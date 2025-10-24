@@ -92,6 +92,7 @@ Stworzenie lekkiej, statycznej strony internetowej (Single Page Application) hos
 - **Timer**: Odliczanie z wizualizacją (ostatnie 5s - czerwony, pulsujący)
 - **Opisy**: Szczegółowe instrukcje wykonania każdego ćwiczenia
 - **Ekran końcowy**: Gratulacje po ukończeniu treningu
+- **Wake Lock**: Ekran nie wygasa podczas treningu (Screen Wake Lock API)
 
 ### 4.4 Dodatkowe Funkcje
 - **Utrwalanie sesji**: `localStorage` - zapisywanie postępu

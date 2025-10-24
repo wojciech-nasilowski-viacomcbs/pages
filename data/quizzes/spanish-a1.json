@@ -1,38 +1,36 @@
 {
   "title": "Hiszpański A1: Wielki Test",
-  "totalQuestions": 40,
+  "description": "Sprawdź swoją wiedzę z podstaw języka hiszpańskiego.",
   "questions": [
     {
       "type": "multiple-choice",
-      "question": "Uzupełnij zdanie: La ventana ___ rota.",
+      "questionText": "Uzupełnij zdanie: La ventana ___ rota.",
       "options": [
-        { "text": "es" },
-        { "text": "hace" },
-        { "text": "tiene" },
-        { "text": "está" }
-      ],
-      "correctAnswerIndex": 3,
-      "explanation": "Do opisywania stanów będących rezultatem jakiejś czynności (np. zepsuty, otwarty, zamknięty, mokry) używamy ESTAR."
+        { "text": "es", "isCorrect": false, "explanation": "Niepoprawnie. 'Ser' używamy do opisywania stałych cech." },
+        { "text": "hace", "isCorrect": false, "explanation": "Niepoprawnie. 'Hacer' oznacza 'robić'." },
+        { "text": "tiene", "isCorrect": false, "explanation": "Niepoprawnie. 'Tener' oznacza 'mieć'." },
+        { "text": "está", "isCorrect": true, "explanation": "Poprawnie! Do opisywania stanów będących rezultatem jakiejś czynności (np. zepsuty, otwarty, zamknięty, mokry) używamy ESTAR." }
+      ]
     },
     {
       "type": "fill-in-the-blank",
-      "question": "Mi amigo ___ de Polonia.",
+      "questionText": "Mi amigo ___ de Polonia.",
       "correctAnswer": "es",
-      "explanation": "Do opisywania pochodzenia używamy SER."
+      "explanation": "Do opisywania pochodzenia używamy czasownika SER."
     },
     {
-        "type": "true-false",
-        "question": "'Mucho gusto' oznacza 'do widzenia'.",
-        "correctAnswer": false,
-        "explanation": "'Mucho gusto' oznacza 'miło mi cię poznać'."
+      "type": "true-false",
+      "questionText": "'Mucho gusto' oznacza 'do widzenia'.",
+      "isCorrect": false,
+      "explanation": "Niepoprawnie. 'Mucho gusto' oznacza 'miło mi cię poznać'. 'Do widzenia' to 'Adiós' lub 'Hasta luego'."
     },
     {
       "type": "matching",
-      "question": "Dopasuj słowa:",
+      "questionText": "Dopasuj liczby po polsku i hiszpańsku:",
       "pairs": [
-        { "prompt": "Jeden", "answer": "Uno" },
-        { "prompt": "Dwa", "answer": "Dos" },
-        { "prompt": "Trzy", "answer": "Tres" }
+        { "item": "Jeden", "match": "Uno" },
+        { "item": "Dwa", "match": "Dos" },
+        { "item": "Trzy", "match": "Tres" }
       ]
     }
   ]

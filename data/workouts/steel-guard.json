@@ -1,20 +1,35 @@
 {
   "title": "Trening 'Stalowa Garda'",
-  "description": "45-minutowy trening wzmacniający. Przygotuj sprzęt.",
+  "description": "45-minutowy trening wzmacniający dla boksera. Przygotuj kettlebell (12kg), gumę oporową i hantle (2kg).",
   "phases": [
     {
       "name": "Rozgrzewka",
       "exercises": [
-        { "name": "Bieg bokserski", "type": "time", "duration": 60, "description": "Lekki bieg w miejscu. Ręce w gardzie, luźne, szybkie proste." },
-        { "name": "Krążenia ramion", "type": "time", "duration": 60, "details": "30s w przód, 30s w tył", "description": "Duże, obszerne koła, aby rozgrzać barki." }
+        { "name": "Bieg bokserski", "type": "time", "duration": 60, "description": "Lekki bieg w miejscu. Ręce w gardzie, luźne, szybkie proste.", "details": "", "mediaUrl": "" },
+        { "name": "Krążenia ramion", "type": "time", "duration": 60, "details": "30s w przód, 30s w tył", "description": "Duże, obszerne koła, aby rozgrzać barki.", "mediaUrl": "" },
+        { "name": "Kettlebell Halo (8 kg)", "type": "time", "duration": 60, "description": "Trzymaj kettle 'do góry nogami' za rogi. Przenoś go płynnie wokół głowy, blisko ciała. Zmieniaj kierunek.", "details": "", "mediaUrl": "" }
       ]
     },
     {
       "name": "Obwód Siłowy (Runda 1/3)",
       "exercises": [
-        { "name": "Podciąganie australijskie", "type": "reps", "details": "MAX powtórzeń", "description": "Na niskim drążku. Ściągnij łopatki, klatka piersiowa idzie do drążka. Ciało proste jak deska." },
-        { "name": "Kettlebell Swing (12 kg)", "type": "reps", "details": "15-20 powtórzeń", "description": "Ruch eksplozywny z bioder. To nie przysiad! Napnij mocno pośladki i brzuch u góry." },
-        { "name": "Odpoczynek", "type": "time", "duration": 90, "description": "Złap oddech, napij się wody. Przygotuj się na kolejną rundę." }
+        { "name": "Podciąganie australijskie", "type": "reps", "details": "MAX powtórzeń", "description": "Na niskim drążku. Ściągnij łopatki, klatka piersiowa idzie do drążka. Ciało proste jak deska.", "mediaUrl": "" },
+        { "name": "Kettlebell Swing (12 kg)", "type": "reps", "details": "15-20 powtórzeń", "description": "Ruch eksplozywny z bioder. To nie przysiad! Napnij mocno pośladki i brzuch u góry.", "mediaUrl": "" },
+        { "name": "Goblet Squat (12 kg)", "type": "reps", "details": "10-12 powtórzeń", "description": "Trzymaj kettle blisko klatki piersiowej. Zejdź głęboko, trzymając proste plecy i klatkę wypchniętą do przodu.", "mediaUrl": "" },
+        { "name": "Odpoczynek", "type": "time", "duration": 90, "description": "Złap oddech, napij się wody. Przygotuj się na kolejną rundę.", "details": "", "mediaUrl": "" }
+      ]
+    },
+    {
+      "name": "Blok 'Stalowa Garda'",
+      "exercises": [
+        { "name": "Izometryczna garda (Hantle 2 kg)", "type": "time", "duration": 45, "description": "KLUCZOWE: Stań w pozycji. Trzymaj hantle przy policzkach. Łokcie wąsko, barki napięte. Nie pozwól rękom opaść.", "details": "", "mediaUrl": "" },
+        { "name": "Boks z cieniem (Hantle 2 kg)", "type": "time", "duration": 60, "description": "Poruszaj się. 100% skupienia: ręka, która nie uderza, jest PRZYKLEJONA do gardy. Hantle budują wytrzymałość.", "details": "", "mediaUrl": "" }
+      ]
+    },
+    {
+      "name": "Rozciąganie",
+      "exercises": [
+        { "name": "Rozciąganie klatki i barków", "type": "time", "duration": 120, "details": "Po 30s na stronę/pozycję", "description": "Rozciągnij klatkę w futrynie drzwi. Rozciągnij barki, przyciągając ramię w poprzek klatki.", "mediaUrl": "" }
       ]
     }
   ]

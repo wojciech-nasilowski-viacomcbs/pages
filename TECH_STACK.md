@@ -34,6 +34,7 @@
 - **localStorage**: Zapisywanie postępu sesji
 - **fetch API**: Ładowanie plików JSON
 - **Web Audio API**: Generowanie dźwięków bez zewnętrznych plików audio
+- **Screen Wake Lock API**: Zapobieganie wygaszaniu ekranu podczas treningów
 
 ## Backend / Hosting
 
@@ -73,6 +74,7 @@
 - fetch API
 - localStorage
 - Web Audio API
+- Screen Wake Lock API (opcjonalne - graceful degradation)
 - CSS Grid & Flexbox
 
 ## Responsywność

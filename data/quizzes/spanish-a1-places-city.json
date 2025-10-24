@@ -1,0 +1,433 @@
+{
+  "title": "Hiszpański A1: Miejsca w Mieście",
+  "description": "Sprawdź swoją znajomość miejsc w mieście, przyimków, podstawowych czasowników i zwrotów po hiszpańsku.",
+  "questions": [
+    {
+      "type": "multiple-choice",
+      "questionText": "Jak po hiszpańsku powiemy 'supermarket'?",
+      "options": [
+        { "text": "el supermercado", "isCorrect": true, "explanation": "Poprawnie! 'El supermercado' to supermarket." },
+        { "text": "el gimnasio", "isCorrect": false, "explanation": "Niepoprawnie. 'El gimnasio' to siłownia." },
+        { "text": "el estadio", "isCorrect": false, "explanation": "Niepoprawnie. 'El estadio' to stadion." },
+        { "text": "el museo", "isCorrect": false, "explanation": "Niepoprawnie. 'El museo' to muzeum." }
+      ]
+    },
+    {
+      "type": "fill-in-the-blank",
+      "questionText": "Apteka po hiszpańsku to la ___.",
+      "correctAnswer": "farmacia",
+      "explanation": "Poprawnie! 'La farmacia' to apteka."
+    },
+    {
+      "type": "matching",
+      "questionText": "Dopasuj miejsca w mieście:",
+      "pairs": [
+        { "item": "el banco", "match": "bank" },
+        { "item": "la biblioteca", "match": "biblioteka" },
+        { "item": "el teatro", "match": "teatr" },
+        { "item": "la piscina", "match": "basen" }
+      ]
+    },
+    {
+      "type": "true-false",
+      "questionText": "'El aeropuerto' oznacza lotnisko.",
+      "isCorrect": true,
+      "explanation": "Prawda! 'El aeropuerto' to lotnisko."
+    },
+    {
+      "type": "multiple-choice",
+      "questionText": "Które słowo oznacza 'kościół'?",
+      "options": [
+        { "text": "la iglesia", "isCorrect": true, "explanation": "Poprawnie! 'La iglesia' to kościół." },
+        { "text": "la catedral", "isCorrect": false, "explanation": "Niepoprawnie. 'La catedral' to katedra (większa budowla)." },
+        { "text": "el ayuntamiento", "isCorrect": false, "explanation": "Niepoprawnie. 'El ayuntamiento' to ratusz." },
+        { "text": "el museo", "isCorrect": false, "explanation": "Niepoprawnie. 'El museo' to muzeum." }
+      ]
+    },
+    {
+      "type": "fill-in-the-blank",
+      "questionText": "Kawiarnia po hiszpańsku to la ___.",
+      "correctAnswer": "cafetería",
+      "explanation": "Poprawnie! 'La cafetería' to kawiarnia."
+    },
+    {
+      "type": "matching",
+      "questionText": "Dopasuj sklepy i miejsca:",
+      "pairs": [
+        { "item": "la panadería", "match": "piekarnia" },
+        { "item": "la heladería", "match": "lodziarnia" },
+        { "item": "la gasolinera", "match": "stacja benzynowa" },
+        { "item": "la tienda", "match": "sklep" }
+      ]
+    },
+    {
+      "type": "true-false",
+      "questionText": "'El hotel' to po hiszpańsku parking.",
+      "isCorrect": false,
+      "explanation": "Fałsz! 'El hotel' to hotel. Parking to 'el aparcamiento'."
+    },
+    {
+      "type": "multiple-choice",
+      "questionText": "Jak zapytamy po hiszpańsku 'Gdzie jest...?'",
+      "options": [
+        { "text": "¿Dónde está...?", "isCorrect": true, "explanation": "Poprawnie! '¿Dónde está...?' to 'Gdzie jest...?'" },
+        { "text": "¿Qué es...?", "isCorrect": false, "explanation": "Niepoprawnie. To znaczy 'Co to jest...?'" },
+        { "text": "¿Cómo estás?", "isCorrect": false, "explanation": "Niepoprawnie. To znaczy 'Jak się masz?'" },
+        { "text": "¿Cuándo es...?", "isCorrect": false, "explanation": "Niepoprawnie. To znaczy 'Kiedy jest...?'" }
+      ]
+    },
+    {
+      "type": "fill-in-the-blank",
+      "questionText": "Most po hiszpańsku to el ___.",
+      "correctAnswer": "puente",
+      "explanation": "Poprawnie! 'El puente' to most."
+    },
+    {
+      "type": "matching",
+      "questionText": "Dopasuj przyimki miejsca:",
+      "pairs": [
+        { "item": "delante de", "match": "przed" },
+        { "item": "detrás de", "match": "za" },
+        { "item": "al lado de", "match": "obok" },
+        { "item": "debajo de", "match": "pod" }
+      ]
+    },
+    {
+      "type": "true-false",
+      "questionText": "'La plaza' oznacza plażę.",
+      "isCorrect": false,
+      "explanation": "Fałsz! 'La plaza' to plac. Plaża to 'la playa'."
+    },
+    {
+      "type": "multiple-choice",
+      "questionText": "Która fraza oznacza 'blisko'?",
+      "options": [
+        { "text": "cerca de", "isCorrect": true, "explanation": "Poprawnie! 'Cerca de' oznacza 'blisko'." },
+        { "text": "lejos de", "isCorrect": false, "explanation": "Niepoprawnie. 'Lejos de' oznacza 'daleko od'." },
+        { "text": "encima de", "isCorrect": false, "explanation": "Niepoprawnie. 'Encima de' oznacza 'nad'." },
+        { "text": "entre", "isCorrect": false, "explanation": "Niepoprawnie. 'Entre' oznacza 'pomiędzy'." }
+      ]
+    },
+    {
+      "type": "fill-in-the-blank",
+      "questionText": "Uniwersytet po hiszpańsku to la ___.",
+      "correctAnswer": "universidad",
+      "explanation": "Poprawnie! 'La universidad' to uniwersytet."
+    },
+    {
+      "type": "matching",
+      "questionText": "Dopasuj kierunki:",
+      "pairs": [
+        { "item": "a la izquierda de", "match": "na lewo od" },
+        { "item": "a la derecha de", "match": "na prawo od" },
+        { "item": "recto", "match": "prosto" },
+        { "item": "al final de", "match": "na końcu" }
+      ]
+    },
+    {
+      "type": "true-false",
+      "questionText": "'El colegio' to uniwersytet.",
+      "isCorrect": false,
+      "explanation": "Fałsz! 'El colegio' to szkoła podstawowa/średnia. Uniwersytet to 'la universidad'."
+    },
+    {
+      "type": "multiple-choice",
+      "questionText": "Który czasownik używamy do opisywania położenia?",
+      "options": [
+        { "text": "estar", "isCorrect": true, "explanation": "Poprawnie! 'Estar' używamy do opisywania położenia i stanów." },
+        { "text": "ser", "isCorrect": false, "explanation": "Niepoprawnie. 'Ser' używamy do cech stałych i tożsamości." },
+        { "text": "tener", "isCorrect": false, "explanation": "Niepoprawnie. 'Tener' oznacza 'mieć'." },
+        { "text": "hacer", "isCorrect": false, "explanation": "Niepoprawnie. 'Hacer' oznacza 'robić'." }
+      ]
+    },
+    {
+      "type": "fill-in-the-blank",
+      "questionText": "Stare miasto po hiszpańsku to el casco ___.",
+      "correctAnswer": "antiguo",
+      "explanation": "Poprawnie! 'El casco antiguo' to stare miasto."
+    },
+    {
+      "type": "matching",
+      "questionText": "Dopasuj pomieszczenia w domu:",
+      "pairs": [
+        { "item": "el salón", "match": "salon" },
+        { "item": "la cocina", "match": "kuchnia" },
+        { "item": "la casa", "match": "dom" },
+        { "item": "la ventana", "match": "okno" }
+      ]
+    },
+    {
+      "type": "true-false",
+      "questionText": "'La calle' oznacza ulicę.",
+      "isCorrect": true,
+      "explanation": "Prawda! 'La calle' to ulica."
+    },
+    {
+      "type": "multiple-choice",
+      "questionText": "Jak powiemy 'Chcę iść do...'?",
+      "options": [
+        { "text": "Quiero ir a...", "isCorrect": true, "explanation": "Poprawnie! 'Quiero ir a...' to 'Chcę iść/jechać do...'" },
+        { "text": "Tengo que ir...", "isCorrect": false, "explanation": "To znaczy 'Muszę iść...', ale nie jest to dokładne tłumaczenie." },
+        { "text": "Puedo ir...", "isCorrect": false, "explanation": "Niepoprawnie. To znaczy 'Mogę iść...'" },
+        { "text": "Voy a ir...", "isCorrect": false, "explanation": "To znaczy 'Idę/Jadę...', ale nie wyraża chęci." }
+      ]
+    },
+    {
+      "type": "fill-in-the-blank",
+      "questionText": "Centrum handlowe po hiszpańsku to el centro ___.",
+      "correctAnswer": "comercial",
+      "explanation": "Poprawnie! 'El centro comercial' to centrum handlowe."
+    },
+    {
+      "type": "matching",
+      "questionText": "Dopasuj czasowniki:",
+      "pairs": [
+        { "item": "ir", "match": "iść, jechać" },
+        { "item": "poder", "match": "móc" },
+        { "item": "tener", "match": "mieć" },
+        { "item": "querer", "match": "chcieć" }
+      ]
+    },
+    {
+      "type": "true-false",
+      "questionText": "'El quiosco' to kiosk.",
+      "isCorrect": true,
+      "explanation": "Prawda! 'El quiosco' to kiosk."
+    },
+    {
+      "type": "multiple-choice",
+      "questionText": "Które słowo oznacza 'na' lub 'w'?",
+      "options": [
+        { "text": "en", "isCorrect": true, "explanation": "Poprawnie! 'En' oznacza 'w' lub 'na'." },
+        { "text": "sobre", "isCorrect": false, "explanation": "Niepoprawnie. 'Sobre' oznacza 'na' (na wierzchu)." },
+        { "text": "entre", "isCorrect": false, "explanation": "Niepoprawnie. 'Entre' oznacza 'pomiędzy'." },
+        { "text": "cerca", "isCorrect": false, "explanation": "Niepoprawnie. 'Cerca' oznacza 'blisko'." }
+      ]
+    },
+    {
+      "type": "fill-in-the-blank",
+      "questionText": "Stacja metra po hiszpańsku to la estación de ___.",
+      "correctAnswer": "metro",
+      "explanation": "Poprawnie! 'La estación de metro' to stacja metra."
+    },
+    {
+      "type": "matching",
+      "questionText": "Dopasuj więcej czasowników:",
+      "pairs": [
+        { "item": "decir", "match": "powiedzieć" },
+        { "item": "ayudar", "match": "pomagać" },
+        { "item": "saber", "match": "wiedzieć, umieć" },
+        { "item": "seguir", "match": "iść dalej, kontynuować" }
+      ]
+    },
+    {
+      "type": "true-false",
+      "questionText": "'La avenida' to aleja.",
+      "isCorrect": true,
+      "explanation": "Prawda! 'La avenida' to aleja (szeroka ulica)."
+    },
+    {
+      "type": "multiple-choice",
+      "questionText": "Co oznacza 'girar'?",
+      "options": [
+        { "text": "skręcać", "isCorrect": true, "explanation": "Poprawnie! 'Girar' oznacza 'skręcać'." },
+        { "text": "iść prosto", "isCorrect": false, "explanation": "Niepoprawnie. Iść prosto to 'seguir recto'." },
+        { "text": "zatrzymać się", "isCorrect": false, "explanation": "Niepoprawnie. To byłoby 'parar'." },
+        { "text": "wracać", "isCorrect": false, "explanation": "Niepoprawnie. To byłoby 'volver'." }
+      ]
+    },
+    {
+      "type": "fill-in-the-blank",
+      "questionText": "Restauracja po hiszpańsku to el ___.",
+      "correctAnswer": "restaurante",
+      "explanation": "Poprawnie! 'El restaurante' to restauracja."
+    },
+    {
+      "type": "matching",
+      "questionText": "Dopasuj przymiotniki:",
+      "pairs": [
+        { "item": "grande", "match": "duży" },
+        { "item": "alto/alta", "match": "wysoki/wysoka" },
+        { "item": "cerrado/cerrada", "match": "zamknięty/zamknięta" },
+        { "item": "cansado/cansada", "match": "zmęczony/zmęczona" }
+      ]
+    },
+    {
+      "type": "true-false",
+      "questionText": "'Está bastante cerca' oznacza 'Jest całkiem blisko'.",
+      "isCorrect": true,
+      "explanation": "Prawda! 'Está bastante cerca' to 'Jest całkiem blisko'."
+    },
+    {
+      "type": "multiple-choice",
+      "questionText": "Jak zapytamy 'Skąd jesteś?'",
+      "options": [
+        { "text": "¿De dónde eres?", "isCorrect": true, "explanation": "Poprawnie! '¿De dónde eres?' to 'Skąd jesteś?'" },
+        { "text": "¿Dónde estás?", "isCorrect": false, "explanation": "Niepoprawnie. To znaczy 'Gdzie jesteś?'" },
+        { "text": "¿Cómo eres?", "isCorrect": false, "explanation": "Niepoprawnie. To znaczy 'Jaki jesteś?' (opis cech)." },
+        { "text": "¿Quién eres?", "isCorrect": false, "explanation": "Niepoprawnie. To znaczy 'Kim jesteś?'" }
+      ]
+    },
+    {
+      "type": "fill-in-the-blank",
+      "questionText": "Odpowiedź na pytanie '¿De dónde eres?' to: Soy ___ Polonia.",
+      "correctAnswer": "de",
+      "explanation": "Poprawnie! 'Soy de Polonia' to 'Jestem z Polski'."
+    },
+    {
+      "type": "matching",
+      "questionText": "Dopasuj rzeczowniki:",
+      "pairs": [
+        { "item": "el coche", "match": "samochód" },
+        { "item": "el libro", "match": "książka" },
+        { "item": "la mesa", "match": "stół" },
+        { "item": "la llave", "match": "klucz" }
+      ]
+    },
+    {
+      "type": "true-false",
+      "questionText": "'Sigue todo recto' oznacza 'Skręć w lewo'.",
+      "isCorrect": false,
+      "explanation": "Fałsz! 'Sigue todo recto' oznacza 'Idź cały czas prosto'."
+    },
+    {
+      "type": "multiple-choice",
+      "questionText": "Co oznacza zwrot 'hacer ejercicio'?",
+      "options": [
+        { "text": "ćwiczyć", "isCorrect": true, "explanation": "Poprawnie! 'Hacer ejercicio' to 'ćwiczyć'." },
+        { "text": "robić zakupy", "isCorrect": false, "explanation": "Niepoprawnie. To byłoby 'hacer compras'." },
+        { "text": "gotować", "isCorrect": false, "explanation": "Niepoprawnie. To byłoby 'cocinar'." },
+        { "text": "spać", "isCorrect": false, "explanation": "Niepoprawnie. To byłoby 'dormir'." }
+      ]
+    },
+    {
+      "type": "fill-in-the-blank",
+      "questionText": "Siłownia po hiszpańsku to el ___.",
+      "correctAnswer": "gimnasio",
+      "explanation": "Poprawnie! 'El gimnasio' to siłownia."
+    },
+    {
+      "type": "matching",
+      "questionText": "Dopasuj zwroty:",
+      "pairs": [
+        { "item": "Tengo frío", "match": "Zimno mi" },
+        { "item": "¡Hace mucho calor!", "match": "Ale gorąco!" },
+        { "item": "sin problema", "match": "bez problemu" },
+        { "item": "Claro que sí", "match": "Jasne, że tak" }
+      ]
+    },
+    {
+      "type": "true-false",
+      "questionText": "'Los fines de semana' oznacza 'w weekendy'.",
+      "isCorrect": true,
+      "explanation": "Prawda! 'Los fines de semana' to 'w weekendy'."
+    },
+    {
+      "type": "multiple-choice",
+      "questionText": "Który czasownik oznacza 'znaleźć'?",
+      "options": [
+        { "text": "encontrar", "isCorrect": true, "explanation": "Poprawnie! 'Encontrar' oznacza 'znaleźć'." },
+        { "text": "buscar", "isCorrect": false, "explanation": "Niepoprawnie. 'Buscar' oznacza 'szukać'." },
+        { "text": "perder", "isCorrect": false, "explanation": "Niepoprawnie. 'Perder' oznacza 'zgubić'." },
+        { "text": "tener", "isCorrect": false, "explanation": "Niepoprawnie. 'Tener' oznacza 'mieć'." }
+      ]
+    },
+    {
+      "type": "fill-in-the-blank",
+      "questionText": "Bar po hiszpańsku to el ___.",
+      "correctAnswer": "bar",
+      "explanation": "Poprawnie! 'El bar' to bar (słowo jest bardzo podobne!)."
+    },
+    {
+      "type": "matching",
+      "questionText": "Dopasuj więcej przymiotników:",
+      "pairs": [
+        { "item": "enfermo", "match": "chory" },
+        { "item": "contento/contenta", "match": "zadowolony/zadowolona" },
+        { "item": "amable", "match": "miły" },
+        { "item": "deportista", "match": "wysportowany/a" }
+      ]
+    },
+    {
+      "type": "true-false",
+      "questionText": "'De vacaciones' oznacza 'na wakacjach'.",
+      "isCorrect": true,
+      "explanation": "Prawda! 'De vacaciones' to 'na wakacjach'."
+    },
+    {
+      "type": "multiple-choice",
+      "questionText": "Co oznacza 'después de trabajar'?",
+      "options": [
+        { "text": "po pracy", "isCorrect": true, "explanation": "Poprawnie! 'Después de trabajar' to 'po pracy'." },
+        { "text": "przed pracą", "isCorrect": false, "explanation": "Niepoprawnie. To byłoby 'antes de trabajar'." },
+        { "text": "podczas pracy", "isCorrect": false, "explanation": "Niepoprawnie. To byłoby 'durante el trabajo'." },
+        { "text": "bez pracy", "isCorrect": false, "explanation": "Niepoprawnie. To byłoby 'sin trabajo'." }
+      ]
+    },
+    {
+      "type": "fill-in-the-blank",
+      "questionText": "Park po hiszpańsku to el ___.",
+      "correctAnswer": "parque",
+      "explanation": "Poprawnie! 'El parque' to park."
+    },
+    {
+      "type": "matching",
+      "questionText": "Dopasuj ostatnie czasowniki:",
+      "pairs": [
+        { "item": "venir", "match": "przychodzić" },
+        { "item": "hablar", "match": "mówić" },
+        { "item": "trabajar", "match": "pracować" },
+        { "item": "dormir", "match": "spać" }
+      ]
+    },
+    {
+      "type": "true-false",
+      "questionText": "'A 5 minutos de aquí' oznacza '5 minut stąd'.",
+      "isCorrect": true,
+      "explanation": "Prawda! 'A 5 minutos de aquí' to '5 minut stąd'."
+    },
+    {
+      "type": "multiple-choice",
+      "questionText": "Które słowo oznacza 'tutaj'?",
+      "options": [
+        { "text": "aquí", "isCorrect": true, "explanation": "Poprawnie! 'Aquí' oznacza 'tutaj'." },
+        { "text": "allí", "isCorrect": false, "explanation": "Niepoprawnie. 'Allí' oznacza 'tam'." },
+        { "text": "ahí", "isCorrect": false, "explanation": "Niepoprawnie. 'Ahí' oznacza 'tam' (bliżej niż 'allí')." },
+        { "text": "donde", "isCorrect": false, "explanation": "Niepoprawnie. 'Donde' oznacza 'gdzie'." }
+      ]
+    },
+    {
+      "type": "fill-in-the-blank",
+      "questionText": "Plaża po hiszpańsku to la ___.",
+      "correctAnswer": "playa",
+      "explanation": "Poprawnie! 'La playa' to plaża."
+    },
+    {
+      "type": "matching",
+      "questionText": "Dopasuj ostatnie miejsca:",
+      "pairs": [
+        { "item": "el estadio", "match": "stadion" },
+        { "item": "el museo", "match": "muzeum" },
+        { "item": "la catedral", "match": "katedra" },
+        { "item": "el ayuntamiento", "match": "ratusz" }
+      ]
+    },
+    {
+      "type": "true-false",
+      "questionText": "'Está prohibido' oznacza 'jest zabronione'.",
+      "isCorrect": true,
+      "explanation": "Prawda! 'Está prohibido' to 'jest zabronione'."
+    },
+    {
+      "type": "multiple-choice",
+      "questionText": "Jak zapytamy 'Wiesz, jak mogę tam dotrzeć?'",
+      "options": [
+        { "text": "¿Sabes cómo puedo ir ahí?", "isCorrect": true, "explanation": "Poprawnie! '¿Sabes cómo puedo ir ahí?' to 'Wiesz, jak mogę tam dotrzeć?'" },
+        { "text": "¿Dónde está?", "isCorrect": false, "explanation": "Niepoprawnie. To tylko 'Gdzie jest?'" },
+        { "text": "¿Puedo ir?", "isCorrect": false, "explanation": "Niepoprawnie. To tylko 'Mogę iść?'" },
+        { "text": "¿Cómo estás?", "isCorrect": false, "explanation": "Niepoprawnie. To znaczy 'Jak się masz?'" }
+      ]
+    }
+  ]
+}
+

@@ -1,0 +1,423 @@
+{
+  "title": "Hiszpański A1: Liczebniki Główne",
+  "description": "Naucz się liczebników głównych w języku hiszpańskim od 0 do 1000 i więcej.",
+  "questions": [
+    {
+      "type": "multiple-choice",
+      "questionText": "Jak po hiszpańsku powiemy 'zero'?",
+      "options": [
+        { "text": "cero", "isCorrect": true, "explanation": "Poprawnie! 'Cero' to zero." },
+        { "text": "uno", "isCorrect": false, "explanation": "Niepoprawnie. 'Uno' to jeden." },
+        { "text": "nada", "isCorrect": false, "explanation": "Niepoprawnie. 'Nada' oznacza 'nic'." },
+        { "text": "ninguno", "isCorrect": false, "explanation": "Niepoprawnie. 'Ninguno' oznacza 'żaden'." }
+      ]
+    },
+    {
+      "type": "fill-in-the-blank",
+      "questionText": "Jeden po hiszpańsku to ___.",
+      "correctAnswer": "uno",
+      "explanation": "Poprawnie! 'Uno' to jeden."
+    },
+    {
+      "type": "matching",
+      "questionText": "Dopasuj liczby 1-4:",
+      "pairs": [
+        { "item": "uno", "match": "1" },
+        { "item": "dos", "match": "2" },
+        { "item": "tres", "match": "3" },
+        { "item": "cuatro", "match": "4" }
+      ]
+    },
+    {
+      "type": "true-false",
+      "questionText": "'Cinco' oznacza pięć.",
+      "isCorrect": true,
+      "explanation": "Prawda! 'Cinco' to pięć."
+    },
+    {
+      "type": "multiple-choice",
+      "questionText": "Które słowo oznacza 'sześć'?",
+      "options": [
+        { "text": "seis", "isCorrect": true, "explanation": "Poprawnie! 'Seis' to sześć." },
+        { "text": "siete", "isCorrect": false, "explanation": "Niepoprawnie. 'Siete' to siedem." },
+        { "text": "cinco", "isCorrect": false, "explanation": "Niepoprawnie. 'Cinco' to pięć." },
+        { "text": "ocho", "isCorrect": false, "explanation": "Niepoprawnie. 'Ocho' to osiem." }
+      ]
+    },
+    {
+      "type": "fill-in-the-blank",
+      "questionText": "Siedem po hiszpańsku to ___.",
+      "correctAnswer": "siete",
+      "explanation": "Poprawnie! 'Siete' to siedem."
+    },
+    {
+      "type": "matching",
+      "questionText": "Dopasuj liczby 5-8:",
+      "pairs": [
+        { "item": "cinco", "match": "5" },
+        { "item": "seis", "match": "6" },
+        { "item": "siete", "match": "7" },
+        { "item": "ocho", "match": "8" }
+      ]
+    },
+    {
+      "type": "true-false",
+      "questionText": "'Nueve' to dziewięć.",
+      "isCorrect": true,
+      "explanation": "Prawda! 'Nueve' to dziewięć."
+    },
+    {
+      "type": "multiple-choice",
+      "questionText": "Jak powiemy 'dziesięć' po hiszpańsku?",
+      "options": [
+        { "text": "diez", "isCorrect": true, "explanation": "Poprawnie! 'Diez' to dziesięć." },
+        { "text": "nueve", "isCorrect": false, "explanation": "Niepoprawnie. 'Nueve' to dziewięć." },
+        { "text": "once", "isCorrect": false, "explanation": "Niepoprawnie. 'Once' to jedenaście." },
+        { "text": "doce", "isCorrect": false, "explanation": "Niepoprawnie. 'Doce' to dwanaście." }
+      ]
+    },
+    {
+      "type": "fill-in-the-blank",
+      "questionText": "Jedenaście po hiszpańsku to ___.",
+      "correctAnswer": "once",
+      "explanation": "Poprawnie! 'Once' to jedenaście."
+    },
+    {
+      "type": "matching",
+      "questionText": "Dopasuj liczby 9-12:",
+      "pairs": [
+        { "item": "nueve", "match": "9" },
+        { "item": "diez", "match": "10" },
+        { "item": "once", "match": "11" },
+        { "item": "doce", "match": "12" }
+      ]
+    },
+    {
+      "type": "true-false",
+      "questionText": "'Trece' oznacza trzynaście.",
+      "isCorrect": true,
+      "explanation": "Prawda! 'Trece' to trzynaście."
+    },
+    {
+      "type": "multiple-choice",
+      "questionText": "Które słowo oznacza 'czternaście'?",
+      "options": [
+        { "text": "catorce", "isCorrect": true, "explanation": "Poprawnie! 'Catorce' to czternaście." },
+        { "text": "trece", "isCorrect": false, "explanation": "Niepoprawnie. 'Trece' to trzynaście." },
+        { "text": "quince", "isCorrect": false, "explanation": "Niepoprawnie. 'Quince' to piętnaście." },
+        { "text": "cuatro", "isCorrect": false, "explanation": "Niepoprawnie. 'Cuatro' to cztery." }
+      ]
+    },
+    {
+      "type": "fill-in-the-blank",
+      "questionText": "Piętnaście po hiszpańsku to ___.",
+      "correctAnswer": "quince",
+      "explanation": "Poprawnie! 'Quince' to piętnaście."
+    },
+    {
+      "type": "matching",
+      "questionText": "Dopasuj liczby 13-16:",
+      "pairs": [
+        { "item": "trece", "match": "13" },
+        { "item": "catorce", "match": "14" },
+        { "item": "quince", "match": "15" },
+        { "item": "dieciséis", "match": "16" }
+      ]
+    },
+    {
+      "type": "true-false",
+      "questionText": "'Diecisiete' to siedemnaście.",
+      "isCorrect": true,
+      "explanation": "Prawda! 'Diecisiete' to siedemnaście."
+    },
+    {
+      "type": "multiple-choice",
+      "questionText": "Jak powiemy 'osiemnaście' po hiszpańsku?",
+      "options": [
+        { "text": "dieciocho", "isCorrect": true, "explanation": "Poprawnie! 'Dieciocho' to osiemnaście." },
+        { "text": "diecisiete", "isCorrect": false, "explanation": "Niepoprawnie. 'Diecisiete' to siedemnaście." },
+        { "text": "diecinueve", "isCorrect": false, "explanation": "Niepoprawnie. 'Diecinueve' to dziewiętnaście." },
+        { "text": "ocho", "isCorrect": false, "explanation": "Niepoprawnie. 'Ocho' to osiem." }
+      ]
+    },
+    {
+      "type": "fill-in-the-blank",
+      "questionText": "Dziewiętnaście po hiszpańsku to ___.",
+      "correctAnswer": "diecinueve",
+      "explanation": "Poprawnie! 'Diecinueve' to dziewiętnaście."
+    },
+    {
+      "type": "matching",
+      "questionText": "Dopasuj liczby 17-20:",
+      "pairs": [
+        { "item": "diecisiete", "match": "17" },
+        { "item": "dieciocho", "match": "18" },
+        { "item": "diecinueve", "match": "19" },
+        { "item": "veinte", "match": "20" }
+      ]
+    },
+    {
+      "type": "true-false",
+      "questionText": "'Veinte' oznacza dwadzieścia.",
+      "isCorrect": true,
+      "explanation": "Prawda! 'Veinte' to dwadzieścia."
+    },
+    {
+      "type": "multiple-choice",
+      "questionText": "Jak powiemy 'dwadzieścia jeden' po hiszpańsku?",
+      "options": [
+        { "text": "veintiuno", "isCorrect": true, "explanation": "Poprawnie! 'Veintiuno' to dwadzieścia jeden." },
+        { "text": "veinte y uno", "isCorrect": false, "explanation": "Niepoprawnie. Liczby 21-29 piszemy łącznie: veintiuno, veintidós, etc." },
+        { "text": "veinteuno", "isCorrect": false, "explanation": "Niepoprawnie. Poprawna forma to 'veintiuno'." },
+        { "text": "viente uno", "isCorrect": false, "explanation": "Niepoprawnie. To błędna pisownia." }
+      ]
+    },
+    {
+      "type": "fill-in-the-blank",
+      "questionText": "Dwadzieścia dwa po hiszpańsku to ___.",
+      "correctAnswer": "veintidós",
+      "explanation": "Poprawnie! 'Veintidós' to dwadzieścia dwa. Uwaga na akcent!"
+    },
+    {
+      "type": "matching",
+      "questionText": "Dopasuj liczby 21-24:",
+      "pairs": [
+        { "item": "veintiuno", "match": "21" },
+        { "item": "veintidós", "match": "22" },
+        { "item": "veintitrés", "match": "23" },
+        { "item": "veinticuatro", "match": "24" }
+      ]
+    },
+    {
+      "type": "true-false",
+      "questionText": "'Veinticinco' to dwadzieścia pięć.",
+      "isCorrect": true,
+      "explanation": "Prawda! 'Veinticinco' to dwadzieścia pięć."
+    },
+    {
+      "type": "multiple-choice",
+      "questionText": "Które słowo oznacza 'trzydzieści'?",
+      "options": [
+        { "text": "treinta", "isCorrect": true, "explanation": "Poprawnie! 'Treinta' to trzydzieści." },
+        { "text": "veinte", "isCorrect": false, "explanation": "Niepoprawnie. 'Veinte' to dwadzieścia." },
+        { "text": "cuarenta", "isCorrect": false, "explanation": "Niepoprawnie. 'Cuarenta' to czterdzieści." },
+        { "text": "tres", "isCorrect": false, "explanation": "Niepoprawnie. 'Tres' to trzy." }
+      ]
+    },
+    {
+      "type": "fill-in-the-blank",
+      "questionText": "Trzydzieści jeden po hiszpańsku to treinta y ___.",
+      "correctAnswer": "uno",
+      "explanation": "Poprawnie! 'Treinta y uno' to trzydzieści jeden. Od 31 wzwyż używamy 'y' (i)."
+    },
+    {
+      "type": "matching",
+      "questionText": "Dopasuj dziesiątki:",
+      "pairs": [
+        { "item": "treinta", "match": "30" },
+        { "item": "cuarenta", "match": "40" },
+        { "item": "cincuenta", "match": "50" },
+        { "item": "sesenta", "match": "60" }
+      ]
+    },
+    {
+      "type": "true-false",
+      "questionText": "'Setenta' oznacza siedemdziesiąt.",
+      "isCorrect": true,
+      "explanation": "Prawda! 'Setenta' to siedemdziesiąt."
+    },
+    {
+      "type": "multiple-choice",
+      "questionText": "Jak powiemy 'osiemdziesiąt' po hiszpańsku?",
+      "options": [
+        { "text": "ochenta", "isCorrect": true, "explanation": "Poprawnie! 'Ochenta' to osiemdziesiąt." },
+        { "text": "setenta", "isCorrect": false, "explanation": "Niepoprawnie. 'Setenta' to siedemdziesiąt." },
+        { "text": "noventa", "isCorrect": false, "explanation": "Niepoprawnie. 'Noventa' to dziewięćdziesiąt." },
+        { "text": "ocho", "isCorrect": false, "explanation": "Niepoprawnie. 'Ocho' to osiem." }
+      ]
+    },
+    {
+      "type": "fill-in-the-blank",
+      "questionText": "Dziewięćdziesiąt po hiszpańsku to ___.",
+      "correctAnswer": "noventa",
+      "explanation": "Poprawnie! 'Noventa' to dziewięćdziesiąt."
+    },
+    {
+      "type": "matching",
+      "questionText": "Dopasuj więcej dziesiątek:",
+      "pairs": [
+        { "item": "setenta", "match": "70" },
+        { "item": "ochenta", "match": "80" },
+        { "item": "noventa", "match": "90" },
+        { "item": "cien", "match": "100" }
+      ]
+    },
+    {
+      "type": "true-false",
+      "questionText": "'Cien' i 'ciento' to dwie formy liczby 100.",
+      "isCorrect": true,
+      "explanation": "Prawda! 'Cien' używamy samodzielnie (100), a 'ciento' przed innymi liczbami (101-199)."
+    },
+    {
+      "type": "multiple-choice",
+      "questionText": "Jak poprawnie powiemy '100 osób'?",
+      "options": [
+        { "text": "cien personas", "isCorrect": true, "explanation": "Poprawnie! Przed rzeczownikiem używamy 'cien'." },
+        { "text": "ciento personas", "isCorrect": false, "explanation": "Niepoprawnie. 'Ciento' używamy tylko przed innymi liczbami (101-199)." },
+        { "text": "cieno personas", "isCorrect": false, "explanation": "Niepoprawnie. To błędna forma." },
+        { "text": "cienta personas", "isCorrect": false, "explanation": "Niepoprawnie. To błędna forma." }
+      ]
+    },
+    {
+      "type": "fill-in-the-blank",
+      "questionText": "101 po hiszpańsku to ciento ___.",
+      "correctAnswer": "uno",
+      "explanation": "Poprawnie! 'Ciento uno' to 101. Używamy 'ciento' przed innymi liczbami."
+    },
+    {
+      "type": "matching",
+      "questionText": "Dopasuj liczby powyżej 100:",
+      "pairs": [
+        { "item": "ciento cincuenta", "match": "150" },
+        { "item": "doscientos", "match": "200" },
+        { "item": "trescientos", "match": "300" },
+        { "item": "cuatrocientos", "match": "400" }
+      ]
+    },
+    {
+      "type": "true-false",
+      "questionText": "'Quinientos' oznacza pięćset.",
+      "isCorrect": true,
+      "explanation": "Prawda! 'Quinientos' to pięćset."
+    },
+    {
+      "type": "multiple-choice",
+      "questionText": "Które słowo oznacza 'sześćset'?",
+      "options": [
+        { "text": "seiscientos", "isCorrect": true, "explanation": "Poprawnie! 'Seiscientos' to sześćset." },
+        { "text": "seis cientos", "isCorrect": false, "explanation": "Niepoprawnie. Piszemy łącznie: 'seiscientos'." },
+        { "text": "seiscientas", "isCorrect": false, "explanation": "To forma żeńska, ale pytanie nie określa rodzaju." },
+        { "text": "sesenta", "isCorrect": false, "explanation": "Niepoprawnie. 'Sesenta' to sześćdziesiąt." }
+      ]
+    },
+    {
+      "type": "fill-in-the-blank",
+      "questionText": "Siedemset po hiszpańsku to ___.",
+      "correctAnswer": "setecientos",
+      "explanation": "Poprawnie! 'Setecientos' to siedemset."
+    },
+    {
+      "type": "matching",
+      "questionText": "Dopasuj setki:",
+      "pairs": [
+        { "item": "quinientos", "match": "500" },
+        { "item": "seiscientos", "match": "600" },
+        { "item": "setecientos", "match": "700" },
+        { "item": "ochocientos", "match": "800" }
+      ]
+    },
+    {
+      "type": "true-false",
+      "questionText": "'Novecientos' to dziewięćset.",
+      "isCorrect": true,
+      "explanation": "Prawda! 'Novecientos' to dziewięćset."
+    },
+    {
+      "type": "multiple-choice",
+      "questionText": "Jak powiemy 'tysiąc' po hiszpańsku?",
+      "options": [
+        { "text": "mil", "isCorrect": true, "explanation": "Poprawnie! 'Mil' to tysiąc." },
+        { "text": "milo", "isCorrect": false, "explanation": "Niepoprawnie. To błędna forma." },
+        { "text": "mille", "isCorrect": false, "explanation": "Niepoprawnie. To forma włoska lub francuska." },
+        { "text": "cien", "isCorrect": false, "explanation": "Niepoprawnie. 'Cien' to sto." }
+      ]
+    },
+    {
+      "type": "fill-in-the-blank",
+      "questionText": "Dwa tysiące po hiszpańsku to dos ___.",
+      "correctAnswer": "mil",
+      "explanation": "Poprawnie! 'Dos mil' to dwa tysiące. 'Mil' nie zmienia formy w liczbie mnogiej."
+    },
+    {
+      "type": "matching",
+      "questionText": "Dopasuj duże liczby:",
+      "pairs": [
+        { "item": "mil", "match": "1000" },
+        { "item": "dos mil", "match": "2000" },
+        { "item": "diez mil", "match": "10 000" },
+        { "item": "cien mil", "match": "100 000" }
+      ]
+    },
+    {
+      "type": "true-false",
+      "questionText": "'Un millón' oznacza milion.",
+      "isCorrect": true,
+      "explanation": "Prawda! 'Un millón' to milion."
+    },
+    {
+      "type": "multiple-choice",
+      "questionText": "Jak poprawnie powiemy '45'?",
+      "options": [
+        { "text": "cuarenta y cinco", "isCorrect": true, "explanation": "Poprawnie! 'Cuarenta y cinco' to 45. Od 31 używamy 'y'." },
+        { "text": "cuarentacinco", "isCorrect": false, "explanation": "Niepoprawnie. Tylko 21-29 piszemy łącznie (veintiuno, etc.)." },
+        { "text": "cuarenta cinco", "isCorrect": false, "explanation": "Niepoprawnie. Brakuje 'y' (i)." },
+        { "text": "cuatro y cinco", "isCorrect": false, "explanation": "Niepoprawnie. To znaczyłoby 'cztery i pięć'." }
+      ]
+    },
+    {
+      "type": "fill-in-the-blank",
+      "questionText": "77 po hiszpańsku to setenta y ___.",
+      "correctAnswer": "siete",
+      "explanation": "Poprawnie! 'Setenta y siete' to 77."
+    },
+    {
+      "type": "matching",
+      "questionText": "Dopasuj złożone liczby:",
+      "pairs": [
+        { "item": "treinta y tres", "match": "33" },
+        { "item": "cincuenta y cinco", "match": "55" },
+        { "item": "sesenta y seis", "match": "66" },
+        { "item": "ochenta y ocho", "match": "88" }
+      ]
+    },
+    {
+      "type": "true-false",
+      "questionText": "Liczby 200-900 mają formy męskie i żeńskie (np. doscientos/doscientas).",
+      "isCorrect": true,
+      "explanation": "Prawda! Setki 200-900 dostosowują się do rodzaju rzeczownika: doscientos libros (książki - męskie), doscientas personas (osoby - żeńskie)."
+    },
+    {
+      "type": "multiple-choice",
+      "questionText": "Jak poprawnie powiemy '500 kobiet' (mujeres - żeński)?",
+      "options": [
+        { "text": "quinientas mujeres", "isCorrect": true, "explanation": "Poprawnie! Używamy formy żeńskiej 'quinientas' dla żeńskiego rzeczownika." },
+        { "text": "quinientos mujeres", "isCorrect": false, "explanation": "Niepoprawnie. 'Mujeres' jest żeńskie, więc liczebnik też musi być: 'quinientas'." },
+        { "text": "quince mujeres", "isCorrect": false, "explanation": "Niepoprawnie. 'Quince' to 15, nie 500." },
+        { "text": "cinco mujeres", "isCorrect": false, "explanation": "Niepoprawnie. 'Cinco' to 5, nie 500." }
+      ]
+    },
+    {
+      "type": "fill-in-the-blank",
+      "questionText": "99 po hiszpańsku to noventa y ___.",
+      "correctAnswer": "nueve",
+      "explanation": "Poprawnie! 'Noventa y nueve' to 99."
+    },
+    {
+      "type": "matching",
+      "questionText": "Dopasuj ostatnie liczby:",
+      "pairs": [
+        { "item": "catorce", "match": "14" },
+        { "item": "cuarenta", "match": "40" },
+        { "item": "cuatrocientos", "match": "400" },
+        { "item": "cuatro mil", "match": "4000" }
+      ]
+    },
+    {
+      "type": "true-false",
+      "questionText": "'Ciento' nigdy nie występuje samodzielnie, tylko przed liczbami 1-99.",
+      "isCorrect": true,
+      "explanation": "Prawda! Samodzielnie mówimy 'cien' (100), a 'ciento' używamy tylko w liczbach 101-199."
+    }
+  ]
+}
+
