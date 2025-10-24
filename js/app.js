@@ -25,6 +25,7 @@ const elements = {
   workoutScreen: document.getElementById('workout-screen'),
   workoutEndScreen: document.getElementById('workout-end-screen'),
   continueDialog: document.getElementById('continue-dialog'),
+  exitDialog: document.getElementById('exit-dialog'),
   
   // Główny ekran
   tabQuizzes: document.getElementById('tab-quizzes'),
@@ -33,7 +34,8 @@ const elements = {
   loader: document.getElementById('loader'),
   errorMessage: document.getElementById('error-message'),
   
-  // Przycisk dźwięku
+  // Przyciski nawigacji
+  homeButton: document.getElementById('home-button'),
   soundToggle: document.getElementById('sound-toggle'),
   soundIconOn: document.getElementById('sound-icon-on'),
   soundIconOff: document.getElementById('sound-icon-off'),
@@ -41,6 +43,10 @@ const elements = {
   // Dialog kontynuacji
   continueYes: document.getElementById('continue-yes'),
   continueNo: document.getElementById('continue-no'),
+  
+  // Dialog wyjścia
+  exitConfirm: document.getElementById('exit-confirm'),
+  exitCancel: document.getElementById('exit-cancel'),
   
   // Przyciski powrotu do menu
   quizHome: document.getElementById('quiz-home'),
@@ -78,12 +84,19 @@ function attachEventListeners() {
   elements.tabQuizzes.addEventListener('click', () => switchTab('quizzes'));
   elements.tabWorkouts.addEventListener('click', () => switchTab('workouts'));
   
+  // Przycisk powrotu do strony głównej
+  elements.homeButton.addEventListener('click', handleHomeButtonClick);
+  
   // Przycisk dźwięku
   elements.soundToggle.addEventListener('click', handleSoundToggle);
   
   // Dialog kontynuacji
   elements.continueYes.addEventListener('click', handleContinueYes);
   elements.continueNo.addEventListener('click', handleContinueNo);
+  
+  // Dialog wyjścia
+  elements.exitConfirm.addEventListener('click', handleExitConfirm);
+  elements.exitCancel.addEventListener('click', handleExitCancel);
   
   // Przyciski powrotu do menu
   elements.quizHome.addEventListener('click', () => showScreen('main'));
@@ -402,6 +415,39 @@ function handleContinueNo() {
   elements.continueDialog.classList.add('hidden');
   localStorage.removeItem('currentSession');
   state.savedSession = null;
+}
+
+/**
+ * Obsługa kliknięcia przycisku Home
+ */
+function handleHomeButtonClick() {
+  // Jeśli jesteśmy na stronie głównej, nic nie rób
+  if (state.currentView === 'main') {
+    return;
+  }
+  
+  // Jeśli jesteśmy w quizie lub treningu, pokaż dialog potwierdzenia
+  if (state.currentView === 'quiz' || state.currentView === 'workout') {
+    elements.exitDialog.classList.remove('hidden');
+  } else {
+    // Jeśli jesteśmy na ekranie podsumowania, wróć od razu
+    showScreen('main');
+  }
+}
+
+/**
+ * Obsługa: Potwierdź wyjście do menu
+ */
+function handleExitConfirm() {
+  elements.exitDialog.classList.add('hidden');
+  showScreen('main');
+}
+
+/**
+ * Obsługa: Anuluj wyjście
+ */
+function handleExitCancel() {
+  elements.exitDialog.classList.add('hidden');
 }
 
 // Inicjalizuj aplikację po załadowaniu DOM
