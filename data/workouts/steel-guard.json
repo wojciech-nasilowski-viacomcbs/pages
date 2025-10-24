@@ -1,0 +1,21 @@
+{
+  "title": "Trening 'Stalowa Garda'",
+  "description": "45-minutowy trening wzmacniający. Przygotuj sprzęt.",
+  "phases": [
+    {
+      "name": "Rozgrzewka",
+      "exercises": [
+        { "name": "Bieg bokserski", "type": "time", "duration": 60, "description": "Lekki bieg w miejscu. Ręce w gardzie, luźne, szybkie proste." },
+        { "name": "Krążenia ramion", "type": "time", "duration": 60, "details": "30s w przód, 30s w tył", "description": "Duże, obszerne koła, aby rozgrzać barki." }
+      ]
+    },
+    {
+      "name": "Obwód Siłowy (Runda 1/3)",
+      "exercises": [
+        { "name": "Podciąganie australijskie", "type": "reps", "details": "MAX powtórzeń", "description": "Na niskim drążku. Ściągnij łopatki, klatka piersiowa idzie do drążka. Ciało proste jak deska." },
+        { "name": "Kettlebell Swing (12 kg)", "type": "reps", "details": "15-20 powtórzeń", "description": "Ruch eksplozywny z bioder. To nie przysiad! Napnij mocno pośladki i brzuch u góry." },
+        { "name": "Odpoczynek", "type": "time", "duration": 90, "description": "Złap oddech, napij się wody. Przygotuj się na kolejną rundę." }
+      ]
+    }
+  ]
+}

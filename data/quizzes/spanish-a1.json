@@ -1,0 +1,39 @@
+{
+  "title": "Hiszpański A1: Wielki Test",
+  "totalQuestions": 40,
+  "questions": [
+    {
+      "type": "multiple-choice",
+      "question": "Uzupełnij zdanie: La ventana ___ rota.",
+      "options": [
+        { "text": "es" },
+        { "text": "hace" },
+        { "text": "tiene" },
+        { "text": "está" }
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "Do opisywania stanów będących rezultatem jakiejś czynności (np. zepsuty, otwarty, zamknięty, mokry) używamy ESTAR."
+    },
+    {
+      "type": "fill-in-the-blank",
+      "question": "Mi amigo ___ de Polonia.",
+      "correctAnswer": "es",
+      "explanation": "Do opisywania pochodzenia używamy SER."
+    },
+    {
+        "type": "true-false",
+        "question": "'Mucho gusto' oznacza 'do widzenia'.",
+        "correctAnswer": false,
+        "explanation": "'Mucho gusto' oznacza 'miło mi cię poznać'."
+    },
+    {
+      "type": "matching",
+      "question": "Dopasuj słowa:",
+      "pairs": [
+        { "prompt": "Jeden", "answer": "Uno" },
+        { "prompt": "Dwa", "answer": "Dos" },
+        { "prompt": "Trzy", "answer": "Tres" }
+      ]
+    }
+  ]
+}
