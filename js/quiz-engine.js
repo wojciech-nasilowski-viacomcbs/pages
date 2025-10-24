@@ -349,11 +349,11 @@ function renderMatching(questionData) {
       
       // Odznacz poprzedni
       elements.answersContainer.querySelectorAll('.matching-left').forEach(b => {
-        b.classList.remove('border-blue-500');
+        b.classList.remove('border-blue-500', 'bg-blue-900', 'border-4');
       });
       
-      // Zaznacz aktualny
-      btn.classList.add('border-blue-500');
+      // Zaznacz aktualny - wyraźniejsze zaznaczenie
+      btn.classList.add('border-blue-500', 'bg-blue-900', 'border-4');
       selectedLeft = parseInt(btn.dataset.index);
     });
   });
@@ -371,7 +371,7 @@ function renderMatching(questionData) {
       // Zablokuj przyciski
       const leftBtn = elements.answersContainer.querySelector(`.matching-left[data-index="${leftIndex}"]`);
       leftBtn.disabled = true;
-      leftBtn.classList.remove('border-blue-500');
+      leftBtn.classList.remove('border-blue-500', 'bg-blue-900', 'border-4');
       leftBtn.classList.add('opacity-50');
       
       btn.disabled = true;
