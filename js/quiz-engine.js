@@ -675,7 +675,7 @@ function renderMatching(questionData) {
       
       // Jeśli kliknięto ten sam element (zaznaczony, ale nie dopasowany) - odznacz go
       if (selectedLeft === leftIndex) {
-        btn.classList.remove('border-blue-500', 'bg-blue-900', 'border-4');
+        btn.classList.remove('border-blue-400', 'bg-blue-600', 'border-4', 'shadow-lg', 'shadow-blue-500/50');
         selectedLeft = null;
         return;
       }
@@ -683,12 +683,12 @@ function renderMatching(questionData) {
       // Odznacz poprzedni
       elements.answersContainer.querySelectorAll('.matching-left').forEach(b => {
         if (!userMatches.find(m => m.leftIndex === parseInt(b.dataset.index))) {
-          b.classList.remove('border-blue-500', 'bg-blue-900', 'border-4');
+          b.classList.remove('border-blue-400', 'bg-blue-600', 'border-4', 'shadow-lg', 'shadow-blue-500/50');
         }
       });
       
-      // Zaznacz aktualny - wyraźniejsze zaznaczenie
-      btn.classList.add('border-blue-500', 'bg-blue-900', 'border-4');
+      // Zaznacz aktualny - wyraźniejsze zaznaczenie z cieniem dla mobile
+      btn.classList.add('border-blue-400', 'bg-blue-600', 'border-4', 'shadow-lg', 'shadow-blue-500/50');
       selectedLeft = leftIndex;
     });
   });
@@ -728,7 +728,7 @@ function renderMatching(questionData) {
       
       // Oznacz dopasowane przyciski (fioletowy = dopasowane, ale można cofnąć)
       const leftBtn = elements.answersContainer.querySelector(`.matching-left[data-index="${leftIndex}"]`);
-      leftBtn.classList.remove('border-blue-500', 'bg-blue-900', 'border-4', 'bg-gray-700', 'hover:bg-gray-600');
+      leftBtn.classList.remove('border-blue-400', 'bg-blue-600', 'border-4', 'shadow-lg', 'shadow-blue-500/50', 'bg-gray-700', 'hover:bg-gray-600');
       leftBtn.classList.add('opacity-50', 'bg-purple-700', 'border-purple-500', 'border-2');
       
       btn.classList.remove('bg-gray-700', 'hover:bg-gray-600');
