@@ -39,6 +39,7 @@ export function initQuizEngine(showScreen, state) {
     quizHeader: document.getElementById('quiz-header'),
     quizQuestionContainer: document.getElementById('quiz-question-container'),
     randomizeCheckbox: document.getElementById('quiz-randomize'),
+    skipListeningCheckbox: document.getElementById('quiz-skip-listening'),
     startButton: document.getElementById('quiz-start-btn'),
     
     // Quiz
@@ -131,6 +132,12 @@ function showQuizOptions() {
   if (savedRandomize !== null) {
     elements.randomizeCheckbox.checked = savedRandomize === 'true';
   }
+  
+  // Wczytaj zapisaną preferencję pomijania pytań słuchowych
+  const savedSkipListening = localStorage.getItem('skipListeningQuestions');
+  if (savedSkipListening !== null) {
+    elements.skipListeningCheckbox.checked = savedSkipListening === 'true';
+  }
 }
 
 /**
@@ -138,9 +145,16 @@ function showQuizOptions() {
  */
 function handleStartQuiz() {
   const shouldRandomize = elements.randomizeCheckbox.checked;
+  const shouldSkipListening = elements.skipListeningCheckbox.checked;
   
-  // Zapisz preferencję
+  // Zapisz preferencje
   localStorage.setItem('quizRandomize', shouldRandomize);
+  localStorage.setItem('skipListeningQuestions', shouldSkipListening);
+  
+  // Filtruj pytania słuchowe jeśli zaznaczono opcję
+  if (shouldSkipListening) {
+    filterListeningQuestions();
+  }
   
   // Losuj kolejność pytań jeśli zaznaczono
   if (shouldRandomize) {
@@ -174,6 +188,14 @@ function randomizeQuestions() {
   
   // Zmień kolejność pytań
   quizState.data.questions = indices.map(i => questions[i]);
+}
+
+/**
+ * Filtruje pytania słuchowe (listening) z quizu
+ */
+function filterListeningQuestions() {
+  // Filtruj pytania, usuwając te typu "listening"
+  quizState.data.questions = quizState.data.questions.filter(q => q.type !== 'listening');
 }
 
 /**
