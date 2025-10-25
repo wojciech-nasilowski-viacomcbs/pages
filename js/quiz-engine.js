@@ -39,6 +39,7 @@ export function initQuizEngine(showScreen, state) {
     quizHeader: document.getElementById('quiz-header'),
     quizQuestionContainer: document.getElementById('quiz-question-container'),
     randomizeCheckbox: document.getElementById('quiz-randomize'),
+    skipListeningCheckbox: document.getElementById('quiz-skip-listening'), // Checkbox do pomijania pytań słuchowych
     startButton: document.getElementById('quiz-start-btn'),
     
     // Quiz
@@ -131,6 +132,12 @@ function showQuizOptions() {
   if (savedRandomize !== null) {
     elements.randomizeCheckbox.checked = savedRandomize === 'true';
   }
+  
+  // Wczytaj zapisaną preferencję pomijania pytań słuchowych
+  const savedSkipListening = localStorage.getItem('skipListeningQuestions');
+  if (savedSkipListening !== null) {
+    elements.skipListeningCheckbox.checked = savedSkipListening === 'true';
+  }
 }
 
 /**
@@ -138,11 +145,20 @@ function showQuizOptions() {
  */
 function handleStartQuiz() {
   const shouldRandomize = elements.randomizeCheckbox.checked;
+  const shouldSkipListening = elements.skipListeningCheckbox.checked;
   
-  // Zapisz preferencję
+  // Zapisz preferencje użytkownika w localStorage
   localStorage.setItem('quizRandomize', shouldRandomize);
+  localStorage.setItem('skipListeningQuestions', shouldSkipListening);
   
-  // Losuj kolejność pytań jeśli zaznaczono
+  // Filtruj pytania słuchowe jeśli użytkownik zaznaczył tę opcję
+  // WAŻNE: Filtrowanie musi być wykonane PRZED losowaniem
+  if (shouldSkipListening) {
+    filterListeningQuestions();
+  }
+  
+  // Losuj kolejność pytań jeśli zaznaczono opcję randomizacji
+  // Losowanie działa na przefiltrowanych pytaniach
   if (shouldRandomize) {
     randomizeQuestions();
   }
@@ -174,6 +190,21 @@ function randomizeQuestions() {
   
   // Zmień kolejność pytań
   quizState.data.questions = indices.map(i => questions[i]);
+}
+
+/**
+ * Filtruje pytania słuchowe (listening) z quizu
+ * Usuwa wszystkie pytania typu "listening" z tablicy pytań
+ * 
+ * Funkcja modyfikuje quizState.data.questions in-place, zachowując
+ * tylko pytania, które NIE są typu "listening"
+ * 
+ * Przykład:
+ * - Przed: 69 pytań (w tym 6 typu "listening")
+ * - Po: 63 pytania (wszystkie oprócz "listening")
+ */
+function filterListeningQuestions() {
+  quizState.data.questions = quizState.data.questions.filter(q => q.type !== 'listening');
 }
 
 /**
