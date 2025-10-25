@@ -4,7 +4,7 @@
  */
 
 import { toggleMute, isSoundMuted } from './audio.js';
-import { initQuizEngine, startQuiz } from './quiz-engine.js';
+import { initQuizEngine, startQuiz, resetMistakes } from './quiz-engine.js';
 import { initWorkoutEngine, startWorkout } from './workout-engine.js';
 
 // Stan aplikacji
@@ -99,7 +99,10 @@ function attachEventListeners() {
   elements.exitCancel.addEventListener('click', handleExitCancel);
   
   // Przyciski powrotu do menu
-  elements.quizHome.addEventListener('click', () => showScreen('main'));
+  elements.quizHome.addEventListener('click', () => {
+    resetMistakes(); // Resetuj błędy przy wyjściu z podsumowania
+    showScreen('main');
+  });
   elements.workoutHome.addEventListener('click', () => showScreen('main'));
 }
 
@@ -440,6 +443,12 @@ function handleHomeButtonClick() {
  */
 function handleExitConfirm() {
   elements.exitDialog.classList.add('hidden');
+  
+  // Resetuj błędy quizu przy wyjściu
+  if (state.currentView === 'quiz') {
+    resetMistakes();
+  }
+  
   showScreen('main');
 }
 

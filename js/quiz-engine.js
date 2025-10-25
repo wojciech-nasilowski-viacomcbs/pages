@@ -16,7 +16,9 @@ const quizState = {
   score: 0,
   answers: [],
   isAnswered: false,
-  questionOrder: null // Przechowuje indeksy pytań jeśli były losowane
+  questionOrder: null, // Przechowuje indeksy pytań jeśli były losowane
+  mistakeQuestions: [], // Pytania z błędnymi odpowiedziami (w bieżącej sesji)
+  originalQuestions: null // Oryginalne pytania przed filtrowaniem błędów
 };
 
 // Elementy DOM - będą pobrane przy inicjalizacji
@@ -51,7 +53,9 @@ export function initQuizEngine(showScreen, state) {
     // Podsumowanie
     finalScore: document.getElementById('quiz-final-score'),
     finalDetails: document.getElementById('quiz-final-details'),
+    mistakesInfo: document.getElementById('quiz-mistakes-info'),
     retryButton: document.getElementById('quiz-retry'),
+    retryMistakesButton: document.getElementById('quiz-retry-mistakes'),
     homeButton: document.getElementById('quiz-home')
   };
   
@@ -59,12 +63,21 @@ export function initQuizEngine(showScreen, state) {
   elements.startButton.addEventListener('click', handleStartQuiz);
   elements.nextButton.addEventListener('click', handleNextQuestion);
   elements.retryButton.addEventListener('click', handleRetry);
+  elements.retryMistakesButton.addEventListener('click', handleRetryMistakes);
+}
+
+/**
+ * Resetuje listę błędów (wywołane przy wyjściu z quizu)
+ */
+export function resetMistakes() {
+  quizState.mistakeQuestions = [];
+  quizState.originalQuestions = null;
 }
 
 /**
  * Rozpoczyna quiz (pokazuje opcje)
  */
-export function startQuiz(quizData, filename) {
+export function startQuiz(quizData, filename, mistakesOnly = false) {
   quizState.data = quizData;
   quizState.filename = filename;
   quizState.currentQuestionIndex = 0;
@@ -72,9 +85,16 @@ export function startQuiz(quizData, filename) {
   quizState.answers = [];
   quizState.isAnswered = false;
   
+  // Jeśli to nie jest tryb błędów, zapisz oryginalne pytania i resetuj błędy
+  if (!mistakesOnly) {
+    quizState.mistakeQuestions = [];
+    // Zapisz oryginalne pytania PRZED jakimkolwiek losowaniem
+    quizState.originalQuestions = [...quizData.questions];
+  }
+  
   // Sprawdź zapisany postęp
   const savedProgress = loadProgress();
-  if (savedProgress && savedProgress.filename === filename) {
+  if (savedProgress && savedProgress.filename === filename && !mistakesOnly) {
     quizState.currentQuestionIndex = savedProgress.currentQuestionIndex;
     quizState.score = savedProgress.score;
     quizState.answers = savedProgress.answers;
@@ -234,6 +254,8 @@ function handleMultipleChoiceAnswer(questionData, selectedIndex) {
     playCorrectSound();
   } else {
     playIncorrectSound();
+    // Zapisz indeks błędnego pytania
+    recordMistake();
   }
   
   // Pokoloruj odpowiedzi
@@ -314,6 +336,8 @@ function handleFillInTheBlankAnswer(questionData, userAnswer) {
     playCorrectSound();
   } else {
     playIncorrectSound();
+    // Zapisz indeks błędnego pytania
+    recordMistake();
   }
   
   // Zablokuj input i przycisk
@@ -375,6 +399,8 @@ function handleTrueFalseAnswer(questionData, userAnswer) {
     playCorrectSound();
   } else {
     playIncorrectSound();
+    // Zapisz indeks błędnego pytania
+    recordMistake();
   }
   
   // Pokoloruj przyciski
@@ -568,6 +594,8 @@ function handleMatchingAnswer(questionData, userMatches) {
     playCorrectSound();
   } else {
     playIncorrectSound();
+    // Zapisz indeks błędnego pytania
+    recordMistake();
   }
   
   // Pokoloruj odpowiedzi
@@ -650,6 +678,17 @@ function showSummary() {
   elements.finalScore.textContent = `${percentage}%`;
   elements.finalDetails.textContent = `${quizState.score} / ${totalQuestions} poprawnych odpowiedzi`;
   
+  // Pokaż informację o błędach
+  const mistakesCount = quizState.mistakeQuestions.length;
+  
+  if (mistakesCount > 0) {
+    elements.mistakesInfo.textContent = `Pomyłki: ${mistakesCount} z ${totalQuestions} pytań`;
+    elements.retryMistakesButton.classList.remove('hidden');
+  } else {
+    elements.mistakesInfo.textContent = 'Brawo! Wszystkie odpowiedzi poprawne! 🎉';
+    elements.retryMistakesButton.classList.add('hidden');
+  }
+  
   // Wyczyść zapisany postęp
   localStorage.removeItem('currentSession');
   
@@ -668,12 +707,68 @@ function handleRetry() {
   fetch(`data/quizzes/${filename}`)
     .then(response => response.json())
     .then(quizData => {
+      // Reset błędów - nowy quiz od początku
+      quizState.mistakeQuestions = [];
+      quizState.originalQuestions = null;
+      
       startQuiz(quizData, filename);
       showScreenFn('quiz');
     })
     .catch(error => {
       console.error('Błąd wczytywania quizu:', error);
     });
+}
+
+/**
+ * Zapisuje błędne pytanie
+ */
+function recordMistake() {
+  // Zapisz bieżące pytanie jako błędne
+  const currentQuestion = quizState.data.questions[quizState.currentQuestionIndex];
+  
+  // Pobierz tekst pytania (obsłuż oba pola)
+  const currentQuestionText = currentQuestion.questionText || currentQuestion.question;
+  
+  // Sprawdź czy to pytanie już nie jest na liście (porównanie po treści pytania)
+  const alreadyRecorded = quizState.mistakeQuestions.some(q => {
+    const qText = q.questionText || q.question;
+    return qText === currentQuestionText;
+  });
+  
+  if (!alreadyRecorded) {
+    quizState.mistakeQuestions.push(currentQuestion);
+  }
+}
+
+/**
+ * Rozpoczyna quiz tylko z błędnymi pytaniami
+ */
+function handleRetryMistakes() {
+  // Wyczyść zapisany postęp
+  localStorage.removeItem('currentSession');
+  
+  // Zachowaj oryginalne pytania dla kolejnych prób
+  const originalQuestionsBackup = [...quizState.originalQuestions];
+  
+  // Zachowaj listę błędnych pytań PRZED resetowaniem
+  const mistakeQuestionsBackup = [...quizState.mistakeQuestions];
+  
+  // Resetuj listę błędów dla nowej próby (PRZED startQuiz!)
+  quizState.mistakeQuestions = [];
+  
+  // Stwórz nowe dane quizu tylko z błędnymi pytaniami
+  const mistakesQuizData = {
+    ...quizState.data,
+    questions: mistakeQuestionsBackup
+  };
+  
+  // Rozpocznij quiz z błędnymi pytaniami (mistakesOnly=true, więc nie resetuje mistakeQuestions)
+  startQuiz(mistakesQuizData, quizState.filename, true);
+  
+  // Przywróć oryginalne pytania (dla mapowania nowych błędów)
+  quizState.originalQuestions = originalQuestionsBackup;
+  
+  showScreenFn('quiz');
 }
 
 /**
