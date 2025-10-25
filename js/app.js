@@ -259,7 +259,25 @@ function renderCards() {
 /**
  * Wczytuje i rozpoczyna quiz
  */
-async function loadAndStartQuiz(filename) {
+async function loadAndStartQuiz(filename, skipSessionCheck = false) {
+  // Sprawdź czy jest zapisana sesja dla tego quizu (chyba że skipSessionCheck = true)
+  if (!skipSessionCheck) {
+    const savedSession = localStorage.getItem('currentSession');
+    if (savedSession) {
+      const session = JSON.parse(savedSession);
+      
+      // Jeśli to ten sam quiz i sesja nie jest starsza niż 24h
+      if (session.type === 'quiz' && session.filename === filename) {
+        const sessionAge = Date.now() - session.timestamp;
+        if (sessionAge < 24 * 60 * 60 * 1000) {
+          // Pokaż dialog kontynuacji
+          showContinueDialog(session);
+          return;
+        }
+      }
+    }
+  }
+  
   try {
     showScreen('loading');
     const response = await fetch(`data/quizzes/${filename}`);
@@ -368,7 +386,8 @@ function handleSoundToggle() {
 }
 
 /**
- * Sprawdza, czy jest zapisana sesja
+ * Sprawdza, czy jest zapisana sesja (wywoływane przy starcie aplikacji)
+ * Teraz tylko czyści wygasłe sesje, dialog pokazuje się przy kliknięciu w quiz
  */
 function checkSavedSession() {
   const savedSession = localStorage.getItem('currentSession');
@@ -377,14 +396,12 @@ function checkSavedSession() {
     
     // Sprawdź, czy sesja nie jest starsza niż 24h
     const sessionAge = Date.now() - session.timestamp;
-    if (sessionAge < 24 * 60 * 60 * 1000) {
-      showContinueDialog(session);
-      return;
+    if (sessionAge >= 24 * 60 * 60 * 1000) {
+      // Sesja wygasła - wyczyść
+      localStorage.removeItem('currentSession');
     }
+    // Jeśli sesja jest aktualna, zostaw ją - dialog pokaże się przy kliknięciu w quiz
   }
-  
-  // Brak sesji lub wygasła - wyczyść
-  localStorage.removeItem('currentSession');
 }
 
 /**
@@ -405,7 +422,7 @@ function handleContinueYes() {
   
   const session = state.savedSession;
   if (session.type === 'quiz') {
-    loadAndStartQuiz(session.filename);
+    loadAndStartQuiz(session.filename, true); // skipSessionCheck = true, bo już jesteśmy w dialogu
   } else if (session.type === 'workout') {
     loadAndStartWorkout(session.filename);
   }
@@ -444,8 +461,8 @@ function handleHomeButtonClick() {
 function handleExitConfirm() {
   elements.exitDialog.classList.add('hidden');
   
-  // Wyczyść zapisaną sesję, aby przy następnym uruchomieniu pokazać opcje
-  localStorage.removeItem('currentSession');
+  // NIE usuwamy sesji - ma być zapamiętana
+  // Przy następnym kliknięciu w quiz pojawi się dialog kontynuacji
   
   // Resetuj błędy quizu przy wyjściu
   if (state.currentView === 'quiz') {
