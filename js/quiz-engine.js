@@ -318,7 +318,10 @@ function renderMatching(questionData) {
   const rightItems = [...questionData.pairs.map(p => p.match)].sort(() => Math.random() - 0.5);
   
   elements.answersContainer.innerHTML = `
-    <div class="text-sm text-gray-400 mb-4">Kliknij element z lewej, a potem odpowiadający mu element z prawej.</div>
+    <div class="text-sm text-gray-400 mb-4">
+      Kliknij element z lewej, a potem odpowiadający mu element z prawej. 
+      <span class="text-yellow-400">Kliknij ponownie na dopasowaną parę, aby ją cofnąć.</span>
+    </div>
     <div class="grid grid-cols-2 gap-4">
       <div class="space-y-2">
         ${questionData.pairs.map((pair, index) => `
@@ -337,53 +340,121 @@ function renderMatching(questionData) {
         `).join('')}
       </div>
     </div>
+    <div class="mt-4 text-center">
+      <button id="matching-submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+        Sprawdź odpowiedzi
+      </button>
+    </div>
   `;
   
   let selectedLeft = null;
   const userMatches = [];
   
-  // Event listenery
+  const updateSubmitButton = () => {
+    const submitBtn = document.getElementById('matching-submit');
+    if (userMatches.length === questionData.pairs.length) {
+      submitBtn.disabled = false;
+    } else {
+      submitBtn.disabled = true;
+    }
+  };
+  
+  // Event listenery dla lewej kolumny
   elements.answersContainer.querySelectorAll('.matching-left').forEach(btn => {
     btn.addEventListener('click', () => {
-      if (btn.disabled) return;
+      const leftIndex = parseInt(btn.dataset.index);
+      
+      // Sprawdź czy ten element jest już dopasowany
+      const existingMatch = userMatches.find(m => m.leftIndex === leftIndex);
+      
+      if (existingMatch) {
+        // Cofnij dopasowanie
+        const matchIndex = userMatches.indexOf(existingMatch);
+        userMatches.splice(matchIndex, 1);
+        
+        // Odblokuj przyciski
+        btn.classList.remove('opacity-50', 'bg-purple-700', 'border-purple-500');
+        btn.classList.add('bg-gray-700', 'hover:bg-gray-600');
+        
+        const rightBtns = elements.answersContainer.querySelectorAll('.matching-right');
+        const rightBtn = Array.from(rightBtns).find(b => b.dataset.match === existingMatch.rightMatch);
+        rightBtn.classList.remove('opacity-50', 'bg-purple-700', 'border-purple-500');
+        rightBtn.classList.add('bg-gray-700', 'hover:bg-gray-600');
+        
+        updateSubmitButton();
+        return;
+      }
+      
+      // Jeśli kliknięto ten sam element (zaznaczony, ale nie dopasowany) - odznacz go
+      if (selectedLeft === leftIndex) {
+        btn.classList.remove('border-blue-500', 'bg-blue-900', 'border-4');
+        selectedLeft = null;
+        return;
+      }
       
       // Odznacz poprzedni
       elements.answersContainer.querySelectorAll('.matching-left').forEach(b => {
-        b.classList.remove('border-blue-500', 'bg-blue-900', 'border-4');
+        if (!userMatches.find(m => m.leftIndex === parseInt(b.dataset.index))) {
+          b.classList.remove('border-blue-500', 'bg-blue-900', 'border-4');
+        }
       });
       
       // Zaznacz aktualny - wyraźniejsze zaznaczenie
       btn.classList.add('border-blue-500', 'bg-blue-900', 'border-4');
-      selectedLeft = parseInt(btn.dataset.index);
+      selectedLeft = leftIndex;
     });
   });
   
+  // Event listenery dla prawej kolumny
   elements.answersContainer.querySelectorAll('.matching-right').forEach(btn => {
     btn.addEventListener('click', () => {
-      if (btn.disabled || selectedLeft === null) return;
+      const rightMatch = btn.dataset.match;
+      
+      // Sprawdź czy ten element jest już dopasowany
+      const existingMatch = userMatches.find(m => m.rightMatch === rightMatch);
+      
+      if (existingMatch) {
+        // Cofnij dopasowanie
+        const matchIndex = userMatches.indexOf(existingMatch);
+        userMatches.splice(matchIndex, 1);
+        
+        // Odblokuj przyciski
+        btn.classList.remove('opacity-50', 'bg-purple-700', 'border-purple-500');
+        btn.classList.add('bg-gray-700', 'hover:bg-gray-600');
+        
+        const leftBtn = elements.answersContainer.querySelector(`.matching-left[data-index="${existingMatch.leftIndex}"]`);
+        leftBtn.classList.remove('opacity-50', 'bg-purple-700', 'border-purple-500');
+        leftBtn.classList.add('bg-gray-700', 'hover:bg-gray-600');
+        
+        updateSubmitButton();
+        return;
+      }
+      
+      // Normalny flow - dopasowanie
+      if (selectedLeft === null) return;
       
       const leftIndex = selectedLeft;
-      const rightMatch = btn.dataset.match;
       
       // Zapisz dopasowanie
       userMatches.push({ leftIndex, rightMatch });
       
-      // Zablokuj przyciski
+      // Oznacz dopasowane przyciski (fioletowy = dopasowane, ale można cofnąć)
       const leftBtn = elements.answersContainer.querySelector(`.matching-left[data-index="${leftIndex}"]`);
-      leftBtn.disabled = true;
-      leftBtn.classList.remove('border-blue-500', 'bg-blue-900', 'border-4');
-      leftBtn.classList.add('opacity-50');
+      leftBtn.classList.remove('border-blue-500', 'bg-blue-900', 'border-4', 'bg-gray-700', 'hover:bg-gray-600');
+      leftBtn.classList.add('opacity-50', 'bg-purple-700', 'border-purple-500', 'border-2');
       
-      btn.disabled = true;
-      btn.classList.add('opacity-50');
+      btn.classList.remove('bg-gray-700', 'hover:bg-gray-600');
+      btn.classList.add('opacity-50', 'bg-purple-700', 'border-purple-500', 'border-2');
       
       selectedLeft = null;
       
-      // Sprawdź, czy wszystkie dopasowane
-      if (userMatches.length === questionData.pairs.length) {
-        handleMatchingAnswer(questionData, userMatches);
-      }
+      updateSubmitButton();
     });
+  });
+  
+  // Przycisk sprawdzania
+  document.getElementById('matching-submit').addEventListener('click', () => {
+    handleMatchingAnswer(questionData, userMatches);
   });
 }
 
@@ -430,9 +501,18 @@ function handleMatchingAnswer(questionData, userMatches) {
     }
   });
   
-  const explanation = isCorrect 
-    ? 'Świetnie! Wszystkie pary dopasowane poprawnie.' 
-    : `Poprawnie dopasowano ${correctCount} z ${questionData.pairs.length} par.`;
+  // Przygotuj wyjaśnienie z poprawnymi odpowiedziami
+  let explanation = '';
+  if (isCorrect) {
+    explanation = 'Świetnie! Wszystkie pary dopasowane poprawnie.';
+  } else {
+    explanation = `Poprawnie dopasowano ${correctCount} z ${questionData.pairs.length} par.\n\n`;
+    explanation += '<div class="mt-3 text-sm"><strong>Prawidłowe dopasowania:</strong><ul class="mt-2 space-y-1">';
+    questionData.pairs.forEach(pair => {
+      explanation += `<li>• <span class="text-blue-300">${pair.item}</span> → <span class="text-green-300">${pair.match}</span></li>`;
+    });
+    explanation += '</ul></div>';
+  }
   
   showFeedback(isCorrect, explanation);
 }
