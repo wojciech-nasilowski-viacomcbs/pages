@@ -15,25 +15,12 @@ const quizState = {
   currentQuestionIndex: 0,
   score: 0,
   answers: [],
-  isAnswered: false
+  isAnswered: false,
+  questionOrder: null // Przechowuje indeksy pytań jeśli były losowane
 };
 
-// Elementy DOM
-const elements = {
-  progress: document.getElementById('quiz-progress'),
-  scoreDisplay: document.getElementById('quiz-score'),
-  progressBar: document.getElementById('quiz-progress-bar'),
-  question: document.getElementById('quiz-question'),
-  answersContainer: document.getElementById('quiz-answers'),
-  feedback: document.getElementById('quiz-feedback'),
-  nextButton: document.getElementById('quiz-next'),
-  
-  // Podsumowanie
-  finalScore: document.getElementById('quiz-final-score'),
-  finalDetails: document.getElementById('quiz-final-details'),
-  retryButton: document.getElementById('quiz-retry'),
-  homeButton: document.getElementById('quiz-home')
-};
+// Elementy DOM - będą pobrane przy inicjalizacji
+let elements = {};
 
 /**
  * Inicjalizacja silnika quizów
@@ -42,13 +29,40 @@ export function initQuizEngine(showScreen, state) {
   showScreenFn = showScreen;
   appState = state;
   
+  // Pobierz elementy DOM
+  elements = {
+    // Opcje quizu
+    quizOptions: document.getElementById('quiz-options'),
+    quizTitle: document.getElementById('quiz-title'),
+    quizHeader: document.getElementById('quiz-header'),
+    quizQuestionContainer: document.getElementById('quiz-question-container'),
+    randomizeCheckbox: document.getElementById('quiz-randomize'),
+    startButton: document.getElementById('quiz-start-btn'),
+    
+    // Quiz
+    progress: document.getElementById('quiz-progress'),
+    scoreDisplay: document.getElementById('quiz-score'),
+    progressBar: document.getElementById('quiz-progress-bar'),
+    question: document.getElementById('quiz-question'),
+    answersContainer: document.getElementById('quiz-answers'),
+    feedback: document.getElementById('quiz-feedback'),
+    nextButton: document.getElementById('quiz-next'),
+    
+    // Podsumowanie
+    finalScore: document.getElementById('quiz-final-score'),
+    finalDetails: document.getElementById('quiz-final-details'),
+    retryButton: document.getElementById('quiz-retry'),
+    homeButton: document.getElementById('quiz-home')
+  };
+  
   // Event listenery
+  elements.startButton.addEventListener('click', handleStartQuiz);
   elements.nextButton.addEventListener('click', handleNextQuestion);
   elements.retryButton.addEventListener('click', handleRetry);
 }
 
 /**
- * Rozpoczyna quiz
+ * Rozpoczyna quiz (pokazuje opcje)
  */
 export function startQuiz(quizData, filename) {
   quizState.data = quizData;
@@ -64,9 +78,82 @@ export function startQuiz(quizData, filename) {
     quizState.currentQuestionIndex = savedProgress.currentQuestionIndex;
     quizState.score = savedProgress.score;
     quizState.answers = savedProgress.answers;
+    
+    // Jeśli kontynuujemy, przywróć kolejność pytań i od razu rozpocznij
+    if (savedProgress.questionOrder) {
+      quizState.data.questions = savedProgress.questionOrder.map(i => quizData.questions[i]);
+    }
+    
+    // Ukryj opcje, pokaż quiz
+    elements.quizOptions.classList.add('hidden');
+    elements.quizHeader.classList.remove('hidden');
+    elements.quizQuestionContainer.classList.remove('hidden');
+    displayQuestion();
+  } else {
+    // Nowy quiz - pokaż opcje
+    showQuizOptions();
+  }
+}
+
+/**
+ * Pokazuje opcje quizu przed rozpoczęciem
+ */
+function showQuizOptions() {
+  elements.quizOptions.classList.remove('hidden');
+  elements.quizHeader.classList.add('hidden');
+  elements.quizQuestionContainer.classList.add('hidden');
+  
+  // Ustaw tytuł quizu
+  elements.quizTitle.textContent = quizState.data.title || 'Quiz';
+  
+  // Wczytaj zapisane preferencje losowania
+  const savedRandomize = localStorage.getItem('quizRandomize');
+  if (savedRandomize !== null) {
+    elements.randomizeCheckbox.checked = savedRandomize === 'true';
+  }
+}
+
+/**
+ * Obsługuje rozpoczęcie quizu po wybraniu opcji
+ */
+function handleStartQuiz() {
+  const shouldRandomize = elements.randomizeCheckbox.checked;
+  
+  // Zapisz preferencję
+  localStorage.setItem('quizRandomize', shouldRandomize);
+  
+  // Losuj kolejność pytań jeśli zaznaczono
+  if (shouldRandomize) {
+    randomizeQuestions();
   }
   
+  // Ukryj opcje, pokaż quiz
+  elements.quizOptions.classList.add('hidden');
+  elements.quizHeader.classList.remove('hidden');
+  elements.quizQuestionContainer.classList.remove('hidden');
+  
+  // Rozpocznij quiz
   displayQuestion();
+}
+
+/**
+ * Losuje kolejność pytań
+ */
+function randomizeQuestions() {
+  const questions = quizState.data.questions;
+  const indices = questions.map((_, i) => i);
+  
+  // Fisher-Yates shuffle
+  for (let i = indices.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [indices[i], indices[j]] = [indices[j], indices[i]];
+  }
+  
+  // Zapisz oryginalną kolejność dla zapisu postępu
+  quizState.questionOrder = indices;
+  
+  // Zmień kolejność pytań
+  quizState.data.questions = indices.map(i => questions[i]);
 }
 
 /**
@@ -573,8 +660,20 @@ function showSummary() {
  * Powtarza quiz od początku
  */
 function handleRetry() {
-  startQuiz(quizState.data, quizState.filename);
-  showScreenFn('quiz');
+  // Wyczyść zapisany postęp, aby pokazać opcje quizu ponownie
+  localStorage.removeItem('currentSession');
+  
+  // Wczytaj oryginalne dane quizu ponownie
+  const filename = quizState.filename;
+  fetch(`data/quizzes/${filename}`)
+    .then(response => response.json())
+    .then(quizData => {
+      startQuiz(quizData, filename);
+      showScreenFn('quiz');
+    })
+    .catch(error => {
+      console.error('Błąd wczytywania quizu:', error);
+    });
 }
 
 /**
@@ -587,6 +686,7 @@ function saveProgress() {
     currentQuestionIndex: quizState.currentQuestionIndex,
     score: quizState.score,
     answers: quizState.answers,
+    questionOrder: quizState.questionOrder, // Zapisz kolejność pytań jeśli była losowana
     timestamp: Date.now()
   };
   
