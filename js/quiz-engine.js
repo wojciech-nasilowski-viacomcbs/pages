@@ -39,7 +39,7 @@ export function initQuizEngine(showScreen, state) {
     quizHeader: document.getElementById('quiz-header'),
     quizQuestionContainer: document.getElementById('quiz-question-container'),
     randomizeCheckbox: document.getElementById('quiz-randomize'),
-    skipListeningCheckbox: document.getElementById('quiz-skip-listening'),
+    skipListeningCheckbox: document.getElementById('quiz-skip-listening'), // Checkbox do pomijania pytań słuchowych
     startButton: document.getElementById('quiz-start-btn'),
     
     // Quiz
@@ -147,16 +147,18 @@ function handleStartQuiz() {
   const shouldRandomize = elements.randomizeCheckbox.checked;
   const shouldSkipListening = elements.skipListeningCheckbox.checked;
   
-  // Zapisz preferencje
+  // Zapisz preferencje użytkownika w localStorage
   localStorage.setItem('quizRandomize', shouldRandomize);
   localStorage.setItem('skipListeningQuestions', shouldSkipListening);
   
-  // Filtruj pytania słuchowe jeśli zaznaczono opcję
+  // Filtruj pytania słuchowe jeśli użytkownik zaznaczył tę opcję
+  // WAŻNE: Filtrowanie musi być wykonane PRZED losowaniem
   if (shouldSkipListening) {
     filterListeningQuestions();
   }
   
-  // Losuj kolejność pytań jeśli zaznaczono
+  // Losuj kolejność pytań jeśli zaznaczono opcję randomizacji
+  // Losowanie działa na przefiltrowanych pytaniach
   if (shouldRandomize) {
     randomizeQuestions();
   }
@@ -192,9 +194,16 @@ function randomizeQuestions() {
 
 /**
  * Filtruje pytania słuchowe (listening) z quizu
+ * Usuwa wszystkie pytania typu "listening" z tablicy pytań
+ * 
+ * Funkcja modyfikuje quizState.data.questions in-place, zachowując
+ * tylko pytania, które NIE są typu "listening"
+ * 
+ * Przykład:
+ * - Przed: 69 pytań (w tym 6 typu "listening")
+ * - Po: 63 pytania (wszystkie oprócz "listening")
  */
 function filterListeningQuestions() {
-  // Filtruj pytania, usuwając te typu "listening"
   quizState.data.questions = quizState.data.questions.filter(q => q.type !== 'listening');
 }
 
