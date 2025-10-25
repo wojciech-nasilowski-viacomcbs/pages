@@ -5,6 +5,8 @@
     {
       "type": "multiple-choice",
       "questionText": "Co oznacza 'menu'?",
+      "audioText": "menu",
+      "audioLang": "en-US",
       "options": [
         { "text": "Rachunek", "isCorrect": false, "explanation": "Niepoprawnie. Rachunek to po angielsku 'bill' lub 'check'." },
         { "text": "Kelner", "isCorrect": false, "explanation": "Niepoprawnie. Kelner to po angielsku 'waiter'." },
@@ -15,6 +17,8 @@
     {
       "type": "fill-in-the-blank",
       "questionText": "Can I have the ___, please? (Czy mogę prosić rachunek?)",
+      "audioText": "Can I have the bill, please?",
+      "audioLang": "en-US",
       "correctAnswer": "bill",
       "explanation": "W brytyjskim angielskim używamy 'bill', w amerykańskim 'check'."
     },
@@ -41,6 +45,9 @@
     {
       "type": "true-false",
       "questionText": "'Waiter' oznacza kelnera, a 'waitress' kelnerkę.",
+      "audioText": "waiter, waitress",
+      "audioLang": "en-US",
+      "audioRate": 0.8,
       "isCorrect": true,
       "explanation": "Prawda! 'Waiter' to kelner (mężczyzna), 'waitress' to kelnerka (kobieta)."
     },
@@ -516,6 +523,72 @@
         { "item": "Krem z grzybów", "match": "Mushroom cream soup" },
         { "item": "Zupa cebulowa", "match": "Onion soup" }
       ]
+    },
+    {
+      "type": "listening",
+      "questionText": "🎧 Posłuchaj i wpisz, co usłyszałeś:",
+      "audioText": "A table for two, please",
+      "audioLang": "en-US",
+      "audioRate": 0.85,
+      "correctAnswer": "A table for two, please",
+      "acceptableAnswers": ["A table for two please", "A table for 2 please", "A table for 2, please"],
+      "explanation": "To zdanie oznacza: 'Stolik dla dwóch osób, proszę' - używamy go przy rezerwacji stolika.",
+      "autoPlay": true
+    },
+    {
+      "type": "listening",
+      "questionText": "🎧 Posłuchaj i wpisz zdanie:",
+      "audioText": "Could I have the menu, please?",
+      "audioLang": "en-US",
+      "audioRate": 0.85,
+      "correctAnswer": "Could I have the menu, please?",
+      "acceptableAnswers": ["Could I have the menu please", "Can I have the menu please", "Can I have the menu, please?"],
+      "explanation": "Zdanie oznacza: 'Czy mogę prosić o menu?' - grzeczny sposób proszenia o kartę dań.",
+      "autoPlay": true
+    },
+    {
+      "type": "listening",
+      "questionText": "🎧 Posłuchaj i wpisz, co mówi kelner:",
+      "audioText": "Are you ready to order?",
+      "audioLang": "en-US",
+      "audioRate": 0.8,
+      "correctAnswer": "Are you ready to order?",
+      "acceptableAnswers": ["Are you ready to order", "Ready to order?"],
+      "explanation": "Kelner pyta: 'Czy jesteście gotowi do zamówienia?' - standardowe pytanie przed przyjęciem zamówienia.",
+      "autoPlay": true
+    },
+    {
+      "type": "listening",
+      "questionText": "🎧 Posłuchaj i wpisz zdanie:",
+      "audioText": "I'd like the chicken, please",
+      "audioLang": "en-US",
+      "audioRate": 0.85,
+      "correctAnswer": "I'd like the chicken, please",
+      "acceptableAnswers": ["I'd like the chicken please", "Id like the chicken please", "I would like the chicken please", "I would like the chicken, please"],
+      "explanation": "Zdanie oznacza: 'Poproszę kurczaka' - używamy 'I'd like' (I would like) przy zamawianiu.",
+      "autoPlay": true
+    },
+    {
+      "type": "listening",
+      "questionText": "🎧 Posłuchaj i wpisz pytanie:",
+      "audioText": "Can I pay by card?",
+      "audioLang": "en-US",
+      "audioRate": 0.85,
+      "correctAnswer": "Can I pay by card?",
+      "acceptableAnswers": ["Can I pay by card", "Could I pay by card?", "Could I pay by card"],
+      "explanation": "Pytanie oznacza: 'Czy mogę zapłacić kartą?' - używamy go przed płaceniem.",
+      "autoPlay": true
+    },
+    {
+      "type": "listening",
+      "questionText": "🎧 Posłuchaj i wpisz zwrot:",
+      "audioText": "The bill, please",
+      "audioLang": "en-US",
+      "audioRate": 0.85,
+      "correctAnswer": "The bill, please",
+      "acceptableAnswers": ["The bill please", "Bill please", "Bill, please"],
+      "explanation": "Zwrot oznacza: 'Rachunek, proszę' - używamy go, gdy chcemy zapłacić i wyjść.",
+      "autoPlay": true
     }
   ]
 }

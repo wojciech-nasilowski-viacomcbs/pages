@@ -1,6 +1,7 @@
 {
   "quizzes": [
     "english-a1-restaurant.json",
+    "english-advanced-vocabulary.json",
     "spanish-a1-numbers.json",
     "spanish-a1-places-city.json",
     "spanish-a1.json"
@@ -9,5 +10,5 @@
     "codzienny.json",
     "steel-guard.json"
   ],
-  "generatedAt": "2025-10-25T05:42:45.647Z"
+  "generatedAt": "2025-10-25T05:54:00.745Z"
 }
