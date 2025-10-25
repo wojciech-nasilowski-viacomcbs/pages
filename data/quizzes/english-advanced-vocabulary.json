@@ -3,14 +3,32 @@
   "description": "Kompleksowy test zaawansowanego słownictwa - listening, definicje, użycie w kontekście. Poziom C1-C2.",
   "questions": [
     {
-      "type": "listening",
-      "questionText": "🎧 Posłuchaj i wpisz słowo:",
-      "audioText": "serendipity",
+      "type": "multiple-choice",
+      "questionText": "Co oznacza słowo 'vicarious'?",
+      "audioText": "vicarious",
       "audioLang": "en-US",
-      "audioRate": 0.85,
-      "correctAnswer": "serendipity",
-      "explanation": "'Serendipity' oznacza szczęśliwy traf, przypadkowe odkrycie czegoś wartościowego.",
-      "autoPlay": true
+      "options": [
+        {
+          "text": "Bezpośredni, osobisty",
+          "isCorrect": false,
+          "explanation": "To przeciwieństwo! 'Direct' lub 'personal'."
+        },
+        {
+          "text": "Zastępczy, pośredni (przeżywany przez kogoś innego)",
+          "isCorrect": true,
+          "explanation": "Poprawnie! 'Vicarious' opisuje doświadczenie przeżywane pośrednio, przez obserwację innych."
+        },
+        {
+          "text": "Niebezpieczny, ryzykowny",
+          "isCorrect": false,
+          "explanation": "To byłoby 'dangerous' lub 'risky'."
+        },
+        {
+          "text": "Wirtualny, cyfrowy",
+          "isCorrect": false,
+          "explanation": "To byłoby 'virtual'."
+        }
+      ]
     },
     {
       "type": "listening",
@@ -23,24 +41,231 @@
       "autoPlay": true
     },
     {
-      "type": "listening",
-      "questionText": "🎧 Posłuchaj i wpisz słowo:",
+      "type": "fill-in-the-blank",
+      "questionText": "The politician tried to ___ the issue by using complex language. (Polityk próbował zaciemnić sprawę używając skomplikowanego języka)",
+      "correctAnswer": "obfuscate",
+      "acceptableAnswers": [
+        "obfuscate",
+        "obscure",
+        "confuse"
+      ],
+      "explanation": "'Obfuscate' oznacza zaciemniać, utrudniać zrozumienie. 'Obscure' i 'confuse' też są akceptowalne."
+    },
+    {
+      "type": "true-false",
+      "questionText": "'Juxtaposition' oznacza zestawienie dwóch rzeczy obok siebie dla kontrastu.",
+      "audioText": "juxtaposition",
+      "audioLang": "en-US",
+      "isCorrect": true,
+      "explanation": "Prawda! 'Juxtaposition' to umieszczenie dwóch elementów obok siebie, aby pokazać różnice lub podobieństwa."
+    },
+    {
+      "type": "matching",
+      "questionText": "Dopasuj przeciwieństwa:",
+      "pairs": [
+        {
+          "item": "Ameliorate",
+          "match": "Exacerbate"
+        },
+        {
+          "item": "Superfluous",
+          "match": "Essential"
+        },
+        {
+          "item": "Recalcitrant",
+          "match": "Compliant"
+        },
+        {
+          "item": "Ambiguous",
+          "match": "Clear"
+        }
+      ]
+    },
+    {
+      "type": "multiple-choice",
+      "questionText": "Co oznacza słowo 'ubiquitous'?",
       "audioText": "ubiquitous",
       "audioLang": "en-US",
+      "options": [
+        {
+          "text": "Tajemniczy, enigmatyczny",
+          "isCorrect": false,
+          "explanation": "To byłoby 'mysterious' lub 'enigmatic'."
+        },
+        {
+          "text": "Wszechobecny, występujący wszędzie",
+          "isCorrect": true,
+          "explanation": "Poprawnie! 'Ubiquitous' oznacza coś, co jest wszędzie, powszechne."
+        },
+        {
+          "text": "Unikalny, jedyny w swoim rodzaju",
+          "isCorrect": false,
+          "explanation": "To byłoby 'unique'."
+        },
+        {
+          "text": "Przestarzały, nieaktualny",
+          "isCorrect": false,
+          "explanation": "To byłoby 'obsolete' lub 'outdated'."
+        }
+      ]
+    },
+    {
+      "type": "fill-in-the-blank",
+      "questionText": "Don't ___ - just tell me what happened! (Nie owijaj w bawełnę - powiedz mi co się stało!)",
+      "correctAnswer": "beat around the bush",
+      "acceptableAnswers": [
+        "beat around the bush",
+        "beat about the bush"
+      ],
+      "explanation": "Idiom 'beat around the bush' oznacza owijanie w bawełnę, unikanie mówienia wprost."
+    },
+    {
+      "type": "multiple-choice",
+      "questionText": "Co oznacza słowo 'ephemeral'?",
+      "audioText": "ephemeral",
+      "audioLang": "en-US",
+      "options": [
+        {
+          "text": "Wieczny, nieśmiertelny",
+          "isCorrect": false,
+          "explanation": "To przeciwieństwo! 'Eternal' lub 'immortal' oznaczają wieczny."
+        },
+        {
+          "text": "Ulotny, krótkotrwały",
+          "isCorrect": true,
+          "explanation": "Poprawnie! 'Ephemeral' opisuje coś, co trwa bardzo krótko, jest przemijające."
+        },
+        {
+          "text": "Materialny, fizyczny",
+          "isCorrect": false,
+          "explanation": "To byłoby 'tangible' lub 'material'."
+        },
+        {
+          "text": "Duchowy, niematerialny",
+          "isCorrect": false,
+          "explanation": "To byłoby 'spiritual' lub 'ethereal'."
+        }
+      ]
+    },
+    {
+      "type": "true-false",
+      "questionText": "'Procrastinate' oznacza działać szybko i efektywnie.",
+      "audioText": "procrastinate",
+      "audioLang": "en-US",
+      "isCorrect": false,
+      "explanation": "Fałsz! 'Procrastinate' oznacza odkładać coś na później, zwlekać - dokładnie przeciwieństwo!"
+    },
+    {
+      "type": "listening",
+      "questionText": "🎧 Posłuchaj i wpisz wyrażenie:",
+      "audioText": "barking up the wrong tree",
+      "audioLang": "en-US",
       "audioRate": 0.85,
-      "correctAnswer": "ubiquitous",
-      "explanation": "'Ubiquitous' oznacza wszechobecny, występujący wszędzie.",
+      "correctAnswer": "barking up the wrong tree",
+      "acceptableAnswers": [
+        "barking up the wrong tree",
+        "bark up the wrong tree"
+      ],
+      "explanation": "Idiom oznaczający 'mylić się co do czegoś', szukać w złym miejscu.",
       "autoPlay": true
     },
     {
       "type": "listening",
       "questionText": "🎧 Posłuchaj i wpisz wyrażenie:",
-      "audioText": "beat around the bush",
+      "audioText": "once in a blue moon",
       "audioLang": "en-US",
       "audioRate": 0.85,
-      "correctAnswer": "beat around the bush",
-      "acceptableAnswers": ["beat around the bush", "beating around the bush"],
-      "explanation": "Idiom oznaczający 'owijanie w bawełnę', unikanie mówienia wprost.",
+      "correctAnswer": "once in a blue moon",
+      "acceptableAnswers": [
+        "once in a blue moon",
+        "once in blue moon"
+      ],
+      "explanation": "Idiom oznaczający 'bardzo rzadko', 'od wielkiego dzwonu'.",
+      "autoPlay": true
+    },
+    {
+      "type": "listening",
+      "questionText": "🎧 Posłuchaj i wpisz wyrażenie:",
+      "audioText": "the elephant in the room",
+      "audioLang": "en-US",
+      "audioRate": 0.85,
+      "correctAnswer": "the elephant in the room",
+      "acceptableAnswers": [
+        "the elephant in the room",
+        "elephant in the room",
+        "an elephant in the room"
+      ],
+      "explanation": "Idiom oznaczający oczywisty problem, o którym wszyscy wiedzą, ale nikt nie chce o nim mówić.",
+      "autoPlay": true
+    },
+    {
+      "type": "listening",
+      "questionText": "🎧 Posłuchaj i wpisz słowo:",
+      "audioText": "facetious",
+      "audioLang": "en-US",
+      "audioRate": 0.8,
+      "correctAnswer": "facetious",
+      "explanation": "'Facetious' oznacza żartobliwy, niepoważny (często w nieodpowiednim momencie).",
+      "autoPlay": true
+    },
+    {
+      "type": "listening",
+      "questionText": "🎧 Posłuchaj i wpisz wyrażenie:",
+      "audioText": "hit the nail on the head",
+      "audioLang": "en-US",
+      "audioRate": 0.85,
+      "correctAnswer": "hit the nail on the head",
+      "acceptableAnswers": [
+        "hit the nail on the head",
+        "hitting the nail on the head"
+      ],
+      "explanation": "Idiom oznaczający 'trafić w sedno', powiedzieć coś bardzo trafnie.",
+      "autoPlay": true
+    },
+    {
+      "type": "listening",
+      "questionText": "🎧 Posłuchaj i wpisz słowo:",
+      "audioText": "prerequisite",
+      "audioLang": "en-US",
+      "audioRate": 0.8,
+      "correctAnswer": "prerequisite",
+      "acceptableAnswers": [
+        "prerequisite",
+        "pre-requisite"
+      ],
+      "explanation": "'Prerequisite' oznacza warunek wstępny, wymaganie konieczne do spełnienia.",
+      "autoPlay": true
+    },
+    {
+      "type": "matching",
+      "questionText": "Dopasuj słowa do kontekstu użycia:",
+      "pairs": [
+        {
+          "item": "Conundrum",
+          "match": "A difficult puzzle or problem"
+        },
+        {
+          "item": "Prerequisite",
+          "match": "Required condition beforehand"
+        },
+        {
+          "item": "Idiosyncrasy",
+          "match": "A peculiar personal habit"
+        },
+        {
+          "item": "Acquiesce",
+          "match": "To reluctantly agree"
+        }
+      ]
+    },
+    {
+      "type": "listening",
+      "questionText": "🎧 Posłuchaj i wpisz słowo:",
+      "audioText": "pragmatic",
+      "audioLang": "en-US",
+      "audioRate": 0.85,
+      "correctAnswer": "pragmatic",
+      "explanation": "'Pragmatic' oznacza pragmatyczny, praktyczny, nastawiony na rozwiązania.",
       "autoPlay": true
     },
     {
@@ -54,35 +279,123 @@
       "autoPlay": true
     },
     {
+      "type": "fill-in-the-blank",
+      "questionText": "Let's ___ and discuss the main issue. (Przejdźmy do sedna i omówmy główny problem)",
+      "correctAnswer": "cut to the chase",
+      "acceptableAnswers": [
+        "cut to the chase",
+        "get to the point"
+      ],
+      "explanation": "Idiom 'cut to the chase' oznacza przejść do sedna, pominąć nieistotne szczegóły."
+    },
+    {
       "type": "listening",
       "questionText": "🎧 Posłuchaj i wpisz słowo:",
-      "audioText": "meticulous",
+      "audioText": "ameliorate",
       "audioLang": "en-US",
-      "audioRate": 0.85,
-      "correctAnswer": "meticulous",
-      "explanation": "'Meticulous' oznacza skrupulatny, drobiazgowy, bardzo dokładny.",
+      "audioRate": 0.8,
+      "correctAnswer": "ameliorate",
+      "explanation": "'Ameliorate' oznacza poprawić, ulepszyć (formalnie).",
       "autoPlay": true
     },
     {
       "type": "listening",
       "questionText": "🎧 Posłuchaj i wpisz wyrażenie:",
-      "audioText": "once in a blue moon",
+      "audioText": "let the cat out of the bag",
       "audioLang": "en-US",
       "audioRate": 0.85,
-      "correctAnswer": "once in a blue moon",
-      "acceptableAnswers": ["once in a blue moon", "once in blue moon"],
-      "explanation": "Idiom oznaczający 'bardzo rzadko', 'od wielkiego dzwonu'.",
+      "correctAnswer": "let the cat out of the bag",
+      "acceptableAnswers": [
+        "let the cat out of the bag",
+        "letting the cat out of the bag"
+      ],
+      "explanation": "Idiom oznaczający 'wygadać się', przypadkowo ujawnić sekret.",
+      "autoPlay": true
+    },
+    {
+      "type": "matching",
+      "questionText": "Dopasuj idiomy do ich znaczeń:",
+      "pairs": [
+        {
+          "item": "Hit the nail on the head",
+          "match": "Say exactly the right thing"
+        },
+        {
+          "item": "Once in a blue moon",
+          "match": "Very rarely"
+        },
+        {
+          "item": "Spill the beans",
+          "match": "Reveal a secret"
+        },
+        {
+          "item": "Cut to the chase",
+          "match": "Get to the point"
+        }
+      ]
+    },
+    {
+      "type": "fill-in-the-blank",
+      "questionText": "The professor's lecture was so ___ that half the class fell asleep. (Wykład był tak nudny, że połowa klasy zasnęła)",
+      "correctAnswer": "tedious",
+      "acceptableAnswers": [
+        "tedious",
+        "boring",
+        "dull",
+        "monotonous"
+      ],
+      "explanation": "'Tedious' oznacza nudny, męczący, monotonny. Inne akceptowalne odpowiedzi to 'boring', 'dull', 'monotonous'."
+    },
+    {
+      "type": "true-false",
+      "questionText": "'Serendipity' oznacza szczęśliwy przypadek, odkrycie czegoś wartościowego przez przypadek.",
+      "audioText": "serendipity",
+      "audioLang": "en-US",
+      "isCorrect": true,
+      "explanation": "Prawda! 'Serendipity' to piękne słowo oznaczające szczęśliwy traf lub przypadkowe odkrycie."
+    },
+    {
+      "type": "listening",
+      "questionText": "🎧 Posłuchaj i wpisz słowo:",
+      "audioText": "superfluous",
+      "audioLang": "en-US",
+      "audioRate": 0.8,
+      "correctAnswer": "superfluous",
+      "explanation": "'Superfluous' oznacza zbędny, nadmiarowy, niepotrzebny.",
+      "autoPlay": true
+    },
+    {
+      "type": "listening",
+      "questionText": "🎧 Posłuchaj i wpisz wyrażenie:",
+      "audioText": "break the ice",
+      "audioLang": "en-US",
+      "audioRate": 0.85,
+      "correctAnswer": "break the ice",
+      "acceptableAnswers": [
+        "break the ice",
+        "breaking the ice"
+      ],
+      "explanation": "Idiom oznaczający 'przełamać lody', rozpocząć rozmowę w niezręcznej sytuacji.",
       "autoPlay": true
     },
     {
       "type": "listening",
       "questionText": "🎧 Posłuchaj i wpisz słowo:",
-      "audioText": "procrastinate",
+      "audioText": "serendipity",
+      "audioLang": "en-US",
+      "audioRate": 0.85,
+      "correctAnswer": "serendipity",
+      "explanation": "'Serendipity' oznacza szczęśliwy traf, przypadkowe odkrycie czegoś wartościowego.",
+      "autoPlay": true
+    },
+    {
+      "type": "listening",
+      "questionText": "🎧 Posłuchaj i wpisz słowo:",
+      "audioText": "juxtaposition",
       "audioLang": "en-US",
       "audioRate": 0.8,
-      "correctAnswer": "procrastinate",
-      "acceptableAnswers": ["procrastinate", "procrastinating"],
-      "explanation": "'Procrastinate' oznacza odkładać coś na później, zwlekać.",
+      "correctAnswer": "juxtaposition",
+      "explanation": "'Juxtaposition' oznacza zestawienie, umieszczenie obok siebie (dla kontrastu).",
       "autoPlay": true
     },
     {
@@ -98,138 +411,15 @@
     {
       "type": "listening",
       "questionText": "🎧 Posłuchaj i wpisz wyrażenie:",
-      "audioText": "the elephant in the room",
+      "audioText": "beat around the bush",
       "audioLang": "en-US",
       "audioRate": 0.85,
-      "correctAnswer": "the elephant in the room",
-      "acceptableAnswers": ["the elephant in the room", "elephant in the room", "an elephant in the room"],
-      "explanation": "Idiom oznaczający oczywisty problem, o którym wszyscy wiedzą, ale nikt nie chce o nim mówić.",
-      "autoPlay": true
-    },
-    {
-      "type": "listening",
-      "questionText": "🎧 Posłuchaj i wpisz słowo:",
-      "audioText": "prerequisite",
-      "audioLang": "en-US",
-      "audioRate": 0.8,
-      "correctAnswer": "prerequisite",
-      "acceptableAnswers": ["prerequisite", "pre-requisite"],
-      "explanation": "'Prerequisite' oznacza warunek wstępny, wymaganie konieczne do spełnienia.",
-      "autoPlay": true
-    },
-    {
-      "type": "listening",
-      "questionText": "🎧 Posłuchaj i wpisz słowo:",
-      "audioText": "exacerbate",
-      "audioLang": "en-US",
-      "audioRate": 0.8,
-      "correctAnswer": "exacerbate",
-      "explanation": "'Exacerbate' oznacza pogorszyć, zaostrzać (problem, sytuację).",
-      "autoPlay": true
-    },
-    {
-      "type": "listening",
-      "questionText": "🎧 Posłuchaj i wpisz wyrażenie:",
-      "audioText": "break the ice",
-      "audioLang": "en-US",
-      "audioRate": 0.85,
-      "correctAnswer": "break the ice",
-      "acceptableAnswers": ["break the ice", "breaking the ice"],
-      "explanation": "Idiom oznaczający 'przełamać lody', rozpocząć rozmowę w niezręcznej sytuacji.",
-      "autoPlay": true
-    },
-    {
-      "type": "listening",
-      "questionText": "🎧 Posłuchaj i wpisz słowo:",
-      "audioText": "idiosyncrasy",
-      "audioLang": "en-US",
-      "audioRate": 0.75,
-      "correctAnswer": "idiosyncrasy",
-      "acceptableAnswers": ["idiosyncrasy", "idiosyncracy"],
-      "explanation": "'Idiosyncrasy' oznacza indywidualną cechę, dziwactwo, osobliwość.",
-      "autoPlay": true
-    },
-    {
-      "type": "listening",
-      "questionText": "🎧 Posłuchaj i wpisz słowo:",
-      "audioText": "juxtaposition",
-      "audioLang": "en-US",
-      "audioRate": 0.8,
-      "correctAnswer": "juxtaposition",
-      "explanation": "'Juxtaposition' oznacza zestawienie, umieszczenie obok siebie (dla kontrastu).",
-      "autoPlay": true
-    },
-    {
-      "type": "listening",
-      "questionText": "🎧 Posłuchaj i wpisz wyrażenie:",
-      "audioText": "hit the nail on the head",
-      "audioLang": "en-US",
-      "audioRate": 0.85,
-      "correctAnswer": "hit the nail on the head",
-      "acceptableAnswers": ["hit the nail on the head", "hitting the nail on the head"],
-      "explanation": "Idiom oznaczający 'trafić w sedno', powiedzieć coś bardzo trafnie.",
-      "autoPlay": true
-    },
-    {
-      "type": "listening",
-      "questionText": "🎧 Posłuchaj i wpisz słowo:",
-      "audioText": "facetious",
-      "audioLang": "en-US",
-      "audioRate": 0.8,
-      "correctAnswer": "facetious",
-      "explanation": "'Facetious' oznacza żartobliwy, niepoważny (często w nieodpowiednim momencie).",
-      "autoPlay": true
-    },
-    {
-      "type": "listening",
-      "questionText": "🎧 Posłuchaj i wpisz słowo:",
-      "audioText": "pragmatic",
-      "audioLang": "en-US",
-      "audioRate": 0.85,
-      "correctAnswer": "pragmatic",
-      "explanation": "'Pragmatic' oznacza pragmatyczny, praktyczny, nastawiony na rozwiązania.",
-      "autoPlay": true
-    },
-    {
-      "type": "listening",
-      "questionText": "🎧 Posłuchaj i wpisz wyrażenie:",
-      "audioText": "spill the beans",
-      "audioLang": "en-US",
-      "audioRate": 0.85,
-      "correctAnswer": "spill the beans",
-      "acceptableAnswers": ["spill the beans", "spilling the beans"],
-      "explanation": "Idiom oznaczający 'wygadać się', zdradzić sekret.",
-      "autoPlay": true
-    },
-    {
-      "type": "listening",
-      "questionText": "🎧 Posłuchaj i wpisz słowo:",
-      "audioText": "conundrum",
-      "audioLang": "en-US",
-      "audioRate": 0.85,
-      "correctAnswer": "conundrum",
-      "explanation": "'Conundrum' oznacza zagadkę, trudny problem do rozwiązania.",
-      "autoPlay": true
-    },
-    {
-      "type": "listening",
-      "questionText": "🎧 Posłuchaj i wpisz słowo:",
-      "audioText": "superfluous",
-      "audioLang": "en-US",
-      "audioRate": 0.8,
-      "correctAnswer": "superfluous",
-      "explanation": "'Superfluous' oznacza zbędny, nadmiarowy, niepotrzebny.",
-      "autoPlay": true
-    },
-    {
-      "type": "listening",
-      "questionText": "🎧 Posłuchaj i wpisz wyrażenie:",
-      "audioText": "barking up the wrong tree",
-      "audioLang": "en-US",
-      "audioRate": 0.85,
-      "correctAnswer": "barking up the wrong tree",
-      "acceptableAnswers": ["barking up the wrong tree", "bark up the wrong tree"],
-      "explanation": "Idiom oznaczający 'mylić się co do czegoś', szukać w złym miejscu.",
+      "correctAnswer": "beat around the bush",
+      "acceptableAnswers": [
+        "beat around the bush",
+        "beating around the bush"
+      ],
+      "explanation": "Idiom oznaczający 'owijanie w bawełnę', unikanie mówienia wprost.",
       "autoPlay": true
     },
     {
@@ -245,32 +435,212 @@
     {
       "type": "listening",
       "questionText": "🎧 Posłuchaj i wpisz słowo:",
-      "audioText": "ameliorate",
-      "audioLang": "en-US",
-      "audioRate": 0.8,
-      "correctAnswer": "ameliorate",
-      "explanation": "'Ameliorate' oznacza poprawić, ulepszyć (formalnie).",
-      "autoPlay": true
-    },
-    {
-      "type": "listening",
-      "questionText": "🎧 Posłuchaj i wpisz wyrażenie:",
-      "audioText": "cut to the chase",
-      "audioLang": "en-US",
-      "audioRate": 0.85,
-      "correctAnswer": "cut to the chase",
-      "acceptableAnswers": ["cut to the chase", "cutting to the chase"],
-      "explanation": "Idiom oznaczający 'przejść do sedna', pominąć nieistotne szczegóły.",
-      "autoPlay": true
-    },
-    {
-      "type": "listening",
-      "questionText": "🎧 Posłuchaj i wpisz słowo:",
       "audioText": "obfuscate",
       "audioLang": "en-US",
       "audioRate": 0.8,
       "correctAnswer": "obfuscate",
       "explanation": "'Obfuscate' oznacza zaciemniać, utrudniać zrozumienie czegoś.",
+      "autoPlay": true
+    },
+    {
+      "type": "listening",
+      "questionText": "🎧 Posłuchaj i wpisz słowo:",
+      "audioText": "ubiquitous",
+      "audioLang": "en-US",
+      "audioRate": 0.85,
+      "correctAnswer": "ubiquitous",
+      "explanation": "'Ubiquitous' oznacza wszechobecny, występujący wszędzie.",
+      "autoPlay": true
+    },
+    {
+      "type": "fill-in-the-blank",
+      "questionText": "His ___ attention to detail made him an excellent editor. (Jego skrupulatna uwaga na szczegóły uczyniła go doskonałym redaktorem)",
+      "audioText": "meticulous",
+      "audioLang": "en-US",
+      "correctAnswer": "meticulous",
+      "explanation": "'Meticulous' oznacza skrupulatny, bardzo dokładny i staranny."
+    },
+    {
+      "type": "matching",
+      "questionText": "Dopasuj zaawansowane słowa do ich definicji:",
+      "pairs": [
+        {
+          "item": "Meticulous",
+          "match": "Extremely careful and precise"
+        },
+        {
+          "item": "Pragmatic",
+          "match": "Practical and realistic"
+        },
+        {
+          "item": "Ostentatious",
+          "match": "Showy and pretentious"
+        },
+        {
+          "item": "Recalcitrant",
+          "match": "Stubbornly uncooperative"
+        }
+      ]
+    },
+    {
+      "type": "multiple-choice",
+      "questionText": "Które słowo oznacza 'pogorszyć sytuację'?",
+      "options": [
+        {
+          "text": "Ameliorate",
+          "isCorrect": false,
+          "explanation": "'Ameliorate' oznacza poprawić, ulepszyć - to przeciwieństwo!"
+        },
+        {
+          "text": "Exacerbate",
+          "isCorrect": true,
+          "explanation": "Poprawnie! 'Exacerbate' oznacza pogorszyć, zaostrzać problem."
+        },
+        {
+          "text": "Alleviate",
+          "isCorrect": false,
+          "explanation": "'Alleviate' oznacza złagodzić, zmniejszyć - to przeciwieństwo!"
+        },
+        {
+          "text": "Mitigate",
+          "isCorrect": false,
+          "explanation": "'Mitigate' oznacza łagodzić, zmniejszać - to przeciwieństwo!"
+        }
+      ]
+    },
+    {
+      "type": "listening",
+      "questionText": "🎧 Posłuchaj i wpisz słowo:",
+      "audioText": "acquiesce",
+      "audioLang": "en-US",
+      "audioRate": 0.8,
+      "correctAnswer": "acquiesce",
+      "explanation": "'Acquiesce' oznacza zgodzić się niechętnie, ustąpić.",
+      "autoPlay": true
+    },
+    {
+      "type": "multiple-choice",
+      "questionText": "Co oznacza idiom 'beat around the bush'?",
+      "audioText": "beat around the bush",
+      "audioLang": "en-US",
+      "options": [
+        {
+          "text": "Owijać w bawełnę, unikać mówienia wprost",
+          "isCorrect": true,
+          "explanation": "Poprawnie! Ten idiom oznacza mówienie nie na temat, unikanie sedna sprawy."
+        },
+        {
+          "text": "Być bardzo zajętym",
+          "isCorrect": false,
+          "explanation": "To byłoby 'busy as a bee' lub 'swamped with work'."
+        },
+        {
+          "text": "Przegrywać w dyskusji",
+          "isCorrect": false,
+          "explanation": "To nie jest znaczenie tego idiomu."
+        },
+        {
+          "text": "Szukać czegoś w lesie",
+          "isCorrect": false,
+          "explanation": "To dosłowne tłumaczenie, nie idiomatyczne znaczenie."
+        }
+      ]
+    },
+    {
+      "type": "true-false",
+      "questionText": "'Facetious' oznacza poważny i formalny.",
+      "audioText": "facetious",
+      "audioLang": "en-US",
+      "isCorrect": false,
+      "explanation": "Fałsz! 'Facetious' oznacza żartobliwy, niepoważny, często w nieodpowiednim momencie."
+    },
+    {
+      "type": "listening",
+      "questionText": "🎧 Posłuchaj i wpisz słowo:",
+      "audioText": "meticulous",
+      "audioLang": "en-US",
+      "audioRate": 0.85,
+      "correctAnswer": "meticulous",
+      "explanation": "'Meticulous' oznacza skrupulatny, drobiazgowy, bardzo dokładny.",
+      "autoPlay": true
+    },
+    {
+      "type": "listening",
+      "questionText": "🎧 Posłuchaj i wpisz wyrażenie:",
+      "audioText": "spill the beans",
+      "audioLang": "en-US",
+      "audioRate": 0.85,
+      "correctAnswer": "spill the beans",
+      "acceptableAnswers": [
+        "spill the beans",
+        "spilling the beans"
+      ],
+      "explanation": "Idiom oznaczający 'wygadać się', zdradzić sekret.",
+      "autoPlay": true
+    },
+    {
+      "type": "fill-in-the-blank",
+      "questionText": "The meeting was full of ___ details that didn't contribute to solving the problem. (Spotkanie było pełne zbędnych szczegółów, które nie przyczyniły się do rozwiązania problemu)",
+      "audioText": "superfluous",
+      "audioLang": "en-US",
+      "correctAnswer": "superfluous",
+      "acceptableAnswers": [
+        "superfluous",
+        "unnecessary",
+        "redundant"
+      ],
+      "explanation": "'Superfluous' oznacza zbędny, nadmiarowy. 'Unnecessary' i 'redundant' też są akceptowalne."
+    },
+    {
+      "type": "listening",
+      "questionText": "🎧 Posłuchaj i wpisz słowo:",
+      "audioText": "idiosyncrasy",
+      "audioLang": "en-US",
+      "audioRate": 0.75,
+      "correctAnswer": "idiosyncrasy",
+      "acceptableAnswers": [
+        "idiosyncrasy",
+        "idiosyncracy"
+      ],
+      "explanation": "'Idiosyncrasy' oznacza indywidualną cechę, dziwactwo, osobliwość.",
+      "autoPlay": true
+    },
+    {
+      "type": "multiple-choice",
+      "questionText": "Co oznacza idiom 'the elephant in the room'?",
+      "audioText": "the elephant in the room",
+      "audioLang": "en-US",
+      "options": [
+        {
+          "text": "Bardzo duży problem",
+          "isCorrect": false,
+          "explanation": "To część prawdy, ale nie całe znaczenie."
+        },
+        {
+          "text": "Oczywisty problem, o którym wszyscy wiedzą, ale nikt nie chce mówić",
+          "isCorrect": true,
+          "explanation": "Poprawnie! To oczywista sprawa, która jest ignorowana, bo jest niewygodna."
+        },
+        {
+          "text": "Nieoczekiwany gość",
+          "isCorrect": false,
+          "explanation": "To nie jest znaczenie tego idiomu."
+        },
+        {
+          "text": "Coś niemożliwego do zignorowania",
+          "isCorrect": false,
+          "explanation": "Blisko, ale nie dokładnie - chodzi o problem, który jest ignorowany mimo oczywistości."
+        }
+      ]
+    },
+    {
+      "type": "listening",
+      "questionText": "🎧 Posłuchaj i wpisz słowo:",
+      "audioText": "conundrum",
+      "audioLang": "en-US",
+      "audioRate": 0.85,
+      "correctAnswer": "conundrum",
+      "explanation": "'Conundrum' oznacza zagadkę, trudny problem do rozwiązania.",
       "autoPlay": true
     },
     {
@@ -285,13 +655,16 @@
     },
     {
       "type": "listening",
-      "questionText": "🎧 Posłuchaj i wpisz wyrażenie:",
-      "audioText": "let the cat out of the bag",
+      "questionText": "🎧 Posłuchaj i wpisz słowo:",
+      "audioText": "procrastinate",
       "audioLang": "en-US",
-      "audioRate": 0.85,
-      "correctAnswer": "let the cat out of the bag",
-      "acceptableAnswers": ["let the cat out of the bag", "letting the cat out of the bag"],
-      "explanation": "Idiom oznaczający 'wygadać się', przypadkowo ujawnić sekret.",
+      "audioRate": 0.8,
+      "correctAnswer": "procrastinate",
+      "acceptableAnswers": [
+        "procrastinate",
+        "procrastinating"
+      ],
+      "explanation": "'Procrastinate' oznacza odkładać coś na później, zwlekać.",
       "autoPlay": true
     },
     {
@@ -305,212 +678,54 @@
       "autoPlay": true
     },
     {
-      "type": "listening",
-      "questionText": "🎧 Posłuchaj i wpisz słowo:",
-      "audioText": "acquiesce",
-      "audioLang": "en-US",
-      "audioRate": 0.8,
-      "correctAnswer": "acquiesce",
-      "explanation": "'Acquiesce' oznacza zgodzić się niechętnie, ustąpić.",
-      "autoPlay": true
-    },
-    {
-      "type": "multiple-choice",
-      "questionText": "Co oznacza słowo 'ubiquitous'?",
-      "audioText": "ubiquitous",
-      "audioLang": "en-US",
-      "options": [
-        { "text": "Tajemniczy, enigmatyczny", "isCorrect": false, "explanation": "To byłoby 'mysterious' lub 'enigmatic'." },
-        { "text": "Wszechobecny, występujący wszędzie", "isCorrect": true, "explanation": "Poprawnie! 'Ubiquitous' oznacza coś, co jest wszędzie, powszechne." },
-        { "text": "Unikalny, jedyny w swoim rodzaju", "isCorrect": false, "explanation": "To byłoby 'unique'." },
-        { "text": "Przestarzały, nieaktualny", "isCorrect": false, "explanation": "To byłoby 'obsolete' lub 'outdated'." }
-      ]
-    },
-    {
-      "type": "multiple-choice",
-      "questionText": "Co oznacza idiom 'beat around the bush'?",
-      "audioText": "beat around the bush",
-      "audioLang": "en-US",
-      "options": [
-        { "text": "Owijać w bawełnę, unikać mówienia wprost", "isCorrect": true, "explanation": "Poprawnie! Ten idiom oznacza mówienie nie na temat, unikanie sedna sprawy." },
-        { "text": "Być bardzo zajętym", "isCorrect": false, "explanation": "To byłoby 'busy as a bee' lub 'swamped with work'." },
-        { "text": "Przegrywać w dyskusji", "isCorrect": false, "explanation": "To nie jest znaczenie tego idiomu." },
-        { "text": "Szukać czegoś w lesie", "isCorrect": false, "explanation": "To dosłowne tłumaczenie, nie idiomatyczne znaczenie." }
-      ]
-    },
-    {
-      "type": "fill-in-the-blank",
-      "questionText": "The professor's lecture was so ___ that half the class fell asleep. (Wykład był tak nudny, że połowa klasy zasnęła)",
-      "correctAnswer": "tedious",
-      "acceptableAnswers": ["tedious", "boring", "dull", "monotonous"],
-      "explanation": "'Tedious' oznacza nudny, męczący, monotonny. Inne akceptowalne odpowiedzi to 'boring', 'dull', 'monotonous'."
-    },
-    {
-      "type": "multiple-choice",
-      "questionText": "Co oznacza słowo 'ephemeral'?",
-      "audioText": "ephemeral",
-      "audioLang": "en-US",
-      "options": [
-        { "text": "Wieczny, nieśmiertelny", "isCorrect": false, "explanation": "To przeciwieństwo! 'Eternal' lub 'immortal' oznaczają wieczny." },
-        { "text": "Ulotny, krótkotrwały", "isCorrect": true, "explanation": "Poprawnie! 'Ephemeral' opisuje coś, co trwa bardzo krótko, jest przemijające." },
-        { "text": "Materialny, fizyczny", "isCorrect": false, "explanation": "To byłoby 'tangible' lub 'material'." },
-        { "text": "Duchowy, niematerialny", "isCorrect": false, "explanation": "To byłoby 'spiritual' lub 'ethereal'." }
-      ]
-    },
-    {
-      "type": "matching",
-      "questionText": "Dopasuj zaawansowane słowa do ich definicji:",
-      "pairs": [
-        { "item": "Meticulous", "match": "Extremely careful and precise" },
-        { "item": "Pragmatic", "match": "Practical and realistic" },
-        { "item": "Ostentatious", "match": "Showy and pretentious" },
-        { "item": "Recalcitrant", "match": "Stubbornly uncooperative" }
-      ]
-    },
-    {
-      "type": "fill-in-the-blank",
-      "questionText": "Don't ___ - just tell me what happened! (Nie owijaj w bawełnę - powiedz mi co się stało!)",
-      "correctAnswer": "beat around the bush",
-      "acceptableAnswers": ["beat around the bush", "beat about the bush"],
-      "explanation": "Idiom 'beat around the bush' oznacza owijanie w bawełnę, unikanie mówienia wprost."
-    },
-    {
-      "type": "true-false",
-      "questionText": "'Serendipity' oznacza szczęśliwy przypadek, odkrycie czegoś wartościowego przez przypadek.",
-      "audioText": "serendipity",
-      "audioLang": "en-US",
-      "isCorrect": true,
-      "explanation": "Prawda! 'Serendipity' to piękne słowo oznaczające szczęśliwy traf lub przypadkowe odkrycie."
-    },
-    {
-      "type": "multiple-choice",
-      "questionText": "Które słowo oznacza 'pogorszyć sytuację'?",
-      "options": [
-        { "text": "Ameliorate", "isCorrect": false, "explanation": "'Ameliorate' oznacza poprawić, ulepszyć - to przeciwieństwo!" },
-        { "text": "Exacerbate", "isCorrect": true, "explanation": "Poprawnie! 'Exacerbate' oznacza pogorszyć, zaostrzać problem." },
-        { "text": "Alleviate", "isCorrect": false, "explanation": "'Alleviate' oznacza złagodzić, zmniejszyć - to przeciwieństwo!" },
-        { "text": "Mitigate", "isCorrect": false, "explanation": "'Mitigate' oznacza łagodzić, zmniejszać - to przeciwieństwo!" }
-      ]
-    },
-    {
-      "type": "fill-in-the-blank",
-      "questionText": "His ___ attention to detail made him an excellent editor. (Jego skrupulatna uwaga na szczegóły uczyniła go doskonałym redaktorem)",
-      "audioText": "meticulous",
-      "audioLang": "en-US",
-      "correctAnswer": "meticulous",
-      "explanation": "'Meticulous' oznacza skrupulatny, bardzo dokładny i staranny."
-    },
-    {
-      "type": "matching",
-      "questionText": "Dopasuj idiomy do ich znaczeń:",
-      "pairs": [
-        { "item": "Hit the nail on the head", "match": "Say exactly the right thing" },
-        { "item": "Once in a blue moon", "match": "Very rarely" },
-        { "item": "Spill the beans", "match": "Reveal a secret" },
-        { "item": "Cut to the chase", "match": "Get to the point" }
-      ]
-    },
-    {
-      "type": "true-false",
-      "questionText": "'Facetious' oznacza poważny i formalny.",
-      "audioText": "facetious",
-      "audioLang": "en-US",
-      "isCorrect": false,
-      "explanation": "Fałsz! 'Facetious' oznacza żartobliwy, niepoważny, często w nieodpowiednim momencie."
-    },
-    {
-      "type": "multiple-choice",
-      "questionText": "Co oznacza idiom 'the elephant in the room'?",
-      "audioText": "the elephant in the room",
-      "audioLang": "en-US",
-      "options": [
-        { "text": "Bardzo duży problem", "isCorrect": false, "explanation": "To część prawdy, ale nie całe znaczenie." },
-        { "text": "Oczywisty problem, o którym wszyscy wiedzą, ale nikt nie chce mówić", "isCorrect": true, "explanation": "Poprawnie! To oczywista sprawa, która jest ignorowana, bo jest niewygodna." },
-        { "text": "Nieoczekiwany gość", "isCorrect": false, "explanation": "To nie jest znaczenie tego idiomu." },
-        { "text": "Coś niemożliwego do zignorowania", "isCorrect": false, "explanation": "Blisko, ale nie dokładnie - chodzi o problem, który jest ignorowany mimo oczywistości." }
-      ]
-    },
-    {
-      "type": "fill-in-the-blank",
-      "questionText": "The politician tried to ___ the issue by using complex language. (Polityk próbował zaciemnić sprawę używając skomplikowanego języka)",
-      "correctAnswer": "obfuscate",
-      "acceptableAnswers": ["obfuscate", "obscure", "confuse"],
-      "explanation": "'Obfuscate' oznacza zaciemniać, utrudniać zrozumienie. 'Obscure' i 'confuse' też są akceptowalne."
-    },
-    {
-      "type": "matching",
-      "questionText": "Dopasuj przeciwieństwa:",
-      "pairs": [
-        { "item": "Ameliorate", "match": "Exacerbate" },
-        { "item": "Superfluous", "match": "Essential" },
-        { "item": "Recalcitrant", "match": "Compliant" },
-        { "item": "Ambiguous", "match": "Clear" }
-      ]
-    },
-    {
-      "type": "true-false",
-      "questionText": "'Procrastinate' oznacza działać szybko i efektywnie.",
-      "audioText": "procrastinate",
-      "audioLang": "en-US",
-      "isCorrect": false,
-      "explanation": "Fałsz! 'Procrastinate' oznacza odkładać coś na później, zwlekać - dokładnie przeciwieństwo!"
-    },
-    {
       "type": "multiple-choice",
       "questionText": "Które słowo NIE jest synonimem 'ubiquitous'?",
       "options": [
-        { "text": "Omnipresent", "isCorrect": false, "explanation": "'Omnipresent' oznacza wszechobecny - to synonim." },
-        { "text": "Pervasive", "isCorrect": false, "explanation": "'Pervasive' oznacza rozpowszechniony - to synonim." },
-        { "text": "Scarce", "isCorrect": true, "explanation": "Poprawnie! 'Scarce' oznacza rzadki, nieliczny - to przeciwieństwo 'ubiquitous'!" },
-        { "text": "Widespread", "isCorrect": false, "explanation": "'Widespread' oznacza szeroko rozpowszechniony - to synonim." }
+        {
+          "text": "Omnipresent",
+          "isCorrect": false,
+          "explanation": "'Omnipresent' oznacza wszechobecny - to synonim."
+        },
+        {
+          "text": "Pervasive",
+          "isCorrect": false,
+          "explanation": "'Pervasive' oznacza rozpowszechniony - to synonim."
+        },
+        {
+          "text": "Scarce",
+          "isCorrect": true,
+          "explanation": "Poprawnie! 'Scarce' oznacza rzadki, nieliczny - to przeciwieństwo 'ubiquitous'!"
+        },
+        {
+          "text": "Widespread",
+          "isCorrect": false,
+          "explanation": "'Widespread' oznacza szeroko rozpowszechniony - to synonim."
+        }
       ]
     },
     {
-      "type": "fill-in-the-blank",
-      "questionText": "Let's ___ and discuss the main issue. (Przejdźmy do sedna i omówmy główny problem)",
+      "type": "listening",
+      "questionText": "🎧 Posłuchaj i wpisz wyrażenie:",
+      "audioText": "cut to the chase",
+      "audioLang": "en-US",
+      "audioRate": 0.85,
       "correctAnswer": "cut to the chase",
-      "acceptableAnswers": ["cut to the chase", "get to the point"],
-      "explanation": "Idiom 'cut to the chase' oznacza przejść do sedna, pominąć nieistotne szczegóły."
+      "acceptableAnswers": [
+        "cut to the chase",
+        "cutting to the chase"
+      ],
+      "explanation": "Idiom oznaczający 'przejść do sedna', pominąć nieistotne szczegóły.",
+      "autoPlay": true
     },
     {
-      "type": "true-false",
-      "questionText": "'Juxtaposition' oznacza zestawienie dwóch rzeczy obok siebie dla kontrastu.",
-      "audioText": "juxtaposition",
+      "type": "listening",
+      "questionText": "🎧 Posłuchaj i wpisz słowo:",
+      "audioText": "exacerbate",
       "audioLang": "en-US",
-      "isCorrect": true,
-      "explanation": "Prawda! 'Juxtaposition' to umieszczenie dwóch elementów obok siebie, aby pokazać różnice lub podobieństwa."
-    },
-    {
-      "type": "multiple-choice",
-      "questionText": "Co oznacza słowo 'vicarious'?",
-      "audioText": "vicarious",
-      "audioLang": "en-US",
-      "options": [
-        { "text": "Bezpośredni, osobisty", "isCorrect": false, "explanation": "To przeciwieństwo! 'Direct' lub 'personal'." },
-        { "text": "Zastępczy, pośredni (przeżywany przez kogoś innego)", "isCorrect": true, "explanation": "Poprawnie! 'Vicarious' opisuje doświadczenie przeżywane pośrednio, przez obserwację innych." },
-        { "text": "Niebezpieczny, ryzykowny", "isCorrect": false, "explanation": "To byłoby 'dangerous' lub 'risky'." },
-        { "text": "Wirtualny, cyfrowy", "isCorrect": false, "explanation": "To byłoby 'virtual'." }
-      ]
-    },
-    {
-      "type": "matching",
-      "questionText": "Dopasuj słowa do kontekstu użycia:",
-      "pairs": [
-        { "item": "Conundrum", "match": "A difficult puzzle or problem" },
-        { "item": "Prerequisite", "match": "Required condition beforehand" },
-        { "item": "Idiosyncrasy", "match": "A peculiar personal habit" },
-        { "item": "Acquiesce", "match": "To reluctantly agree" }
-      ]
-    },
-    {
-      "type": "fill-in-the-blank",
-      "questionText": "The meeting was full of ___ details that didn't contribute to solving the problem. (Spotkanie było pełne zbędnych szczegółów, które nie przyczyniły się do rozwiązania problemu)",
-      "audioText": "superfluous",
-      "audioLang": "en-US",
-      "correctAnswer": "superfluous",
-      "acceptableAnswers": ["superfluous", "unnecessary", "redundant"],
-      "explanation": "'Superfluous' oznacza zbędny, nadmiarowy. 'Unnecessary' i 'redundant' też są akceptowalne."
+      "audioRate": 0.8,
+      "correctAnswer": "exacerbate",
+      "explanation": "'Exacerbate' oznacza pogorszyć, zaostrzać (problem, sytuację).",
+      "autoPlay": true
     }
   ]
 }
-
