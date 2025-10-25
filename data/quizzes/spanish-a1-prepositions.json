@@ -1,0 +1,415 @@
+{
+  "title": "Hiszpański A1: Przyimki Miejsca",
+  "description": "Naucz się hiszpańskich przyimków miejsca (preposiciones de lugar) - w, na, pod, obok, przed, za i inne.",
+  "questions": [
+    {
+      "type": "multiple-choice",
+      "questionText": "Co oznacza 'en'?",
+      "options": [
+        { "text": "w, na", "isCorrect": true, "explanation": "Poprawnie! 'En' to podstawowy przyimek oznaczający 'w' lub 'na'." },
+        { "text": "pod", "isCorrect": false, "explanation": "Niepoprawnie. 'Pod' to 'debajo de'." },
+        { "text": "obok", "isCorrect": false, "explanation": "Niepoprawnie. 'Obok' to 'al lado de'." },
+        { "text": "za", "isCorrect": false, "explanation": "Niepoprawnie. 'Za' to 'detrás de'." }
+      ]
+    },
+    {
+      "type": "fill-in-the-blank",
+      "questionText": "El libro está ___ la mesa. (Książka jest na stole.)",
+      "correctAnswer": "en",
+      "explanation": "'En' używamy do opisywania położenia 'na' lub 'w' czymś."
+    },
+    {
+      "type": "matching",
+      "questionText": "Dopasuj podstawowe przyimki miejsca:",
+      "pairs": [
+        { "item": "en", "match": "w, na" },
+        { "item": "sobre", "match": "na (wierzchu)" },
+        { "item": "bajo", "match": "pod" },
+        { "item": "entre", "match": "między" }
+      ]
+    },
+    {
+      "type": "true-false",
+      "questionText": "'Debajo de' oznacza 'pod'.",
+      "isCorrect": true,
+      "explanation": "Prawda! 'Debajo de' to 'pod'. Np. 'El gato está debajo de la mesa' = Kot jest pod stołem."
+    },
+    {
+      "type": "multiple-choice",
+      "questionText": "Jak powiemy 'obok'?",
+      "options": [
+        { "text": "al lado de", "isCorrect": true, "explanation": "Poprawnie! 'Al lado de' oznacza 'obok'." },
+        { "text": "delante de", "isCorrect": false, "explanation": "Niepoprawnie. 'Delante de' oznacza 'przed'." },
+        { "text": "detrás de", "isCorrect": false, "explanation": "Niepoprawnie. 'Detrás de' oznacza 'za'." },
+        { "text": "encima de", "isCorrect": false, "explanation": "Niepoprawnie. 'Encima de' oznacza 'na (wierzchu)'." }
+      ]
+    },
+    {
+      "type": "fill-in-the-blank",
+      "questionText": "La tienda está al ___ del banco. (Sklep jest obok banku.)",
+      "correctAnswer": "lado",
+      "explanation": "'Al lado de' to stałe wyrażenie oznaczające 'obok'."
+    },
+    {
+      "type": "matching",
+      "questionText": "Dopasuj przyimki kierunku i położenia:",
+      "pairs": [
+        { "item": "delante de", "match": "przed" },
+        { "item": "detrás de", "match": "za" },
+        { "item": "enfrente de", "match": "naprzeciwko" },
+        { "item": "al final de", "match": "na końcu" }
+      ]
+    },
+    {
+      "type": "true-false",
+      "questionText": "'Encima de' i 'sobre' znaczą to samo - 'na wierzchu'.",
+      "isCorrect": true,
+      "explanation": "Prawda! Oba przyimki oznaczają 'na wierzchu/na górze'. 'Encima de' jest bardziej potoczne."
+    },
+    {
+      "type": "listening",
+      "questionText": "🎧 Posłuchaj i wpisz zdanie:",
+      "audioText": "El libro está encima de la mesa",
+      "audioLang": "es-ES",
+      "audioRate": 0.85,
+      "correctAnswer": "El libro está encima de la mesa",
+      "acceptableAnswers": ["El libro esta encima de la mesa", "el libro está encima de la mesa", "el libro esta encima de la mesa"],
+      "explanation": "Zdanie oznacza: 'Książka jest na stole (na wierzchu)' - używamy 'encima de'.",
+      "autoPlay": true
+    },
+    {
+      "type": "multiple-choice",
+      "questionText": "Co oznacza 'cerca de'?",
+      "options": [
+        { "text": "blisko", "isCorrect": true, "explanation": "Poprawnie! 'Cerca de' oznacza 'blisko'." },
+        { "text": "daleko", "isCorrect": false, "explanation": "Niepoprawnie. 'Daleko' to 'lejos de'." },
+        { "text": "wewnątrz", "isCorrect": false, "explanation": "Niepoprawnie. 'Wewnątrz' to 'dentro de'." },
+        { "text": "na zewnątrz", "isCorrect": false, "explanation": "Niepoprawnie. 'Na zewnątrz' to 'fuera de'." }
+      ]
+    },
+    {
+      "type": "fill-in-the-blank",
+      "questionText": "El parque está ___ de mi casa. (Park jest blisko mojego domu.)",
+      "correctAnswer": "cerca",
+      "explanation": "'Cerca de' oznacza 'blisko'. Przeciwieństwo to 'lejos de' (daleko od)."
+    },
+    {
+      "type": "matching",
+      "questionText": "Dopasuj przyimki odległości:",
+      "pairs": [
+        { "item": "cerca de", "match": "blisko" },
+        { "item": "lejos de", "match": "daleko od" },
+        { "item": "a ... minutos de", "match": "... minut od" },
+        { "item": "a ... metros de", "match": "... metrów od" }
+      ]
+    },
+    {
+      "type": "true-false",
+      "questionText": "'Entre' oznacza 'między' (pomiędzy dwoma rzeczami).",
+      "isCorrect": true,
+      "explanation": "Prawda! 'Entre' używamy, gdy coś jest pomiędzy dwoma obiektami. Np. 'entre el banco y la farmacia'."
+    },
+    {
+      "type": "listening",
+      "questionText": "🎧 Posłuchaj i wpisz zdanie:",
+      "audioText": "El restaurante está entre el banco y la farmacia",
+      "audioLang": "es-ES",
+      "audioRate": 0.8,
+      "correctAnswer": "El restaurante está entre el banco y la farmacia",
+      "acceptableAnswers": ["El restaurante esta entre el banco y la farmacia", "el restaurante está entre el banco y la farmacia", "el restaurante esta entre el banco y la farmacia"],
+      "explanation": "Zdanie oznacza: 'Restauracja jest między bankiem a apteką' - używamy 'entre'.",
+      "autoPlay": true
+    },
+    {
+      "type": "multiple-choice",
+      "questionText": "Jak powiemy 'wewnątrz'?",
+      "options": [
+        { "text": "dentro de", "isCorrect": true, "explanation": "Poprawnie! 'Dentro de' oznacza 'wewnątrz'." },
+        { "text": "fuera de", "isCorrect": false, "explanation": "Niepoprawnie. 'Fuera de' oznacza 'na zewnątrz'." },
+        { "text": "alrededor de", "isCorrect": false, "explanation": "Niepoprawnie. 'Alrededor de' oznacza 'wokół'." },
+        { "text": "a través de", "isCorrect": false, "explanation": "Niepoprawnie. 'A través de' oznacza 'przez'." }
+      ]
+    },
+    {
+      "type": "fill-in-the-blank",
+      "questionText": "El gato está ___ de la caja. (Kot jest wewnątrz pudełka.)",
+      "correctAnswer": "dentro",
+      "explanation": "'Dentro de' oznacza 'wewnątrz'. Przeciwieństwo to 'fuera de' (na zewnątrz)."
+    },
+    {
+      "type": "matching",
+      "questionText": "Dopasuj przyimki wewnątrz/zewnątrz:",
+      "pairs": [
+        { "item": "dentro de", "match": "wewnątrz" },
+        { "item": "fuera de", "match": "na zewnątrz" },
+        { "item": "alrededor de", "match": "wokół" },
+        { "item": "a través de", "match": "przez" }
+      ]
+    },
+    {
+      "type": "true-false",
+      "questionText": "'Enfrente de' oznacza 'za' (z tyłu).",
+      "isCorrect": false,
+      "explanation": "Fałsz! 'Enfrente de' oznacza 'naprzeciwko', nie 'za'. 'Za' to 'detrás de'."
+    },
+    {
+      "type": "listening",
+      "questionText": "🎧 Posłuchaj i wpisz zdanie:",
+      "audioText": "La farmacia está enfrente del hospital",
+      "audioLang": "es-ES",
+      "audioRate": 0.85,
+      "correctAnswer": "La farmacia está enfrente del hospital",
+      "acceptableAnswers": ["La farmacia esta enfrente del hospital", "la farmacia está enfrente del hospital", "la farmacia esta enfrente del hospital"],
+      "explanation": "Zdanie oznacza: 'Apteka jest naprzeciwko szpitala' - używamy 'enfrente de'.",
+      "autoPlay": true
+    },
+    {
+      "type": "multiple-choice",
+      "questionText": "Co oznacza 'delante de'?",
+      "options": [
+        { "text": "przed", "isCorrect": true, "explanation": "Poprawnie! 'Delante de' oznacza 'przed'." },
+        { "text": "za", "isCorrect": false, "explanation": "Niepoprawnie. 'Za' to 'detrás de'." },
+        { "text": "obok", "isCorrect": false, "explanation": "Niepoprawnie. 'Obok' to 'al lado de'." },
+        { "text": "naprzeciwko", "isCorrect": false, "explanation": "Niepoprawnie. 'Naprzeciwko' to 'enfrente de'." }
+      ]
+    },
+    {
+      "type": "fill-in-the-blank",
+      "questionText": "El coche está ___ de la casa. (Samochód jest przed domem.)",
+      "correctAnswer": "delante",
+      "explanation": "'Delante de' oznacza 'przed'. Przeciwieństwo to 'detrás de' (za)."
+    },
+    {
+      "type": "matching",
+      "questionText": "Dopasuj przyimki przed/za:",
+      "pairs": [
+        { "item": "delante de", "match": "przed" },
+        { "item": "detrás de", "match": "za" },
+        { "item": "frente a", "match": "naprzeciwko" },
+        { "item": "junto a", "match": "przy, obok" }
+      ]
+    },
+    {
+      "type": "true-false",
+      "questionText": "'A la derecha de' oznacza 'na prawo od'.",
+      "isCorrect": true,
+      "explanation": "Prawda! 'A la derecha de' to 'na prawo od'. 'A la izquierda de' to 'na lewo od'."
+    },
+    {
+      "type": "listening",
+      "questionText": "🎧 Posłuchaj i wpisz zdanie:",
+      "audioText": "El banco está a la izquierda del supermercado",
+      "audioLang": "es-ES",
+      "audioRate": 0.8,
+      "correctAnswer": "El banco está a la izquierda del supermercado",
+      "acceptableAnswers": ["El banco esta a la izquierda del supermercado", "el banco está a la izquierda del supermercado", "el banco esta a la izquierda del supermercado"],
+      "explanation": "Zdanie oznacza: 'Bank jest na lewo od supermarketu' - używamy 'a la izquierda de'.",
+      "autoPlay": true
+    },
+    {
+      "type": "multiple-choice",
+      "questionText": "Jak powiemy 'nad' (ponad czymś)?",
+      "options": [
+        { "text": "encima de", "isCorrect": true, "explanation": "Poprawnie! 'Encima de' lub 'sobre' oznacza 'nad/na'." },
+        { "text": "debajo de", "isCorrect": false, "explanation": "Niepoprawnie. 'Debajo de' oznacza 'pod'." },
+        { "text": "dentro de", "isCorrect": false, "explanation": "Niepoprawnie. 'Dentro de' oznacza 'wewnątrz'." },
+        { "text": "detrás de", "isCorrect": false, "explanation": "Niepoprawnie. 'Detrás de' oznacza 'za'." }
+      ]
+    },
+    {
+      "type": "fill-in-the-blank",
+      "questionText": "La lámpara está ___ de la mesa. (Lampa jest nad stołem.)",
+      "correctAnswer": "encima",
+      "explanation": "'Encima de' lub 'sobre' używamy, gdy coś jest nad czymś lub na wierzchu."
+    },
+    {
+      "type": "matching",
+      "questionText": "Dopasuj przyimki góra/dół:",
+      "pairs": [
+        { "item": "encima de", "match": "na (wierzchu), nad" },
+        { "item": "debajo de", "match": "pod" },
+        { "item": "arriba", "match": "u góry, na górze" },
+        { "item": "abajo", "match": "na dole, w dole" }
+      ]
+    },
+    {
+      "type": "true-false",
+      "questionText": "'Detrás de' i 'detrás' znaczą to samo.",
+      "isCorrect": false,
+      "explanation": "Fałsz! 'Detrás de' to przyimek (za czymś), a 'detrás' to przysłówek (z tyłu). Np. 'está detrás' vs 'está detrás de la casa'."
+    },
+    {
+      "type": "listening",
+      "questionText": "🎧 Posłuchaj i wpisz zdanie:",
+      "audioText": "El perro está debajo de la mesa",
+      "audioLang": "es-ES",
+      "audioRate": 0.85,
+      "correctAnswer": "El perro está debajo de la mesa",
+      "acceptableAnswers": ["El perro esta debajo de la mesa", "el perro está debajo de la mesa", "el perro esta debajo de la mesa"],
+      "explanation": "Zdanie oznacza: 'Pies jest pod stołem' - używamy 'debajo de'.",
+      "autoPlay": true
+    },
+    {
+      "type": "multiple-choice",
+      "questionText": "Co oznacza 'al final de'?",
+      "options": [
+        { "text": "na końcu", "isCorrect": true, "explanation": "Poprawnie! 'Al final de' oznacza 'na końcu'." },
+        { "text": "na początku", "isCorrect": false, "explanation": "Niepoprawnie. 'Na początku' to 'al principio de'." },
+        { "text": "w środku", "isCorrect": false, "explanation": "Niepoprawnie. 'W środku' to 'en el centro de'." },
+        { "text": "na rogu", "isCorrect": false, "explanation": "Niepoprawnie. 'Na rogu' to 'en la esquina'." }
+      ]
+    },
+    {
+      "type": "fill-in-the-blank",
+      "questionText": "La tienda está al ___ de la calle. (Sklep jest na końcu ulicy.)",
+      "correctAnswer": "final",
+      "explanation": "'Al final de' to stałe wyrażenie oznaczające 'na końcu'."
+    },
+    {
+      "type": "matching",
+      "questionText": "Dopasuj przyimki pozycji na ulicy:",
+      "pairs": [
+        { "item": "al final de", "match": "na końcu" },
+        { "item": "al principio de", "match": "na początku" },
+        { "item": "en la esquina", "match": "na rogu" },
+        { "item": "en el centro de", "match": "w centrum, w środku" }
+      ]
+    },
+    {
+      "type": "true-false",
+      "questionText": "'Junto a' oznacza to samo co 'al lado de' - 'obok'.",
+      "isCorrect": true,
+      "explanation": "Prawda! 'Junto a' i 'al lado de' oznaczają 'obok/przy'. 'Junto a' jest nieco bardziej formalne."
+    },
+    {
+      "type": "multiple-choice",
+      "questionText": "Jak powiemy 'wokół'?",
+      "options": [
+        { "text": "alrededor de", "isCorrect": true, "explanation": "Poprawnie! 'Alrededor de' oznacza 'wokół'." },
+        { "text": "dentro de", "isCorrect": false, "explanation": "Niepoprawnie. 'Dentro de' oznacza 'wewnątrz'." },
+        { "text": "entre", "isCorrect": false, "explanation": "Niepoprawnie. 'Entre' oznacza 'między'." },
+        { "text": "hacia", "isCorrect": false, "explanation": "Niepoprawnie. 'Hacia' oznacza 'w kierunku'." }
+      ]
+    },
+    {
+      "type": "fill-in-the-blank",
+      "questionText": "Hay muchos árboles ___ del parque. (Jest wiele drzew wokół parku.)",
+      "correctAnswer": "alrededor",
+      "explanation": "'Alrededor de' oznacza 'wokół'. Używamy go, gdy coś otacza dany obiekt."
+    },
+    {
+      "type": "matching",
+      "questionText": "Dopasuj przyimki kierunku:",
+      "pairs": [
+        { "item": "hacia", "match": "w kierunku" },
+        { "item": "hasta", "match": "aż do, do" },
+        { "item": "desde", "match": "od, z" },
+        { "item": "para", "match": "do, dla" }
+      ]
+    },
+    {
+      "type": "true-false",
+      "questionText": "'Sobre' może oznaczać zarówno 'na' (fizycznie), jak i 'o' (temat).",
+      "isCorrect": true,
+      "explanation": "Prawda! 'Sobre' ma dwa znaczenia: 'na' (sobre la mesa) i 'o' jako temat (hablar sobre algo)."
+    },
+    {
+      "type": "listening",
+      "questionText": "🎧 Posłuchaj i wpisz zdanie:",
+      "audioText": "El museo está al lado de la catedral",
+      "audioLang": "es-ES",
+      "audioRate": 0.85,
+      "correctAnswer": "El museo está al lado de la catedral",
+      "acceptableAnswers": ["El museo esta al lado de la catedral", "el museo está al lado de la catedral", "el museo esta al lado de la catedral"],
+      "explanation": "Zdanie oznacza: 'Muzeum jest obok katedry' - używamy 'al lado de'.",
+      "autoPlay": true
+    },
+    {
+      "type": "multiple-choice",
+      "questionText": "Co oznacza 'a través de'?",
+      "options": [
+        { "text": "przez", "isCorrect": true, "explanation": "Poprawnie! 'A través de' oznacza 'przez' (przechodzenie przez coś)." },
+        { "text": "wokół", "isCorrect": false, "explanation": "Niepoprawnie. 'Wokół' to 'alrededor de'." },
+        { "text": "wzdłuż", "isCorrect": false, "explanation": "Niepoprawnie. 'Wzdłuż' to 'a lo largo de'." },
+        { "text": "poza", "isCorrect": false, "explanation": "Niepoprawnie. 'Poza' to 'fuera de'." }
+      ]
+    },
+    {
+      "type": "fill-in-the-blank",
+      "questionText": "Vamos a través ___ parque. (Idziemy przez park.)",
+      "correctAnswer": "del",
+      "explanation": "'A través de' + 'el' = 'a través del'. Używamy do wyrażenia przechodzenia przez coś."
+    },
+    {
+      "type": "matching",
+      "questionText": "Dopasuj złożone przyimki miejsca:",
+      "pairs": [
+        { "item": "a lo largo de", "match": "wzdłuż" },
+        { "item": "en medio de", "match": "w środku, pośrodku" },
+        { "item": "por encima de", "match": "ponad" },
+        { "item": "por debajo de", "match": "poniżej" }
+      ]
+    },
+    {
+      "type": "true-false",
+      "questionText": "Przyimek 'de' po przyimkach miejsca łączy się z 'el' tworząc 'del'.",
+      "isCorrect": true,
+      "explanation": "Prawda! 'de + el = del'. Np. 'al lado del banco', 'detrás del museo', 'cerca del parque'."
+    },
+    {
+      "type": "listening",
+      "questionText": "🎧 Posłuchaj i wpisz zdanie:",
+      "audioText": "La biblioteca está cerca del centro",
+      "audioLang": "es-ES",
+      "audioRate": 0.85,
+      "correctAnswer": "La biblioteca está cerca del centro",
+      "acceptableAnswers": ["La biblioteca esta cerca del centro", "la biblioteca está cerca del centro", "la biblioteca esta cerca del centro"],
+      "explanation": "Zdanie oznacza: 'Biblioteka jest blisko centrum' - używamy 'cerca de' + 'el' = 'cerca del'.",
+      "autoPlay": true
+    },
+    {
+      "type": "multiple-choice",
+      "questionText": "Która forma jest poprawna?",
+      "options": [
+        { "text": "detrás del hospital", "isCorrect": true, "explanation": "Poprawnie! 'de + el = del'. Zawsze łączymy te formy." },
+        { "text": "detrás de el hospital", "isCorrect": false, "explanation": "Niepoprawnie. Musimy połączyć 'de + el = del'." },
+        { "text": "detrás al hospital", "isCorrect": false, "explanation": "Niepoprawnie. Używamy 'de', nie 'al' po 'detrás'." },
+        { "text": "detrás en hospital", "isCorrect": false, "explanation": "Niepoprawnie. Używamy 'de', nie 'en' po 'detrás'." }
+      ]
+    },
+    {
+      "type": "fill-in-the-blank",
+      "questionText": "El hotel está enfrente ___ teatro. (Hotel jest naprzeciwko teatru.)",
+      "correctAnswer": "del",
+      "explanation": "'Enfrente de' + 'el' = 'enfrente del'. Pamiętaj o kontrakcji!"
+    },
+    {
+      "type": "matching",
+      "questionText": "Dopasuj przyimki z kontrakcjami:",
+      "pairs": [
+        { "item": "al lado del", "match": "obok (+ el)" },
+        { "item": "cerca del", "match": "blisko (+ el)" },
+        { "item": "lejos del", "match": "daleko od (+ el)" },
+        { "item": "enfrente del", "match": "naprzeciwko (+ el)" }
+      ]
+    },
+    {
+      "type": "true-false",
+      "questionText": "Mówimy 'a la derecha de la' (bez kontrakcji), ale 'a la derecha del' (z kontrakcją).",
+      "isCorrect": true,
+      "explanation": "Prawda! Kontrakcja 'del' powstaje tylko z 'de + el', nie z 'de + la'. Np. 'del banco' ale 'de la farmacia'."
+    },
+    {
+      "type": "listening",
+      "questionText": "🎧 Posłuchaj i wpisz zdanie:",
+      "audioText": "El parque está lejos del centro",
+      "audioLang": "es-ES",
+      "audioRate": 0.85,
+      "correctAnswer": "El parque está lejos del centro",
+      "acceptableAnswers": ["El parque esta lejos del centro", "el parque está lejos del centro", "el parque esta lejos del centro"],
+      "explanation": "Zdanie oznacza: 'Park jest daleko od centrum' - używamy 'lejos de' + 'el' = 'lejos del'.",
+      "autoPlay": true
+    }
+  ]
+}
+
