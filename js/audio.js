@@ -168,3 +168,75 @@ export function setMuted(muted) {
   isMuted = muted;
 }
 
+// ============================================
+// Text-to-Speech (TTS) - Web Speech API
+// ============================================
+
+/**
+ * Odtwarza tekst za pomocą syntezatora mowy
+ * @param {string} text - Tekst do wypowiedzenia
+ * @param {string} lang - Kod języka (np. 'en-US', 'es-ES', 'pl-PL')
+ * @param {number} rate - Prędkość mowy (0.1 - 10, domyślnie 0.85 dla nauki)
+ */
+export function speakText(text, lang = 'en-US', rate = 0.85) {
+  if (isMuted) return;
+  
+  if (!('speechSynthesis' in window)) {
+    console.warn('Web Speech API nie jest wspierane w tej przeglądarce');
+    return;
+  }
+  
+  try {
+    // Zatrzymaj poprzednie odtwarzanie
+    stopSpeaking();
+    
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = lang;
+    utterance.rate = rate;
+    utterance.pitch = 1.0;
+    utterance.volume = 1.0;
+    
+    // Obsługa błędów
+    utterance.onerror = (event) => {
+      console.warn('Błąd TTS:', event.error);
+    };
+    
+    speechSynthesis.speak(utterance);
+  } catch (error) {
+    console.warn('Nie udało się odtworzyć tekstu:', error);
+  }
+}
+
+/**
+ * Zatrzymuje bieżące odtwarzanie TTS
+ */
+export function stopSpeaking() {
+  if ('speechSynthesis' in window) {
+    speechSynthesis.cancel();
+  }
+}
+
+/**
+ * Sprawdza, czy TTS jest dostępne w przeglądarce
+ */
+export function isTTSAvailable() {
+  return 'speechSynthesis' in window;
+}
+
+/**
+ * Pobiera listę dostępnych głosów dla danego języka
+ * @param {string} lang - Kod języka (np. 'en', 'es', 'pl')
+ * @returns {Array} Tablica dostępnych głosów
+ */
+export function getAvailableVoices(lang = null) {
+  if (!isTTSAvailable()) return [];
+  
+  const voices = speechSynthesis.getVoices();
+  
+  if (lang) {
+    return voices.filter(voice => voice.lang.startsWith(lang));
+  }
+  
+  return voices;
+}
+

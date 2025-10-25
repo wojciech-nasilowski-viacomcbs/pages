@@ -3,7 +3,7 @@
  * Obsługuje renderowanie i logikę wszystkich typów pytań
  */
 
-import { playCorrectSound, playIncorrectSound } from './audio.js';
+import { playCorrectSound, playIncorrectSound, speakText, stopSpeaking, isTTSAvailable } from './audio.js';
 
 let showScreenFn = null;
 let appState = null;
@@ -212,6 +212,9 @@ function displayQuestion() {
       break;
     case 'matching':
       renderMatching(questionData);
+      break;
+    case 'listening':
+      renderListening(questionData);
       break;
     default:
       console.error('Nieznany typ pytania:', questionData.type);

@@ -1,0 +1,522 @@
+{
+  "title": "English A1: Restaurant & Dining",
+  "description": "Naucz się podstawowych słówek i zwrotów związanych z restauracją, zamawianiem i płaceniem.",
+  "questions": [
+    {
+      "type": "multiple-choice",
+      "questionText": "Co oznacza 'menu'?",
+      "options": [
+        { "text": "Rachunek", "isCorrect": false, "explanation": "Niepoprawnie. Rachunek to po angielsku 'bill' lub 'check'." },
+        { "text": "Kelner", "isCorrect": false, "explanation": "Niepoprawnie. Kelner to po angielsku 'waiter'." },
+        { "text": "Karta dań", "isCorrect": true, "explanation": "Poprawnie! 'Menu' to karta dań w restauracji." },
+        { "text": "Napiwek", "isCorrect": false, "explanation": "Niepoprawnie. Napiwek to po angielsku 'tip'." }
+      ]
+    },
+    {
+      "type": "fill-in-the-blank",
+      "questionText": "Can I have the ___, please? (Czy mogę prosić rachunek?)",
+      "correctAnswer": "bill",
+      "explanation": "W brytyjskim angielskim używamy 'bill', w amerykańskim 'check'."
+    },
+    {
+      "type": "multiple-choice",
+      "questionText": "Jak poprosić o stolik dla dwóch osób?",
+      "options": [
+        { "text": "A table for two, please.", "isCorrect": true, "explanation": "Poprawnie! To standardowe zwrot przy rezerwacji stolika." },
+        { "text": "Two tables, please.", "isCorrect": false, "explanation": "To znaczy 'dwa stoliki', a nie 'stolik dla dwóch osób'." },
+        { "text": "I want two chairs.", "isCorrect": false, "explanation": "To znaczy 'chcę dwa krzesła', co brzmi nienaturalnie." },
+        { "text": "Give me table two.", "isCorrect": false, "explanation": "To brzmi niegrzecznie i niegramatycznie." }
+      ]
+    },
+    {
+      "type": "matching",
+      "questionText": "Dopasuj polskie nazwy do angielskich:",
+      "pairs": [
+        { "item": "Śniadanie", "match": "Breakfast" },
+        { "item": "Obiad", "match": "Lunch" },
+        { "item": "Kolacja", "match": "Dinner" },
+        { "item": "Deser", "match": "Dessert" }
+      ]
+    },
+    {
+      "type": "true-false",
+      "questionText": "'Waiter' oznacza kelnera, a 'waitress' kelnerkę.",
+      "isCorrect": true,
+      "explanation": "Prawda! 'Waiter' to kelner (mężczyzna), 'waitress' to kelnerka (kobieta)."
+    },
+    {
+      "type": "multiple-choice",
+      "questionText": "Co oznacza zwrot 'I'd like to order'?",
+      "options": [
+        { "text": "Chciałbym zapłacić", "isCorrect": false, "explanation": "Niepoprawnie. 'Zapłacić' to 'to pay'." },
+        { "text": "Chciałbym zamówić", "isCorrect": true, "explanation": "Poprawnie! 'I'd like to order' używamy, gdy chcemy złożyć zamówienie." },
+        { "text": "Chciałbym rezerwację", "isCorrect": false, "explanation": "Niepoprawnie. 'Rezerwacja' to 'reservation' lub 'booking'." },
+        { "text": "Chciałbym stolik", "isCorrect": false, "explanation": "Niepoprawnie. To byłoby 'I'd like a table'." }
+      ]
+    },
+    {
+      "type": "fill-in-the-blank",
+      "questionText": "Is service ___ in the bill? (Czy obsługa jest wliczona w rachunek?)",
+      "correctAnswer": "included",
+      "explanation": "'Included' oznacza 'wliczony/wliczona'. Często pytamy o to przed zostawieniem napiwku."
+    },
+    {
+      "type": "matching",
+      "questionText": "Dopasuj dania do ich angielskich nazw:",
+      "pairs": [
+        { "item": "Zupa", "match": "Soup" },
+        { "item": "Sałatka", "match": "Salad" },
+        { "item": "Stek", "match": "Steak" },
+        { "item": "Ryba", "match": "Fish" },
+        { "item": "Kurczak", "match": "Chicken" }
+      ]
+    },
+    {
+      "type": "true-false",
+      "questionText": "'Tip' to po angielsku napiwek.",
+      "isCorrect": true,
+      "explanation": "Prawda! 'Tip' oznacza napiwek zostawiany kelnerowi za obsługę."
+    },
+    {
+      "type": "multiple-choice",
+      "questionText": "Jak grzecznie poprosić kelnera o wodę?",
+      "options": [
+        { "text": "Water!", "isCorrect": false, "explanation": "To brzmi niegrzecznie, jak rozkaz." },
+        { "text": "Give water.", "isCorrect": false, "explanation": "To też brzmi niegrzecznie i jest niegramatyczne." },
+        { "text": "Could I have some water, please?", "isCorrect": true, "explanation": "Poprawnie! To grzeczny sposób proszenia o wodę." },
+        { "text": "I want water now.", "isCorrect": false, "explanation": "To brzmi niegrzecznie i naglająco." }
+      ]
+    },
+    {
+      "type": "fill-in-the-blank",
+      "questionText": "Can I pay by ___? (Czy mogę zapłacić kartą?)",
+      "correctAnswer": "card",
+      "explanation": "'Card' to karta płatnicza. Możesz też powiedzieć 'credit card' (karta kredytowa)."
+    },
+    {
+      "type": "matching",
+      "questionText": "Dopasuj napoje do ich angielskich nazw:",
+      "pairs": [
+        { "item": "Woda", "match": "Water" },
+        { "item": "Sok", "match": "Juice" },
+        { "item": "Kawa", "match": "Coffee" },
+        { "item": "Herbata", "match": "Tea" }
+      ]
+    },
+    {
+      "type": "true-false",
+      "questionText": "'Spicy' oznacza słodki.",
+      "isCorrect": false,
+      "explanation": "Fałsz! 'Spicy' oznacza pikantny/ostry. Słodki to 'sweet'."
+    },
+    {
+      "type": "multiple-choice",
+      "questionText": "Co powiesz, gdy jedzenie jest pyszne?",
+      "options": [
+        { "text": "It's terrible!", "isCorrect": false, "explanation": "To znaczy 'to okropne' - przeciwieństwo tego, co chcemy powiedzieć!" },
+        { "text": "It's delicious!", "isCorrect": true, "explanation": "Poprawnie! 'Delicious' oznacza pyszny/smaczny." },
+        { "text": "It's expensive!", "isCorrect": false, "explanation": "To znaczy 'to drogie', nie mówi nic o smaku." },
+        { "text": "It's cold!", "isCorrect": false, "explanation": "To znaczy 'to zimne', nie opisuje smaku." }
+      ]
+    },
+    {
+      "type": "fill-in-the-blank",
+      "questionText": "I'm allergic ___ nuts. (Jestem uczulony na orzechy.)",
+      "correctAnswer": "to",
+      "explanation": "Używamy przyimka 'to' po 'allergic'. 'Allergic to' = uczulony na."
+    },
+    {
+      "type": "matching",
+      "questionText": "Dopasuj sztućce do ich angielskich nazw:",
+      "pairs": [
+        { "item": "Nóż", "match": "Knife" },
+        { "item": "Widelec", "match": "Fork" },
+        { "item": "Łyżka", "match": "Spoon" },
+        { "item": "Talerz", "match": "Plate" }
+      ]
+    },
+    {
+      "type": "true-false",
+      "questionText": "'Reservation' to rezerwacja stolika.",
+      "isCorrect": true,
+      "explanation": "Prawda! 'Reservation' lub 'booking' oznacza rezerwację stolika w restauracji."
+    },
+    {
+      "type": "multiple-choice",
+      "questionText": "Jak zapytać o polecane danie?",
+      "options": [
+        { "text": "What do you recommend?", "isCorrect": true, "explanation": "Poprawnie! To naturalny sposób pytania o rekomendacje." },
+        { "text": "What is cheap?", "isCorrect": false, "explanation": "To pyta o najtańsze danie, nie o polecane." },
+        { "text": "Give me food.", "isCorrect": false, "explanation": "To brzmi niegrzecznie i niespecyficznie." },
+        { "text": "Where is kitchen?", "isCorrect": false, "explanation": "To pyta o lokalizację kuchni, nie o polecane danie." }
+      ]
+    },
+    {
+      "type": "fill-in-the-blank",
+      "questionText": "We'd like to make a ___ for tonight. (Chcielibyśmy dokonać rezerwacji na dziś wieczór.)",
+      "correctAnswer": "reservation",
+      "explanation": "'Make a reservation' to stały zwrot oznaczający 'dokonać rezerwacji'."
+    },
+    {
+      "type": "multiple-choice",
+      "questionText": "Co oznacza 'main course'?",
+      "options": [
+        { "text": "Przystawka", "isCorrect": false, "explanation": "Niepoprawnie. Przystawka to 'starter' lub 'appetizer'." },
+        { "text": "Danie główne", "isCorrect": true, "explanation": "Poprawnie! 'Main course' to danie główne." },
+        { "text": "Deser", "isCorrect": false, "explanation": "Niepoprawnie. Deser to 'dessert'." },
+        { "text": "Napój", "isCorrect": false, "explanation": "Niepoprawnie. Napój to 'drink' lub 'beverage'." }
+      ]
+    },
+    {
+      "type": "fill-in-the-blank",
+      "questionText": "The food is too ___. (Jedzenie jest za słone.)",
+      "correctAnswer": "salty",
+      "explanation": "'Salty' oznacza słony. Inne smaki: sweet (słodki), sour (kwaśny), bitter (gorzki)."
+    },
+    {
+      "type": "true-false",
+      "questionText": "'Vegetarian' to osoba, która nie je mięsa.",
+      "isCorrect": true,
+      "explanation": "Prawda! 'Vegetarian' to wegetarianin/wegetarianka - osoba, która nie je mięsa."
+    },
+    {
+      "type": "multiple-choice",
+      "questionText": "Jak powiedzieć 'Smacznego!' przed posiłkiem?",
+      "options": [
+        { "text": "Good luck!", "isCorrect": false, "explanation": "To znaczy 'powodzenia', nie używa się przed jedzeniem." },
+        { "text": "Enjoy your meal!", "isCorrect": true, "explanation": "Poprawnie! 'Enjoy your meal!' lub krócej 'Enjoy!' to życzenie smacznego." },
+        { "text": "Good morning!", "isCorrect": false, "explanation": "To znaczy 'dzień dobry', nie ma związku z jedzeniem." },
+        { "text": "See you later!", "isCorrect": false, "explanation": "To znaczy 'do zobaczenia', nie jest życzeniem przed posiłkiem." }
+      ]
+    },
+    {
+      "type": "matching",
+      "questionText": "Dopasuj warzywa do ich angielskich nazw:",
+      "pairs": [
+        { "item": "Pomidor", "match": "Tomato" },
+        { "item": "Ogórek", "match": "Cucumber" },
+        { "item": "Marchew", "match": "Carrot" },
+        { "item": "Cebula", "match": "Onion" }
+      ]
+    },
+    {
+      "type": "fill-in-the-blank",
+      "questionText": "I'd like a glass ___ wine, please. (Poproszę kieliszek wina.)",
+      "correctAnswer": "of",
+      "explanation": "Używamy 'a glass of' (szklanka/kieliszek czegoś). Podobnie: a cup of tea, a bottle of water."
+    },
+    {
+      "type": "multiple-choice",
+      "questionText": "Co oznacza 'rare' w kontekście mięsa?",
+      "options": [
+        { "text": "Dobrze wysmażone", "isCorrect": false, "explanation": "Niepoprawnie. Dobrze wysmażone to 'well done'." },
+        { "text": "Krwiste", "isCorrect": true, "explanation": "Poprawnie! 'Rare' to mięso krwiste. 'Medium' to średnio, 'well done' to dobrze wysmażone." },
+        { "text": "Pieczone", "isCorrect": false, "explanation": "Niepoprawnie. Pieczone to 'roasted' lub 'baked'." },
+        { "text": "Gotowane", "isCorrect": false, "explanation": "Niepoprawnie. Gotowane to 'boiled'." }
+      ]
+    },
+    {
+      "type": "true-false",
+      "questionText": "'Appetizer' to przystawka.",
+      "isCorrect": true,
+      "explanation": "Prawda! 'Appetizer' (amerykański angielski) lub 'starter' (brytyjski) to przystawka."
+    },
+    {
+      "type": "fill-in-the-blank",
+      "questionText": "Could we have the ___, please? (Czy możemy prosić menu?)",
+      "correctAnswer": "menu",
+      "explanation": "'Menu' to karta dań. Możesz też powiedzieć 'Could we see the menu, please?'"
+    },
+    {
+      "type": "multiple-choice",
+      "questionText": "Jak zapytać, czy w daniu jest gluten?",
+      "options": [
+        { "text": "Is this gluten-free?", "isCorrect": true, "explanation": "Poprawnie! 'Gluten-free' oznacza bezglutenowy." },
+        { "text": "Is this sugar?", "isCorrect": false, "explanation": "To pyta 'czy to jest cukier?', nie o gluten." },
+        { "text": "Where is gluten?", "isCorrect": false, "explanation": "To pyta o lokalizację glutenu, brzmi nienaturalnie." },
+        { "text": "Give me gluten.", "isCorrect": false, "explanation": "To znaczy 'daj mi gluten', co nie ma sensu w tym kontekście." }
+      ]
+    },
+    {
+      "type": "matching",
+      "questionText": "Dopasuj sposoby przyrządzania do ich angielskich nazw:",
+      "pairs": [
+        { "item": "Smażony", "match": "Fried" },
+        { "item": "Grillowany", "match": "Grilled" },
+        { "item": "Pieczony", "match": "Baked" },
+        { "item": "Gotowany", "match": "Boiled" }
+      ]
+    },
+    {
+      "type": "true-false",
+      "questionText": "'Bottle' to butelka.",
+      "isCorrect": true,
+      "explanation": "Prawda! 'Bottle' to butelka. Np. 'a bottle of water' (butelka wody)."
+    },
+    {
+      "type": "multiple-choice",
+      "questionText": "Co powiesz, gdy chcesz zamówić to samo co twój znajomy?",
+      "options": [
+        { "text": "I want different.", "isCorrect": false, "explanation": "To znaczy 'chcę coś innego' - przeciwieństwo!" },
+        { "text": "The same for me, please.", "isCorrect": true, "explanation": "Poprawnie! 'The same for me' to 'dla mnie to samo'." },
+        { "text": "I don't want food.", "isCorrect": false, "explanation": "To znaczy 'nie chcę jedzenia'." },
+        { "text": "Give me everything.", "isCorrect": false, "explanation": "To znaczy 'daj mi wszystko', co nie ma sensu." }
+      ]
+    },
+    {
+      "type": "fill-in-the-blank",
+      "questionText": "Is there a table ___? (Czy jest wolny stolik?)",
+      "correctAnswer": "available",
+      "explanation": "'Available' oznacza dostępny/wolny. Możesz też zapytać 'Do you have a table available?'"
+    },
+    {
+      "type": "matching",
+      "questionText": "Dopasuj owoce do ich angielskich nazw:",
+      "pairs": [
+        { "item": "Jabłko", "match": "Apple" },
+        { "item": "Pomarańcza", "match": "Orange" },
+        { "item": "Banan", "match": "Banana" },
+        { "item": "Truskawka", "match": "Strawberry" }
+      ]
+    },
+    {
+      "type": "true-false",
+      "questionText": "'Chef' to szef kuchni.",
+      "isCorrect": true,
+      "explanation": "Prawda! 'Chef' to szef kuchni lub kucharz."
+    },
+    {
+      "type": "multiple-choice",
+      "questionText": "Jak powiedzieć, że danie jest za ostre?",
+      "options": [
+        { "text": "It's too sweet.", "isCorrect": false, "explanation": "To znaczy 'jest za słodkie'." },
+        { "text": "It's too spicy.", "isCorrect": true, "explanation": "Poprawnie! 'Too spicy' oznacza za ostre/pikantne." },
+        { "text": "It's too cold.", "isCorrect": false, "explanation": "To znaczy 'jest za zimne'." },
+        { "text": "It's too expensive.", "isCorrect": false, "explanation": "To znaczy 'jest za drogie'." }
+      ]
+    },
+    {
+      "type": "fill-in-the-blank",
+      "questionText": "We're ready to ___. (Jesteśmy gotowi zamówić.)",
+      "correctAnswer": "order",
+      "explanation": "'Ready to order' to stały zwrot oznaczający gotowość do złożenia zamówienia."
+    },
+    {
+      "type": "true-false",
+      "questionText": "'Takeaway' (UK) lub 'takeout' (US) oznacza jedzenie na wynos.",
+      "isCorrect": true,
+      "explanation": "Prawda! 'Takeaway' (brytyjski) lub 'takeout' (amerykański) to jedzenie na wynos."
+    },
+    {
+      "type": "multiple-choice",
+      "questionText": "Co oznacza 'side dish'?",
+      "options": [
+        { "text": "Danie główne", "isCorrect": false, "explanation": "Niepoprawnie. Danie główne to 'main course'." },
+        { "text": "Dodatek/przystawka", "isCorrect": true, "explanation": "Poprawnie! 'Side dish' to dodatek do dania głównego (np. frytki, ryż, warzywa)." },
+        { "text": "Talerz", "isCorrect": false, "explanation": "Niepoprawnie. Talerz to 'plate' lub 'dish' (jako przedmiot)." },
+        { "text": "Deser", "isCorrect": false, "explanation": "Niepoprawnie. Deser to 'dessert'." }
+      ]
+    },
+    {
+      "type": "matching",
+      "questionText": "Dopasuj rodzaje restauracji do ich angielskich nazw:",
+      "pairs": [
+        { "item": "Fast food", "match": "Fast food restaurant" },
+        { "item": "Kawiarnia", "match": "Cafe" },
+        { "item": "Bar", "match": "Bar" },
+        { "item": "Pizzeria", "match": "Pizzeria" }
+      ]
+    },
+    {
+      "type": "multiple-choice",
+      "questionText": "Co oznacza 'vegan'?",
+      "options": [
+        { "text": "Osoba jedząca tylko mięso", "isCorrect": false, "explanation": "Niepoprawnie. To byłby 'carnivore'." },
+        { "text": "Osoba niejedząca produktów zwierzęcych", "isCorrect": true, "explanation": "Poprawnie! 'Vegan' to weganin - nie je mięsa, nabiału, jajek ani innych produktów zwierzęcych." },
+        { "text": "Osoba niejedząca warzyw", "isCorrect": false, "explanation": "Niepoprawnie. Weganie jedzą głównie warzywa i produkty roślinne." },
+        { "text": "Osoba jedząca tylko ryby", "isCorrect": false, "explanation": "Niepoprawnie. To byłby 'pescatarian'." }
+      ]
+    },
+    {
+      "type": "matching",
+      "questionText": "Dopasuj ograniczenia dietetyczne do ich angielskich nazw:",
+      "pairs": [
+        { "item": "Bezglutenowy", "match": "Gluten-free" },
+        { "item": "Bez laktozy", "match": "Lactose-free" },
+        { "item": "Bez cukru", "match": "Sugar-free" },
+        { "item": "Niskokaloryczny", "match": "Low-calorie" }
+      ]
+    },
+    {
+      "type": "fill-in-the-blank",
+      "questionText": "Do you have any ___ options? (Czy macie jakieś opcje wegetariańskie?)",
+      "correctAnswer": "vegetarian",
+      "explanation": "'Vegetarian options' to opcje/dania wegetariańskie. Możesz też zapytać o 'vegan options'."
+    },
+    {
+      "type": "true-false",
+      "questionText": "'Dairy' oznacza produkty mleczne.",
+      "isCorrect": true,
+      "explanation": "Prawda! 'Dairy' to produkty mleczne (mleko, ser, jogurt, masło). 'Dairy-free' = bez laktozy/produktów mlecznych."
+    },
+    {
+      "type": "matching",
+      "questionText": "Dopasuj rodzaje mięsa do ich angielskich nazw:",
+      "pairs": [
+        { "item": "Wołowina", "match": "Beef" },
+        { "item": "Wieprzowina", "match": "Pork" },
+        { "item": "Baranina", "match": "Lamb" },
+        { "item": "Indyk", "match": "Turkey" }
+      ]
+    },
+    {
+      "type": "multiple-choice",
+      "questionText": "Jak zapytać o składniki dania?",
+      "options": [
+        { "text": "What's in this dish?", "isCorrect": true, "explanation": "Poprawnie! 'What's in this dish?' to pytanie o składniki/zawartość dania." },
+        { "text": "Where is this dish?", "isCorrect": false, "explanation": "To pyta o lokalizację dania, nie o składniki." },
+        { "text": "Who made this?", "isCorrect": false, "explanation": "To pyta 'kto to zrobił?', nie o składniki." },
+        { "text": "How much dishes?", "isCorrect": false, "explanation": "To jest niegramatyczne i nie pyta o składniki." }
+      ]
+    },
+    {
+      "type": "fill-in-the-blank",
+      "questionText": "I'm ___ a diet. (Jestem na diecie.)",
+      "correctAnswer": "on",
+      "explanation": "Używamy przyimka 'on' z 'diet'. 'On a diet' = na diecie."
+    },
+    {
+      "type": "matching",
+      "questionText": "Dopasuj dodatki do kawy do ich angielskich nazw:",
+      "pairs": [
+        { "item": "Mleko", "match": "Milk" },
+        { "item": "Cukier", "match": "Sugar" },
+        { "item": "Śmietanka", "match": "Cream" },
+        { "item": "Miód", "match": "Honey" }
+      ]
+    },
+    {
+      "type": "true-false",
+      "questionText": "'Organic' oznacza ekologiczny/organiczny.",
+      "isCorrect": true,
+      "explanation": "Prawda! 'Organic' to produkty ekologiczne, uprawiane bez pestycydów i chemii."
+    },
+    {
+      "type": "multiple-choice",
+      "questionText": "Co oznacza 'portion'?",
+      "options": [
+        { "text": "Porcja", "isCorrect": true, "explanation": "Poprawnie! 'Portion' to porcja jedzenia. 'Large portion' = duża porcja." },
+        { "text": "Talerz", "isCorrect": false, "explanation": "Niepoprawnie. Talerz to 'plate'." },
+        { "text": "Rachunek", "isCorrect": false, "explanation": "Niepoprawnie. Rachunek to 'bill' lub 'check'." },
+        { "text": "Napiwek", "isCorrect": false, "explanation": "Niepoprawnie. Napiwek to 'tip'." }
+      ]
+    },
+    {
+      "type": "fill-in-the-blank",
+      "questionText": "Does this contain ___? (Czy to zawiera orzechy?)",
+      "correctAnswer": "nuts",
+      "explanation": "'Nuts' to orzechy. 'Contain' = zawierać. Ważne pytanie przy alergiach!"
+    },
+    {
+      "type": "matching",
+      "questionText": "Dopasuj rodzaje sera do ich angielskich nazw:",
+      "pairs": [
+        { "item": "Ser pleśniowy", "match": "Blue cheese" },
+        { "item": "Parmezan", "match": "Parmesan" },
+        { "item": "Mozzarella", "match": "Mozzarella" },
+        { "item": "Ser kozí", "match": "Goat cheese" }
+      ]
+    },
+    {
+      "type": "true-false",
+      "questionText": "'Fresh' oznacza świeży.",
+      "isCorrect": true,
+      "explanation": "Prawda! 'Fresh' to świeży. 'Fresh ingredients' = świeże składniki."
+    },
+    {
+      "type": "multiple-choice",
+      "questionText": "Jak powiedzieć, że jesteś głodny?",
+      "options": [
+        { "text": "I'm hungry.", "isCorrect": true, "explanation": "Poprawnie! 'I'm hungry' = jestem głodny. 'I'm starving' = umieram z głodu." },
+        { "text": "I'm angry.", "isCorrect": false, "explanation": "To znaczy 'jestem zły/wściekły', nie głodny!" },
+        { "text": "I'm tired.", "isCorrect": false, "explanation": "To znaczy 'jestem zmęczony'." },
+        { "text": "I'm happy.", "isCorrect": false, "explanation": "To znaczy 'jestem szczęśliwy'." }
+      ]
+    },
+    {
+      "type": "matching",
+      "questionText": "Dopasuj rodzaje makaronu do ich angielskich nazw:",
+      "pairs": [
+        { "item": "Spaghetti", "match": "Spaghetti" },
+        { "item": "Penne", "match": "Penne" },
+        { "item": "Lasagne", "match": "Lasagna" },
+        { "item": "Ravioli", "match": "Ravioli" }
+      ]
+    },
+    {
+      "type": "fill-in-the-blank",
+      "questionText": "I'd like it without ___, please. (Poproszę bez cebuli.)",
+      "correctAnswer": "onion",
+      "explanation": "'Without' = bez. Możesz prosić o danie 'without' (bez) czegoś, czego nie lubisz."
+    },
+    {
+      "type": "true-false",
+      "questionText": "'Homemade' oznacza domowej roboty.",
+      "isCorrect": true,
+      "explanation": "Prawda! 'Homemade' to domowej roboty/przygotowane w domu. Często oznacza lepszą jakość."
+    },
+    {
+      "type": "multiple-choice",
+      "questionText": "Co oznacza 'leftovers'?",
+      "options": [
+        { "text": "Resztki jedzenia", "isCorrect": true, "explanation": "Poprawnie! 'Leftovers' to resztki jedzenia, które zostały po posiłku." },
+        { "text": "Przystawki", "isCorrect": false, "explanation": "Niepoprawnie. Przystawki to 'starters' lub 'appetizers'." },
+        { "text": "Desery", "isCorrect": false, "explanation": "Niepoprawnie. Desery to 'desserts'." },
+        { "text": "Napoje", "isCorrect": false, "explanation": "Niepoprawnie. Napoje to 'drinks' lub 'beverages'." }
+      ]
+    },
+    {
+      "type": "matching",
+      "questionText": "Dopasuj przyprawy do ich angielskich nazw:",
+      "pairs": [
+        { "item": "Sól", "match": "Salt" },
+        { "item": "Pieprz", "match": "Pepper" },
+        { "item": "Czosnek", "match": "Garlic" },
+        { "item": "Bazylia", "match": "Basil" }
+      ]
+    },
+    {
+      "type": "fill-in-the-blank",
+      "questionText": "Can I have a doggy ___? (Czy mogę prosić o opakowanie resztek na wynos?)",
+      "correctAnswer": "bag",
+      "explanation": "'Doggy bag' to potoczne określenie na opakowanie resztek jedzenia do zabrania do domu."
+    },
+    {
+      "type": "true-false",
+      "questionText": "'Raw' oznacza surowy (nieugotowany).",
+      "isCorrect": true,
+      "explanation": "Prawda! 'Raw' to surowy, nieugotowany. Np. 'raw vegetables' = surowe warzywa."
+    },
+    {
+      "type": "multiple-choice",
+      "questionText": "Jak zapytać, czy danie jest ostre?",
+      "options": [
+        { "text": "Is it spicy?", "isCorrect": true, "explanation": "Poprawnie! 'Is it spicy?' to pytanie, czy danie jest ostre/pikantne." },
+        { "text": "Is it sweet?", "isCorrect": false, "explanation": "To pyta, czy jest słodkie." },
+        { "text": "Is it expensive?", "isCorrect": false, "explanation": "To pyta, czy jest drogie." },
+        { "text": "Is it big?", "isCorrect": false, "explanation": "To pyta, czy jest duże." }
+      ]
+    },
+    {
+      "type": "matching",
+      "questionText": "Dopasuj rodzaje zup do ich angielskich nazw:",
+      "pairs": [
+        { "item": "Rosół", "match": "Chicken soup" },
+        { "item": "Pomidorowa", "match": "Tomato soup" },
+        { "item": "Krem z grzybów", "match": "Mushroom cream soup" },
+        { "item": "Zupa cebulowa", "match": "Onion soup" }
+      ]
+    }
+  ]
+}
+
