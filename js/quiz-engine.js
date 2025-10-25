@@ -827,6 +827,11 @@ function showFeedback(isCorrect, explanation) {
   
   // Pokaż przycisk dalej
   elements.nextButton.classList.remove('hidden');
+  
+  // Przewiń do przycisku "Następne pytanie" po krótkiej chwili (aby animacja się zakończyła)
+  setTimeout(() => {
+    elements.nextButton.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }, 100);
 }
 
 /**
