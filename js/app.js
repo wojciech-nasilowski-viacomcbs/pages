@@ -444,6 +444,9 @@ function handleHomeButtonClick() {
 function handleExitConfirm() {
   elements.exitDialog.classList.add('hidden');
   
+  // Wyczyść zapisaną sesję, aby przy następnym uruchomieniu pokazać opcje
+  localStorage.removeItem('currentSession');
+  
   // Resetuj błędy quizu przy wyjściu
   if (state.currentView === 'quiz') {
     resetMistakes();
