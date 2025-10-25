@@ -19,6 +19,17 @@
       "explanation": "Poprawnie! 'La farmacia' to apteka."
     },
     {
+      "type": "listening",
+      "questionText": "🎧 Posłuchaj i wpisz, co usłyszałeś:",
+      "audioText": "¿Dónde está el banco?",
+      "audioLang": "es-ES",
+      "audioRate": 0.8,
+      "correctAnswer": "¿Dónde está el banco?",
+      "acceptableAnswers": ["Donde esta el banco", "Dónde está el banco", "donde esta el banco"],
+      "explanation": "Pytanie oznacza: 'Gdzie jest bank?' - podstawowe pytanie o lokalizację.",
+      "autoPlay": true
+    },
+    {
       "type": "matching",
       "questionText": "Dopasuj miejsca w mieście:",
       "pairs": [
@@ -49,6 +60,17 @@
       "questionText": "Kawiarnia po hiszpańsku to la ___.",
       "correctAnswer": "cafetería",
       "explanation": "Poprawnie! 'La cafetería' to kawiarnia."
+    },
+    {
+      "type": "listening",
+      "questionText": "🎧 Posłuchaj i wpisz zdanie:",
+      "audioText": "El supermercado está cerca",
+      "audioLang": "es-ES",
+      "audioRate": 0.85,
+      "correctAnswer": "El supermercado está cerca",
+      "acceptableAnswers": ["El supermercado esta cerca", "el supermercado está cerca", "el supermercado esta cerca"],
+      "explanation": "Zdanie oznacza: 'Supermarket jest blisko' - używamy 'estar' do opisywania położenia.",
+      "autoPlay": true
     },
     {
       "type": "matching",
@@ -83,6 +105,17 @@
       "explanation": "Poprawnie! 'El puente' to most."
     },
     {
+      "type": "listening",
+      "questionText": "🎧 Posłuchaj i wpisz kierunek:",
+      "audioText": "Gira a la derecha",
+      "audioLang": "es-ES",
+      "audioRate": 0.8,
+      "correctAnswer": "Gira a la derecha",
+      "acceptableAnswers": ["gira a la derecha", "Gira a la derecha", "Gire a la derecha", "gire a la derecha"],
+      "explanation": "Polecenie oznacza: 'Skręć w prawo' - używane przy udzielaniu wskazówek drogowych.",
+      "autoPlay": true
+    },
+    {
       "type": "matching",
       "questionText": "Dopasuj przyimki miejsca:",
       "pairs": [
@@ -113,6 +146,17 @@
       "questionText": "Uniwersytet po hiszpańsku to la ___.",
       "correctAnswer": "universidad",
       "explanation": "Poprawnie! 'La universidad' to uniwersytet."
+    },
+    {
+      "type": "listening",
+      "questionText": "🎧 Posłuchaj i wpisz pytanie:",
+      "audioText": "¿Cómo puedo ir al museo?",
+      "audioLang": "es-ES",
+      "audioRate": 0.8,
+      "correctAnswer": "¿Cómo puedo ir al museo?",
+      "acceptableAnswers": ["Como puedo ir al museo", "Cómo puedo ir al museo", "como puedo ir al museo"],
+      "explanation": "Pytanie oznacza: 'Jak mogę dojść do muzeum?' - używane przy pytaniu o drogę.",
+      "autoPlay": true
     },
     {
       "type": "matching",
@@ -147,6 +191,17 @@
       "explanation": "Poprawnie! 'El casco antiguo' to stare miasto."
     },
     {
+      "type": "listening",
+      "questionText": "🎧 Posłuchaj i wpisz zdanie:",
+      "audioText": "La biblioteca está al lado del parque",
+      "audioLang": "es-ES",
+      "audioRate": 0.8,
+      "correctAnswer": "La biblioteca está al lado del parque",
+      "acceptableAnswers": ["La biblioteca esta al lado del parque", "la biblioteca está al lado del parque", "la biblioteca esta al lado del parque"],
+      "explanation": "Zdanie oznacza: 'Biblioteka jest obok parku' - używamy 'al lado de' (obok).",
+      "autoPlay": true
+    },
+    {
       "type": "matching",
       "questionText": "Dopasuj pomieszczenia w domu:",
       "pairs": [
@@ -177,6 +232,17 @@
       "questionText": "Centrum handlowe po hiszpańsku to el centro ___.",
       "correctAnswer": "comercial",
       "explanation": "Poprawnie! 'El centro comercial' to centrum handlowe."
+    },
+    {
+      "type": "listening",
+      "questionText": "🎧 Posłuchaj i wpisz zwrot:",
+      "audioText": "Sigue todo recto",
+      "audioLang": "es-ES",
+      "audioRate": 0.85,
+      "correctAnswer": "Sigue todo recto",
+      "acceptableAnswers": ["sigue todo recto", "Sigue todo recto", "Siga todo recto", "siga todo recto"],
+      "explanation": "Polecenie oznacza: 'Idź cały czas prosto' - podstawowa wskazówka drogowa.",
+      "autoPlay": true
     },
     {
       "type": "matching",
@@ -211,6 +277,17 @@
       "explanation": "Poprawnie! 'La estación de metro' to stacja metra."
     },
     {
+      "type": "listening",
+      "questionText": "🎧 Posłuchaj i wpisz zdanie:",
+      "audioText": "Quiero ir al restaurante",
+      "audioLang": "es-ES",
+      "audioRate": 0.85,
+      "correctAnswer": "Quiero ir al restaurante",
+      "acceptableAnswers": ["quiero ir al restaurante", "Quiero ir al restaurante", "Quiero ir a la restaurante"],
+      "explanation": "Zdanie oznacza: 'Chcę iść do restauracji' - używamy 'quiero ir a' (chcę iść do).",
+      "autoPlay": true
+    },
+    {
       "type": "matching",
       "questionText": "Dopasuj więcej czasowników:",
       "pairs": [
@@ -243,6 +320,17 @@
       "explanation": "Poprawnie! 'El restaurante' to restauracja."
     },
     {
+      "type": "listening",
+      "questionText": "🎧 Posłuchaj i wpisz pytanie:",
+      "audioText": "¿Está lejos de aquí?",
+      "audioLang": "es-ES",
+      "audioRate": 0.8,
+      "correctAnswer": "¿Está lejos de aquí?",
+      "acceptableAnswers": ["Esta lejos de aquí", "Está lejos de aquí", "esta lejos de aqui", "Esta lejos de aqui"],
+      "explanation": "Pytanie oznacza: 'Czy to jest daleko stąd?' - używane przy pytaniu o odległość.",
+      "autoPlay": true
+    },
+    {
       "type": "matching",
       "questionText": "Dopasuj przymiotniki:",
       "pairs": [
@@ -273,6 +361,17 @@
       "questionText": "Odpowiedź na pytanie '¿De dónde eres?' to: Soy ___ Polonia.",
       "correctAnswer": "de",
       "explanation": "Poprawnie! 'Soy de Polonia' to 'Jestem z Polski'."
+    },
+    {
+      "type": "listening",
+      "questionText": "🎧 Posłuchaj i wpisz zdanie:",
+      "audioText": "El hotel está enfrente de la estación",
+      "audioLang": "es-ES",
+      "audioRate": 0.8,
+      "correctAnswer": "El hotel está enfrente de la estación",
+      "acceptableAnswers": ["El hotel esta enfrente de la estación", "el hotel está enfrente de la estación", "el hotel esta enfrente de la estacion"],
+      "explanation": "Zdanie oznacza: 'Hotel jest naprzeciwko stacji' - używamy 'enfrente de' (naprzeciwko).",
+      "autoPlay": true
     },
     {
       "type": "matching",
@@ -401,6 +500,17 @@
       "questionText": "Plaża po hiszpańsku to la ___.",
       "correctAnswer": "playa",
       "explanation": "Poprawnie! 'La playa' to plaża."
+    },
+    {
+      "type": "listening",
+      "questionText": "🎧 Posłuchaj i wpisz zdanie:",
+      "audioText": "La farmacia está a cinco minutos",
+      "audioLang": "es-ES",
+      "audioRate": 0.85,
+      "correctAnswer": "La farmacia está a cinco minutos",
+      "acceptableAnswers": ["La farmacia esta a cinco minutos", "la farmacia está a cinco minutos", "la farmacia esta a 5 minutos", "La farmacia está a 5 minutos"],
+      "explanation": "Zdanie oznacza: 'Apteka jest pięć minut (stąd)' - używamy 'a + czas' do opisania odległości.",
+      "autoPlay": true
     },
     {
       "type": "matching",
