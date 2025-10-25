@@ -141,6 +141,66 @@ Użytkownik dopasowuje elementy z lewej kolumny do prawej.
 
 ---
 
+### 5. Listening (Pytanie słuchowe)
+
+Użytkownik słucha tekstu odczytanego przez syntezator mowy (TTS) i wpisuje, co usłyszał.
+
+```json
+{
+  "type": "listening",
+  "questionText": "Posłuchaj i wpisz, co usłyszałeś:",
+  "audioText": "The cat is on the table",
+  "audioLang": "en-US",
+  "audioRate": 0.85,
+  "correctAnswer": "The cat is on the table",
+  "acceptableAnswers": ["The cat's on the table", "The cat is on a table"],
+  "explanation": "Zdanie oznacza: Kot jest na stole.",
+  "autoPlay": true
+}
+```
+
+**Pola:**
+- `type`: zawsze `"listening"`
+- `questionText`: instrukcja dla użytkownika (string)
+- `audioText`: tekst do odczytania przez TTS (string, **wymagane**)
+- `audioLang`: kod języka (string, np. `"en-US"`, `"es-ES"`, `"pl-PL"`, domyślnie `"en-US"`)
+- `audioRate`: prędkość mowy (number, 0.1-10, domyślnie `0.85` - wolniej dla nauki)
+- `correctAnswer`: poprawna odpowiedź (string, **wymagane**)
+- `acceptableAnswers`: opcjonalna tablica alternatywnych poprawnych odpowiedzi (array of strings)
+- `explanation`: wyjaśnienie (string)
+- `autoPlay`: czy automatycznie odtworzyć przy wyświetleniu pytania (boolean, domyślnie `true`)
+
+**Uwaga:** 
+- Odpowiedź użytkownika jest sprawdzana bez wielkości liter, akcentów i znaków interpunkcyjnych.
+- Użytkownik może wielokrotnie odtworzyć nagranie przyciskiem "🔊 Odtwórz" lub "🐌 Wolniej" (70% prędkości).
+- TTS wykorzystuje Web Speech API dostępne w przeglądarkach (Chrome, Edge, Safari).
+
+---
+
+## Opcjonalne Audio dla Wszystkich Typów Pytań
+
+Każdy typ pytania może mieć opcjonalne pole audio, które dodaje przycisk "🔊 Odtwórz" do odczytania pytania lub fragmentu tekstu:
+
+```json
+{
+  "type": "multiple-choice",
+  "questionText": "Co oznacza to słowo?",
+  "audioText": "restaurant",
+  "audioLang": "en-US",
+  "audioRate": 0.85,
+  "options": [...]
+}
+```
+
+**Opcjonalne pola audio:**
+- `audioText`: tekst do odczytania (string)
+- `audioLang`: kod języka (string, domyślnie `"en-US"`)
+- `audioRate`: prędkość mowy (number, domyślnie `0.85`)
+
+Te pola można dodać do typów: `multiple-choice`, `fill-in-the-blank`, `true-false`, `matching`.
+
+---
+
 ## Treningi
 
 ### Lokalizacja
@@ -276,6 +336,15 @@ Każde ćwiczenie ma jeden z dwóch typów: **na czas** lub **na powtórzenia**.
         { "item": "Dwa", "match": "Dos" },
         { "item": "Trzy", "match": "Tres" }
       ]
+    },
+    {
+      "type": "listening",
+      "questionText": "Posłuchaj i wpisz zdanie po hiszpańsku:",
+      "audioText": "Hola, ¿cómo estás?",
+      "audioLang": "es-ES",
+      "correctAnswer": "Hola, ¿cómo estás?",
+      "acceptableAnswers": ["Hola como estas", "Hola, como estás"],
+      "explanation": "To zdanie oznacza: 'Cześć, jak się masz?'"
     }
   ]
 }

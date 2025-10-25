@@ -225,15 +225,177 @@ function displayQuestion() {
 }
 
 /**
+ * Dodaje przycisk audio do pytania (jeśli ma pole audioText)
+ */
+function addAudioButton(questionData) {
+  if (!questionData.audioText || !isTTSAvailable()) return '';
+  
+  const lang = questionData.audioLang || 'en-US';
+  const rate = questionData.audioRate || 0.85;
+  
+  return `
+    <div class="flex gap-2 mb-4">
+      <button class="audio-play-btn bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition flex items-center gap-2"
+              data-text="${questionData.audioText.replace(/"/g, '&quot;')}"
+              data-lang="${lang}"
+              data-rate="${rate}">
+        🔊 Odtwórz
+      </button>
+      <button class="audio-slow-btn bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-lg transition flex items-center gap-2"
+              data-text="${questionData.audioText.replace(/"/g, '&quot;')}"
+              data-lang="${lang}"
+              data-rate="${rate * 0.7}">
+        🐌 Wolniej
+      </button>
+    </div>
+  `;
+}
+
+/**
+ * Dodaje event listenery do przycisków audio
+ */
+function attachAudioListeners() {
+  document.querySelectorAll('.audio-play-btn, .audio-slow-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const text = btn.dataset.text;
+      const lang = btn.dataset.lang;
+      const rate = parseFloat(btn.dataset.rate);
+      speakText(text, lang, rate);
+    });
+  });
+}
+
+/**
+ * Renderuje pytanie słuchowe (listening)
+ */
+function renderListening(questionData) {
+  const audioBtn = addAudioButton(questionData);
+  
+  elements.answersContainer.innerHTML = `
+    ${audioBtn}
+    <div class="bg-blue-900/30 border border-blue-700 rounded-lg p-4 mb-4">
+      <p class="text-blue-200 text-sm">
+        🎧 Posłuchaj nagrania i wpisz, co usłyszałeś/aś. Możesz odtworzyć nagranie wielokrotnie.
+      </p>
+    </div>
+    <div class="space-y-4">
+      <input type="text" 
+             id="listening-input"
+             class="w-full p-4 rounded-lg bg-gray-700 text-white border-2 border-gray-600 focus:border-blue-500 focus:outline-none text-lg"
+             placeholder="Wpisz, co usłyszałeś/aś..."
+             autocomplete="off">
+      <button id="listening-submit" 
+              class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition">
+        Sprawdź odpowiedź
+      </button>
+    </div>
+  `;
+  
+  attachAudioListeners();
+  
+  const input = document.getElementById('listening-input');
+  const submitBtn = document.getElementById('listening-submit');
+  
+  // Enter = submit
+  input.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+      submitBtn.click();
+    }
+  });
+  
+  submitBtn.addEventListener('click', () => handleListeningAnswer(questionData, input.value));
+  
+  // Automatyczne odtworzenie przy pierwszym wyświetleniu
+  if (questionData.audioText && questionData.autoPlay !== false) {
+    setTimeout(() => {
+      speakText(questionData.audioText, questionData.audioLang || 'en-US', questionData.audioRate || 0.85);
+    }, 500);
+  }
+  
+  // Autofocus
+  input.focus();
+}
+
+/**
+ * Obsługuje odpowiedź na pytanie słuchowe
+ */
+function handleListeningAnswer(questionData, userAnswer) {
+  if (quizState.isAnswered) return;
+  if (!userAnswer.trim()) return;
+  
+  quizState.isAnswered = true;
+  
+  // Zatrzymaj odtwarzanie audio
+  stopSpeaking();
+  
+  // Normalizuj odpowiedzi (bez wielkości liter i akcentów)
+  const normalize = (str) => str
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '') // Usuń akcenty
+    .replace(/[^\w\s]/g, '') // Usuń znaki interpunkcyjne
+    .trim();
+  
+  const normalizedUser = normalize(userAnswer);
+  const normalizedCorrect = normalize(questionData.correctAnswer);
+  
+  // Sprawdź czy odpowiedź jest poprawna (dokładne dopasowanie lub alternatywne odpowiedzi)
+  let isCorrect = normalizedUser === normalizedCorrect;
+  
+  // Sprawdź alternatywne odpowiedzi (jeśli istnieją)
+  if (!isCorrect && questionData.acceptableAnswers) {
+    isCorrect = questionData.acceptableAnswers.some(alt => normalize(alt) === normalizedUser);
+  }
+  
+  if (isCorrect) {
+    quizState.score++;
+    playCorrectSound();
+  } else {
+    playIncorrectSound();
+    recordMistake();
+  }
+  
+  // Zablokuj input i przyciski
+  const input = document.getElementById('listening-input');
+  const submitBtn = document.getElementById('listening-submit');
+  const audioButtons = document.querySelectorAll('.audio-play-btn, .audio-slow-btn');
+  
+  input.disabled = true;
+  submitBtn.disabled = true;
+  audioButtons.forEach(btn => btn.disabled = true);
+  
+  if (isCorrect) {
+    input.classList.add('border-green-500', 'bg-green-900/30');
+  } else {
+    input.classList.add('border-red-500', 'bg-red-900/30');
+  }
+  
+  // Pokaż feedback
+  const explanation = isCorrect 
+    ? questionData.explanation 
+    : `Niepoprawnie. Poprawna odpowiedź to: "${questionData.correctAnswer}". ${questionData.explanation || ''}`;
+  
+  showFeedback(isCorrect, explanation);
+}
+
+/**
  * Renderuje pytanie wielokrotnego wyboru
  */
 function renderMultipleChoice(questionData) {
-  elements.answersContainer.innerHTML = questionData.options.map((option, index) => `
-    <button class="quiz-option w-full text-left p-4 rounded-lg bg-gray-700 hover:bg-gray-600 transition border-2 border-transparent"
-            data-index="${index}">
-      <span class="font-medium">${String.fromCharCode(65 + index)}.</span> ${option.text}
-    </button>
-  `).join('');
+  const audioBtn = addAudioButton(questionData);
+  
+  elements.answersContainer.innerHTML = `
+    ${audioBtn}
+    ${questionData.options.map((option, index) => `
+      <button class="quiz-option w-full text-left p-4 rounded-lg bg-gray-700 hover:bg-gray-600 transition border-2 border-transparent"
+              data-index="${index}">
+        <span class="font-medium">${String.fromCharCode(65 + index)}.</span> ${option.text}
+      </button>
+    `).join('')}
+  `;
+  
+  attachAudioListeners();
   
   // Event listenery
   elements.answersContainer.querySelectorAll('.quiz-option').forEach(btn => {
@@ -286,7 +448,10 @@ function handleMultipleChoiceAnswer(questionData, selectedIndex) {
  * Renderuje pytanie z luką do uzupełnienia
  */
 function renderFillInTheBlank(questionData) {
+  const audioBtn = addAudioButton(questionData);
+  
   elements.answersContainer.innerHTML = `
+    ${audioBtn}
     <div class="space-y-4">
       <input type="text" 
              id="fill-blank-input"
@@ -299,6 +464,8 @@ function renderFillInTheBlank(questionData) {
       </button>
     </div>
   `;
+  
+  attachAudioListeners();
   
   const input = document.getElementById('fill-blank-input');
   const submitBtn = document.getElementById('fill-blank-submit');
@@ -367,7 +534,10 @@ function handleFillInTheBlankAnswer(questionData, userAnswer) {
  * Renderuje pytanie prawda/fałsz
  */
 function renderTrueFalse(questionData) {
+  const audioBtn = addAudioButton(questionData);
+  
   elements.answersContainer.innerHTML = `
+    ${audioBtn}
     <div class="grid grid-cols-2 gap-4">
       <button class="quiz-tf-option p-6 rounded-lg bg-gray-700 hover:bg-gray-600 transition border-2 border-transparent font-bold text-lg"
               data-answer="true">
@@ -379,6 +549,8 @@ function renderTrueFalse(questionData) {
       </button>
     </div>
   `;
+  
+  attachAudioListeners();
   
   elements.answersContainer.querySelectorAll('.quiz-tf-option').forEach(btn => {
     btn.addEventListener('click', () => {
