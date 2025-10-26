@@ -57,14 +57,21 @@ TYPY PYTAŃ - SZCZEGÓŁY:
   "correctAnswer": "Paryż"
 }
 
-4. LISTENING (słuchowe z TTS):
+4. LISTENING (słuchowe z TTS - TYLKO dla nauki języków!):
 {
-  "question": "Posłuchaj i wpisz usłyszane słowo",
+  "question": "Posłuchaj i wpisz usłyszane słowo po angielsku",
   "type": "listening",
   "audioText": "Hello world",
   "audioLang": "en-US",
   "correctAnswer": "hello world"
 }
+
+KIEDY UŻYWAĆ "listening":
+✅ Quiz o nauce angielskiego, hiszpańskiego, etc.
+✅ Quiz o wymowie, fonetyce
+✅ Użytkownik wyraźnie prosi o pytania słuchowe
+❌ Quiz o historii, matematyce, geografii
+❌ Quiz ogólny bez kontekstu językowego
 
 KODY JĘZYKÓW dla audioLang:
 - Polski: "pl-PL"
@@ -75,7 +82,33 @@ KODY JĘZYKÓW dla audioLang:
 - Francuski: "fr-FR"
 - Włoski: "it-IT"
 
-FORMAT JSON (KOMPLETNY PRZYKŁAD):
+PRZYKŁAD 1 - Quiz językowy (z listening):
+{
+  "title": "Angielski dla początkujących",
+  "description": "Podstawowe słówka i wymowa",
+  "questions": [
+    {
+      "question": "Co oznacza 'apple'?",
+      "type": "multiple-choice",
+      "options": ["Jabłko", "Gruszka", "Banan", "Pomarańcza"],
+      "correctAnswer": 0
+    },
+    {
+      "question": "Posłuchaj i wpisz usłyszane słowo",
+      "type": "listening",
+      "audioText": "Hello",
+      "audioLang": "en-US",
+      "correctAnswer": "hello"
+    },
+    {
+      "question": "Uzupełnij: I ___ a student",
+      "type": "fill-in-blank",
+      "correctAnswer": "am"
+    }
+  ]
+}
+
+PRZYKŁAD 2 - Quiz ogólny (BEZ listening):
 {
   "title": "Quiz o geografii Europy",
   "description": "Sprawdź swoją wiedzę o stolicach i krajach",
@@ -95,13 +128,6 @@ FORMAT JSON (KOMPLETNY PRZYKŁAD):
       "question": "Stolica Włoch to ____",
       "type": "fill-in-blank",
       "correctAnswer": "Rzym"
-    },
-    {
-      "question": "Posłuchaj nazwy miasta i wpisz ją",
-      "type": "listening",
-      "audioText": "Paris",
-      "audioLang": "en-US",
-      "correctAnswer": "paris"
     }
   ]
 }
