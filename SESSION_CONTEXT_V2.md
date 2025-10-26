@@ -45,6 +45,40 @@
 - Usuwanie z bazy danych
 - Automatyczne odświeżanie listy
 
+### **ETAP 6: Refactoring na moduły** ✅
+- **`js/ui-manager.js`** (~140 linii) - ekrany, zakładki, komunikaty, dźwięk
+- **`js/session-manager.js`** (~130 linii) - sesje quiz/workout, continue/exit dialogs
+- **`js/content-manager.js`** (~950 linii) - render, import, delete, export, AI generator
+- **`js/app.js`** (~580 linii, było 1417!) - init, auth, event listeners, orkiestracja
+
+**Korzyści:**
+- Kod czytelny i łatwy w utrzymaniu
+- Jasny podział odpowiedzialności
+- Łatwiejsze dodawanie nowych funkcji
+
+### **ETAP 7: Eksport JSON** ✅
+- Przycisk "⬇" (eksportuj) obok przycisku usuń
+- Pobieranie pełnych danych z Supabase
+- Czyszczenie metadanych (id, user_id, timestamps)
+- Automatyczne generowanie nazwy pliku
+- Download jako `.json`
+
+### **ETAP 8: Generator AI** ✅
+- Przycisk "🤖 Generator AI" (fioletowy, obok "+ Dodaj")
+- Modal z promptem i polem na OpenAI API Key
+- Integracja z GPT-4o-mini
+- System prompty dla quizów i treningów
+- Automatyczna walidacja wygenerowanych danych
+- Zapis do Supabase
+- Klucz API przechowywany w sessionStorage (bezpiecznie)
+
+**Jak używać:**
+1. Kliknij "🤖 Generator AI"
+2. Wklej swój OpenAI API Key ([uzyskaj tutaj](https://platform.openai.com/api-keys))
+3. Opisz co chcesz wygenerować (np. "Quiz o historii Polski, 10 pytań")
+4. Kliknij "Generuj" - AI wygeneruje treść w ~20-30 sekund
+5. Gotowe! Nowa treść pojawi się na liście
+
 ---
 
 ## 🔧 KLUCZOWE ZMIANY TECHNICZNE
@@ -105,7 +139,10 @@ Zaktualizowane funkcje w `quiz-engine.js`:
 │   ├── supabase-client.js      # Klient Supabase
 │   ├── auth-service.js         # Autentykacja
 │   ├── data-service.js         # CRUD operations
-│   ├── app.js                  # Główna logika (v2.0)
+│   ├── ui-manager.js           # Zarządzanie UI (v2.0 refactored)
+│   ├── session-manager.js      # Zarządzanie sesjami (v2.0 refactored)
+│   ├── content-manager.js      # Import/Export/Delete/AI (v2.0 refactored)
+│   ├── app.js                  # Inicjalizacja i orkiestracja (v2.0)
 │   ├── quiz-engine.js          # Engine quizów (kompatybilny v1/v2)
 │   ├── workout-engine.js       # Engine treningów
 │   └── audio.js                # Audio & TTS
@@ -138,41 +175,68 @@ Zaktualizowane funkcje w `quiz-engine.js`:
 5. **Quiz engine** → kompatybilność z oboma formatami
 6. **UX przycisku usuń** → `event.stopPropagation()`, lepszy design
 7. **File input** → poprawne event listenery
+8. **Refactoring** → podział na moduły, przekazywanie parametrów
 
 ---
 
 ## 📊 STATYSTYKI
 
-- **Pliki zmodyfikowane:** 8
-- **Pliki utworzone:** 6
-- **Linie kodu:** ~3500
-- **Funkcji dodanych:** ~40
-- **Błędów naprawionych:** 7
+- **Pliki zmodyfikowane:** 12
+- **Pliki utworzone:** 9 (w tym 3 nowe moduły)
+- **Linie kodu:** ~5000
+- **Funkcji dodanych:** ~60
+- **Błędów naprawionych:** 8
+- **Refactoring:** 1417 → 580 linii w app.js (-59%!)
 
 ---
 
 ## 🚀 NASTĘPNE KROKI (OPCJONALNE)
 
-1. **Generator AI** (ukryty, dla zaawansowanych)
-2. **Eksport JSON** (pobieranie własnych treści)
-3. **Edycja treści** (inline editing)
-4. **Statystyki** (historia wyników)
-5. **Deployment** (Vercel/Netlify)
-6. **Tailwind production** (PostCSS)
+### Zrealizowane w v2.0:
+1. ✅ **Generator AI** - działający generator z GPT-4o-mini
+2. ✅ **Eksport JSON** - pobieranie własnych treści
+3. ✅ **Refactoring** - podział na moduły
+
+### Do zrobienia w przyszłości (v3.0):
+1. **Edycja treści** (inline editing)
+2. **Statystyki** (historia wyników, wykresy postępu)
+3. **Deployment** (Vercel/Netlify + instrukcje)
+4. **Tailwind production** (PostCSS, purge CSS)
+5. **PWA** (offline support, install prompt)
 
 ---
 
 ## 📝 NOTATKI
 
-- Wszystkie funkcje działają poprawnie
-- Kompatybilność wsteczna zachowana
-- UX dopracowany
-- Kod czysty, bez logów debugowania
+- Wszystkie funkcje działają poprawnie (import, export, AI, delete)
+- Kompatybilność wsteczna zachowana (v1 → v2 auto-konwersja)
+- UX dopracowany (hover effects, loading states, komunikaty)
+- Kod czysty, modularny, bez logów debugowania
 - Gotowe do produkcji
+- Generator AI używa GPT-4o-mini (szybki i tani)
+- API Key bezpiecznie w sessionStorage (nie jest wysyłany nigdzie poza OpenAI)
 
 ---
 
-## 🎯 STATUS: GOTOWE DO UŻYCIA ✅
+## 🎯 STATUS: v2.0 COMPLETE! ✅
 
-Aplikacja jest w pełni funkcjonalna i gotowa do użycia produkcyjnego.
+Aplikacja jest w pełni funkcjonalna z następującymi możliwościami:
+
+### Dla użytkowników:
+- 📝 **Quizy** - różne typy pytań, auto-save sesji
+- 💪 **Treningi** - timer, licznik, Wake Lock API
+- ➕ **Import** - drag&drop, wklej JSON, auto-konwersja v1→v2
+- ⬇️ **Eksport** - pobieraj swoje treści jako JSON
+- 🤖 **Generator AI** - twórz treści z pomocą GPT-4o-mini
+- 🗑️ **Usuwanie** - zarządzaj swoimi treściami
+- 🔐 **Auth** - bezpieczne logowanie przez Supabase
+
+### Dla developerów:
+- 🏗️ **Modularny kod** - 4 wydzielone moduły
+- 🔒 **Row Level Security** - bezpieczeństwo na poziomie bazy
+- ♻️ **Kompatybilność wsteczna** - auto-konwersja starych formatów
+- 🎨 **Tailwind CSS** - nowoczesny UI
+- 📦 **Supabase** - backend as a service
+
+**Gotowe do deploymentu na Vercel/Netlify!**
 

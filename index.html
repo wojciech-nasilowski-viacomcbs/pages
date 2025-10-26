@@ -115,6 +115,9 @@
                 <button id="add-content-button" class="hidden px-6 py-3 rounded-lg font-semibold transition bg-green-600 text-white hover:bg-green-700">
                     + Dodaj
                 </button>
+                <button id="ai-generator-button" class="hidden px-6 py-3 rounded-lg font-semibold transition bg-purple-600 text-white hover:bg-purple-700" title="Generator AI (wymaga OpenAI API key)">
+                    🤖 Generator AI
+                </button>
             </div>
 
             <!-- Kontener na karty -->
@@ -469,6 +472,57 @@
             </div>
         </div>
 
+        <!-- MODAL GENERATORA AI -->
+        <div id="ai-generator-modal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50">
+            <div class="bg-gray-800 p-6 rounded-2xl shadow-2xl max-w-2xl w-full">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold text-white">🤖 Generator AI</h2>
+                    <button id="ai-close" class="text-gray-400 hover:text-white text-2xl">&times;</button>
+                </div>
+
+                <p class="text-gray-300 mb-4">Opisz czego potrzebujesz, a AI wygeneruje <span id="ai-type-label">quiz</span> dla Ciebie.</p>
+
+                <!-- OpenAI API Key -->
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-300 mb-2">
+                        OpenAI API Key
+                        <a href="https://platform.openai.com/api-keys" target="_blank" class="text-blue-400 hover:text-blue-300 ml-2 text-xs">(uzyskaj klucz)</a>
+                    </label>
+                    <input type="password" id="ai-api-key" placeholder="sk-..." 
+                           class="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                    <p class="text-xs text-gray-400 mt-1">Klucz nie jest zapisywany - używany tylko w tej sesji</p>
+                </div>
+
+                <!-- Prompt -->
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-300 mb-2">Opis treści (prompt)</label>
+                    <textarea id="ai-prompt" rows="6" placeholder="Przykład: Stwórz quiz o historii Polski, 10 pytań wielokrotnego wyboru, poziom średniozaawansowany"
+                              class="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"></textarea>
+                </div>
+
+                <!-- Komunikaty -->
+                <div id="ai-error" class="hidden bg-red-900/50 border border-red-600 text-red-200 px-4 py-3 rounded-lg mb-4"></div>
+                <div id="ai-success" class="hidden bg-green-900/50 border border-green-600 text-green-200 px-4 py-3 rounded-lg mb-4"></div>
+                <div id="ai-loading" class="hidden bg-blue-900/50 border border-blue-600 text-blue-200 px-4 py-3 rounded-lg mb-4 flex items-center">
+                    <svg class="animate-spin h-5 w-5 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span>Generowanie... To może potrwać ~20-30 sekund</span>
+                </div>
+
+                <!-- Przyciski -->
+                <div class="flex gap-3">
+                    <button type="button" id="ai-generate" class="flex-1 bg-purple-600 hover:bg-purple-700 text-white font-medium py-3 px-6 rounded-lg transition">
+                        Generuj
+                    </button>
+                    <button type="button" id="ai-cancel" class="flex-1 bg-gray-700 hover:bg-gray-600 text-white font-medium py-3 px-6 rounded-lg transition">
+                        Anuluj
+                    </button>
+                </div>
+            </div>
+        </div>
+
         <!-- MODAL POTWIERDZENIA USUNIĘCIA -->
         <div id="delete-modal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50">
             <div class="bg-gray-800 p-6 rounded-2xl shadow-2xl max-w-md w-full">
@@ -495,6 +549,12 @@
     <script src="js/supabase-client.js"></script>
     <script src="js/auth-service.js"></script>
     <script src="js/data-service.js"></script>
+    
+    <!-- Managers (v2.0 refactored) -->
+    <script src="js/ui-manager.js"></script>
+    <script src="js/session-manager.js"></script>
+    <script src="js/content-manager.js"></script>
+    
     <script src="js/quiz-engine.js"></script>
     <script src="js/workout-engine.js"></script>
     <script src="js/app.js"></script>
