@@ -42,6 +42,7 @@ TYPY PYTAŃ - SZCZEGÓŁY:
   "options": ["Warszawa", "Kraków", "Gdańsk", "Wrocław"],
   "correctAnswer": 0
 }
+UWAGA: correctAnswer musi być liczbą (0, 1, 2, 3), NIE stringiem ("0", "1", etc.)!
 
 2. TRUE/FALSE (prawda/fałsz):
 {
@@ -49,6 +50,7 @@ TYPY PYTAŃ - SZCZEGÓŁY:
   "type": "true-false",
   "correctAnswer": false
 }
+UWAGA: correctAnswer musi być boolean (true/false), NIE string ("true"/"false")!
 
 3. FILL IN BLANK (uzupełnij):
 {
@@ -135,7 +137,12 @@ PRZYKŁAD 2 - Quiz ogólny (BEZ listening):
 OPIS UŻYTKOWNIKA:
 {USER_PROMPT}
 
-WAŻNE: Zwróć TYLKO czysty JSON, bez markdown (\`\`\`json), komentarzy czy dodatkowego tekstu.`,
+KRYTYCZNE WYMAGANIA JSON:
+1. correctAnswer w "multiple-choice" = LICZBA (0, 1, 2, 3), nie string!
+2. correctAnswer w "true-false" = BOOLEAN (true, false), nie string!
+3. correctAnswer w "fill-in-blank" = string
+4. correctAnswer w "listening" = string
+5. Zwróć TYLKO czysty JSON, bez markdown (\`\`\`json), komentarzy czy dodatkowego tekstu.`,
 
   /**
    * Prompt dla generowania treningów

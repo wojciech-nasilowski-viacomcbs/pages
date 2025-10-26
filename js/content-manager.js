@@ -587,8 +587,14 @@ const contentManager = {
           if (q.correctAnswer === undefined || q.correctAnswer === null) {
             errors.push(`Pytanie ${idx + 1}: brak "correctAnswer"`);
           }
+          // Konwersja string → number
           if (typeof q.correctAnswer === 'string') {
-            errors.push(`Pytanie ${idx + 1}: "correctAnswer" musi być liczbą (0-${q.options.length - 1}), nie stringiem`);
+            const parsed = parseInt(q.correctAnswer, 10);
+            if (isNaN(parsed)) {
+              errors.push(`Pytanie ${idx + 1}: "correctAnswer" "${q.correctAnswer}" nie jest poprawną liczbą`);
+            } else {
+              q.correctAnswer = parsed;
+            }
           }
           if (typeof q.correctAnswer === 'number' && (q.correctAnswer < 0 || q.correctAnswer >= q.options.length)) {
             errors.push(`Pytanie ${idx + 1}: "correctAnswer" (${q.correctAnswer}) poza zakresem (0-${q.options.length - 1})`);
@@ -596,14 +602,24 @@ const contentManager = {
         }
         
         if (q.type === 'true-false') {
+          // Konwersja string → boolean
+          if (typeof q.correctAnswer === 'string') {
+            if (q.correctAnswer === 'true') {
+              q.correctAnswer = true;
+            } else if (q.correctAnswer === 'false') {
+              q.correctAnswer = false;
+            } else {
+              errors.push(`Pytanie ${idx + 1}: "correctAnswer" "${q.correctAnswer}" nie jest poprawną wartością (true/false)`);
+            }
+          }
           if (typeof q.correctAnswer !== 'boolean') {
-            errors.push(`Pytanie ${idx + 1}: "correctAnswer" musi być boolean`);
+            errors.push(`Pytanie ${idx + 1}: "correctAnswer" musi być boolean (true/false), otrzymano: ${typeof q.correctAnswer}`);
           }
         }
         
         if (q.type === 'fill-in-blank') {
           if (!q.correctAnswer || typeof q.correctAnswer !== 'string') {
-            errors.push(`Pytanie ${idx + 1}: brak "correctAnswer"`);
+            errors.push(`Pytanie ${idx + 1}: brak "correctAnswer" (string)`);
           }
         }
         

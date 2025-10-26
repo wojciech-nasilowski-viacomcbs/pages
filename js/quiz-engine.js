@@ -406,8 +406,8 @@ function handleListeningAnswer(questionData, userAnswer) {
   
   // Pokaż feedback
   const explanation = isCorrect 
-    ? questionData.explanation 
-    : `Niepoprawnie. Poprawna odpowiedź to: "${questionData.correctAnswer}". ${questionData.explanation || ''}`;
+    ? (questionData.explanation || '') 
+    : `Niepoprawnie. Poprawna odpowiedź to: "${questionData.correctAnswer}".${questionData.explanation ? ' ' + questionData.explanation : ''}`;
   
   showFeedback(isCorrect, explanation);
 }
@@ -485,8 +485,8 @@ function handleMultipleChoiceAnswer(questionData, selectedIndex) {
   
   // Pokaż feedback
   const explanation = typeof selectedOption === 'string' 
-    ? questionData.explanation 
-    : selectedOption.explanation;
+    ? (questionData.explanation || '') 
+    : (selectedOption.explanation || '');
   showFeedback(isCorrect, explanation);
 }
 
@@ -570,8 +570,8 @@ function handleFillInTheBlankAnswer(questionData, userAnswer) {
   
   // Pokaż feedback
   const explanation = isCorrect 
-    ? questionData.explanation 
-    : `Niepoprawnie. Poprawna odpowiedź to: "${questionData.correctAnswer}". ${questionData.explanation}`;
+    ? (questionData.explanation || '') 
+    : `Niepoprawnie. Poprawna odpowiedź to: "${questionData.correctAnswer}".${questionData.explanation ? ' ' + questionData.explanation : ''}`;
   
   showFeedback(isCorrect, explanation);
 }
@@ -645,7 +645,7 @@ function handleTrueFalseAnswer(questionData, userAnswer) {
     }
   });
   
-  showFeedback(isCorrect, questionData.explanation);
+  showFeedback(isCorrect, questionData.explanation || '');
 }
 
 /**
