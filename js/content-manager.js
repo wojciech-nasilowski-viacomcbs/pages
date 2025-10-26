@@ -584,8 +584,14 @@ const contentManager = {
           if (!Array.isArray(q.options) || q.options.length < 2) {
             errors.push(`Pytanie ${idx + 1}: brak opcji odpowiedzi`);
           }
-          if (q.correctAnswer === undefined) {
+          if (q.correctAnswer === undefined || q.correctAnswer === null) {
             errors.push(`Pytanie ${idx + 1}: brak "correctAnswer"`);
+          }
+          if (typeof q.correctAnswer === 'string') {
+            errors.push(`Pytanie ${idx + 1}: "correctAnswer" musi być liczbą (0-${q.options.length - 1}), nie stringiem`);
+          }
+          if (typeof q.correctAnswer === 'number' && (q.correctAnswer < 0 || q.correctAnswer >= q.options.length)) {
+            errors.push(`Pytanie ${idx + 1}: "correctAnswer" (${q.correctAnswer}) poza zakresem (0-${q.options.length - 1})`);
           }
         }
         
@@ -756,11 +762,11 @@ const contentManager = {
     const contentType = state.currentTab === 'quizzes' ? 'quiz' : 'workout';
     
     // Pobierz API Key z config
-    const apiKey = window.APP_CONFIG?.OPENAI_API_KEY;
+    const apiKey = window.APP_CONFIG?.OPENROUTER_API_KEY;
     
     // Walidacja
-    if (!apiKey || apiKey === 'YOUR_OPENAI_API_KEY') {
-      this.showAIError('Brak klucza OpenAI API. Skonfiguruj OPENAI_API_KEY w config.js', elements);
+    if (!apiKey || apiKey === 'YOUR_OPENROUTER_API_KEY') {
+      this.showAIError('Brak klucza OpenRouter API. Skonfiguruj OPENROUTER_API_KEY w config.js', elements);
       return;
     }
     
@@ -827,14 +833,16 @@ const contentManager = {
     // Zastąp {USER_PROMPT} rzeczywistym promptem użytkownika
     const systemPrompt = promptTemplate.replace('{USER_PROMPT}', userPrompt);
     
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${apiKey}`
+        'Authorization': `Bearer ${apiKey}`,
+        'HTTP-Referer': window.location.origin,
+        'X-Title': 'Quizy & Treningi - AI Generator'
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
+        model: 'openai/gpt-4o-mini', // OpenRouter format: provider/model
         messages: [
           { role: 'user', content: systemPrompt }
         ],
@@ -845,7 +853,7 @@ const contentManager = {
     
     if (!response.ok) {
       const error = await response.json();
-      throw new Error(error.error?.message || 'Błąd API OpenAI');
+      throw new Error(error.error?.message || 'Błąd API OpenRouter');
     }
     
     const data = await response.json();
