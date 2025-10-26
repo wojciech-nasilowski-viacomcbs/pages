@@ -481,22 +481,18 @@
                 </div>
 
                 <p class="text-gray-300 mb-4">Opisz czego potrzebujesz, a AI wygeneruje <span id="ai-type-label">quiz</span> dla Ciebie.</p>
-
-                <!-- OpenAI API Key -->
-                <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-300 mb-2">
-                        OpenAI API Key
-                        <a href="https://platform.openai.com/api-keys" target="_blank" class="text-blue-400 hover:text-blue-300 ml-2 text-xs">(uzyskaj klucz)</a>
-                    </label>
-                    <input type="password" id="ai-api-key" placeholder="sk-..." 
-                           class="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
-                    <p class="text-xs text-gray-400 mt-1">Klucz nie jest zapisywany - używany tylko w tej sesji</p>
+                
+                <div class="bg-blue-900/30 border border-blue-600/50 rounded-lg p-3 mb-4">
+                    <p class="text-blue-200 text-sm">
+                        💡 <strong>Wskazówka:</strong> Możesz określić typy pytań, np:
+                        <br>"Quiz o angielskim, 10 pytań: 5 multiple-choice, 3 listening, 2 fill-in-blank"
+                    </p>
                 </div>
 
                 <!-- Prompt -->
                 <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-300 mb-2">Opis treści (prompt)</label>
-                    <textarea id="ai-prompt" rows="6" placeholder="Przykład: Stwórz quiz o historii Polski, 10 pytań wielokrotnego wyboru, poziom średniozaawansowany"
+                    <textarea id="ai-prompt" rows="6" placeholder="Przykład: Quiz o angielskim dla początkujących, 10 pytań: 5 multiple-choice, 3 listening (en-US), 2 fill-in-blank"
                               class="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"></textarea>
                 </div>
 
@@ -553,6 +549,7 @@
     <!-- Managers (v2.0 refactored) -->
     <script src="js/ui-manager.js"></script>
     <script src="js/session-manager.js"></script>
+    <script src="js/ai-prompts.js"></script>
     <script src="js/content-manager.js"></script>
     
     <script src="js/quiz-engine.js"></script>

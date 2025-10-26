@@ -122,7 +122,6 @@ const elements = {
   aiGeneratorButton: document.getElementById('ai-generator-button'),
   aiGeneratorModal: document.getElementById('ai-generator-modal'),
   aiTypeLabel: document.getElementById('ai-type-label'),
-  aiApiKey: document.getElementById('ai-api-key'),
   aiPrompt: document.getElementById('ai-prompt'),
   aiError: document.getElementById('ai-error'),
   aiSuccess: document.getElementById('ai-success'),

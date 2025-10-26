@@ -532,9 +532,12 @@ const contentManager = {
             }
           }
           
-          delete converted.audioText;
-          delete converted.audioLang;
-          delete converted.audioRate;
+          // Usuń nieużywane pola (ale ZACHOWAJ audioText, audioLang dla listening)
+          if (converted.type !== 'listening') {
+            delete converted.audioText;
+            delete converted.audioLang;
+            delete converted.audioRate;
+          }
           delete converted.acceptableAnswers;
           delete converted.autoPlay;
           delete converted.caseSensitive;
@@ -542,7 +545,7 @@ const contentManager = {
           return converted;
         });
         
-        data.questions = data.questions.filter(q => q.type !== 'listening');
+        // NIE usuwamy pytań listening - są obsługiwane w v2!
       }
     }
     
@@ -573,7 +576,7 @@ const contentManager = {
           errors.push(`Pytanie ${idx + 1}: brak pola "question"`);
         }
         
-        if (!q.type || !['multiple-choice', 'true-false', 'fill-in-blank', 'matching'].includes(q.type)) {
+        if (!q.type || !['multiple-choice', 'true-false', 'fill-in-blank', 'matching', 'listening'].includes(q.type)) {
           errors.push(`Pytanie ${idx + 1}: nieprawidłowy typ "${q.type}"`);
         }
         
@@ -601,6 +604,18 @@ const contentManager = {
         if (q.type === 'matching') {
           if (!Array.isArray(q.pairs) || q.pairs.length === 0) {
             errors.push(`Pytanie ${idx + 1}: brak "pairs"`);
+          }
+        }
+        
+        if (q.type === 'listening') {
+          if (!q.audioText || typeof q.audioText !== 'string') {
+            errors.push(`Pytanie ${idx + 1}: brak "audioText"`);
+          }
+          if (!q.audioLang || typeof q.audioLang !== 'string') {
+            errors.push(`Pytanie ${idx + 1}: brak "audioLang"`);
+          }
+          if (!q.correctAnswer || typeof q.correctAnswer !== 'string') {
+            errors.push(`Pytanie ${idx + 1}: brak "correctAnswer"`);
           }
         }
       });
@@ -721,12 +736,6 @@ const contentManager = {
     elements.aiSuccess.classList.add('hidden');
     elements.aiLoading.classList.add('hidden');
     
-    // Pobierz klucz API z localStorage jeśli istnieje (opcjonalnie)
-    const savedKey = sessionStorage.getItem('openai_api_key');
-    if (savedKey) {
-      elements.aiApiKey.value = savedKey;
-    }
-    
     // Pokaż modal
     elements.aiGeneratorModal.classList.remove('hidden');
   },
@@ -743,13 +752,15 @@ const contentManager = {
    */
   async handleAIGenerate(state, elements, uiManager) {
     // Pobierz dane z formularza
-    const apiKey = elements.aiApiKey.value.trim();
     const prompt = elements.aiPrompt.value.trim();
     const contentType = state.currentTab === 'quizzes' ? 'quiz' : 'workout';
     
+    // Pobierz API Key z config
+    const apiKey = window.APP_CONFIG?.OPENAI_API_KEY;
+    
     // Walidacja
-    if (!apiKey) {
-      this.showAIError('Podaj OpenAI API Key', elements);
+    if (!apiKey || apiKey === 'YOUR_OPENAI_API_KEY') {
+      this.showAIError('Brak klucza OpenAI API. Skonfiguruj OPENAI_API_KEY w config.js', elements);
       return;
     }
     
@@ -757,9 +768,6 @@ const contentManager = {
       this.showAIError('Opisz co chcesz wygenerować', elements);
       return;
     }
-    
-    // Zapisz klucz do sessionStorage (opcjonalnie)
-    sessionStorage.setItem('openai_api_key', apiKey);
     
     // Pokaż loading
     elements.aiError.classList.add('hidden');
@@ -811,9 +819,13 @@ const contentManager = {
    * Wywołanie OpenAI API
    */
   async callOpenAI(apiKey, userPrompt, contentType) {
-    const systemPrompt = contentType === 'quiz' 
-      ? this.getQuizSystemPrompt()
-      : this.getWorkoutSystemPrompt();
+    // Pobierz szablon promptu z AI_PROMPTS
+    const promptTemplate = contentType === 'quiz' 
+      ? window.AI_PROMPTS.quiz
+      : window.AI_PROMPTS.workout;
+    
+    // Zastąp {USER_PROMPT} rzeczywistym promptem użytkownika
+    const systemPrompt = promptTemplate.replace('{USER_PROMPT}', userPrompt);
     
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -824,8 +836,7 @@ const contentManager = {
       body: JSON.stringify({
         model: 'gpt-4o-mini',
         messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: userPrompt }
+          { role: 'user', content: systemPrompt }
         ],
         temperature: 0.7,
         max_tokens: 4000
@@ -849,81 +860,6 @@ const contentManager = {
     }
     
     return JSON.parse(jsonString);
-  },
-  
-  /**
-   * System prompt dla quizów
-   */
-  getQuizSystemPrompt() {
-    return `Jesteś ekspertem w tworzeniu quizów edukacyjnych. Wygeneruj quiz w formacie JSON zgodnym z tym schematem:
-
-{
-  "title": "Tytuł quizu",
-  "description": "Opis quizu",
-  "questions": [
-    {
-      "question": "Treść pytania",
-      "type": "multiple-choice",
-      "options": ["Opcja 1", "Opcja 2", "Opcja 3", "Opcja 4"],
-      "correctAnswer": 0
-    },
-    {
-      "question": "Treść pytania prawda/fałsz",
-      "type": "true-false",
-      "correctAnswer": true
-    },
-    {
-      "question": "Treść pytania do uzupełnienia",
-      "type": "fill-in-blank",
-      "correctAnswer": "poprawna odpowiedź"
-    }
-  ]
-}
-
-WAŻNE:
-- Używaj TYLKO typów: "multiple-choice", "true-false", "fill-in-blank"
-- correctAnswer w multiple-choice to index (0-3)
-- correctAnswer w true-false to boolean (true/false)
-- correctAnswer w fill-in-blank to string
-- Zwróć TYLKO czysty JSON, bez dodatkowych komentarzy
-- Wszystkie texty po polsku (chyba że użytkownik poprosi inaczej)`;
-  },
-  
-  /**
-   * System prompt dla treningów
-   */
-  getWorkoutSystemPrompt() {
-    return `Jesteś ekspertem w tworzeniu planów treningowych. Wygeneruj trening w formacie JSON zgodnym z tym schematem:
-
-{
-  "title": "Tytuł treningu",
-  "description": "Opis treningu",
-  "phases": [
-    {
-      "name": "Rozgrzewka",
-      "exercises": [
-        {
-          "name": "Nazwa ćwiczenia",
-          "type": "time",
-          "duration": 30,
-          "details": "Szczegóły wykonania"
-        },
-        {
-          "name": "Nazwa ćwiczenia",
-          "type": "reps",
-          "reps": 10,
-          "details": "Szczegóły wykonania"
-        }
-      ]
-    }
-  ]
-}
-
-WAŻNE:
-- Używaj TYLKO typów: "time" (z duration w sekundach) lub "reps" (z liczbą powtórzeń)
-- Każdy trening powinien mieć min. 2-3 fazy (np. Rozgrzewka, Trening główny, Rozciąganie)
-- Zwróć TYLKO czysty JSON, bez dodatkowych komentarzy
-- Wszystkie texty po polsku (chyba że użytkownik poprosi inaczej)`;
   },
   
   showAIError(message, elements) {
