@@ -2,6 +2,9 @@
  * Moduł do generowania dźwięków za pomocą Web Audio API
  */
 
+(function() {
+'use strict';
+
 let audioContext = null;
 let isMuted = false;
 
@@ -48,7 +51,7 @@ function playTone(frequency, duration, type = 'sine') {
  * Dźwięk dla poprawnej odpowiedzi
  * Przyjemny, rosnący ton
  */
-export function playCorrectSound() {
+function playCorrectSound() {
   if (isMuted) return;
   
   try {
@@ -80,7 +83,7 @@ export function playCorrectSound() {
  * Dźwięk dla błędnej odpowiedzi
  * Krótki, niski "buzz"
  */
-export function playIncorrectSound() {
+function playIncorrectSound() {
   if (isMuted) return;
   
   try {
@@ -109,7 +112,7 @@ export function playIncorrectSound() {
  * Dźwięk na koniec timera
  * Dwa krótkie sygnały "bip-bip"
  */
-export function playTimerEndSound() {
+function playTimerEndSound() {
   if (isMuted) return;
   
   try {
@@ -149,7 +152,7 @@ export function playTimerEndSound() {
 /**
  * Przełącza wyciszenie dźwięków
  */
-export function toggleMute() {
+function toggleMute() {
   isMuted = !isMuted;
   return isMuted;
 }
@@ -157,14 +160,14 @@ export function toggleMute() {
 /**
  * Sprawdza, czy dźwięki są wyciszone
  */
-export function isSoundMuted() {
+function isSoundMuted() {
   return isMuted;
 }
 
 /**
  * Ustawia stan wyciszenia
  */
-export function setMuted(muted) {
+function setMuted(muted) {
   isMuted = muted;
 }
 
@@ -178,7 +181,7 @@ export function setMuted(muted) {
  * @param {string} lang - Kod języka (np. 'en-US', 'es-ES', 'pl-PL')
  * @param {number} rate - Prędkość mowy (0.1 - 10, domyślnie 0.85 dla nauki)
  */
-export function speakText(text, lang = 'en-US', rate = 0.85) {
+function speakText(text, lang = 'en-US', rate = 0.85) {
   if (isMuted) return;
   
   if (!('speechSynthesis' in window)) {
@@ -210,7 +213,7 @@ export function speakText(text, lang = 'en-US', rate = 0.85) {
 /**
  * Zatrzymuje bieżące odtwarzanie TTS
  */
-export function stopSpeaking() {
+function stopSpeaking() {
   if ('speechSynthesis' in window) {
     speechSynthesis.cancel();
   }
@@ -219,7 +222,7 @@ export function stopSpeaking() {
 /**
  * Sprawdza, czy TTS jest dostępne w przeglądarce
  */
-export function isTTSAvailable() {
+function isTTSAvailable() {
   return 'speechSynthesis' in window;
 }
 
@@ -228,7 +231,7 @@ export function isTTSAvailable() {
  * @param {string} lang - Kod języka (np. 'en', 'es', 'pl')
  * @returns {Array} Tablica dostępnych głosów
  */
-export function getAvailableVoices(lang = null) {
+function getAvailableVoices(lang = null) {
   if (!isTTSAvailable()) return [];
   
   const voices = speechSynthesis.getVoices();
@@ -240,3 +243,21 @@ export function getAvailableVoices(lang = null) {
   return voices;
 }
 
+// ============================================
+// EXPORTS (Global scope for non-module usage)
+// ============================================
+
+window.playCorrectSound = playCorrectSound;
+window.playIncorrectSound = playIncorrectSound;
+window.playTimerEndSound = playTimerEndSound;
+window.toggleMute = toggleMute;
+window.isSoundMuted = isSoundMuted;
+window.setMuted = setMuted;
+window.speakText = speakText;
+window.stopSpeaking = stopSpeaking;
+window.isTTSAvailable = isTTSAvailable;
+window.getAvailableVoices = getAvailableVoices;
+
+console.log('✅ Audio module initialized');
+
+})(); // End of IIFE

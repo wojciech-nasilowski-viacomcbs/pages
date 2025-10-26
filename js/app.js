@@ -1,11 +1,10 @@
 /**
- * Główna logika aplikacji
+ * Główna logika aplikacji - v2.0 z Supabase
  * Zarządza nawigacją, ładowaniem danych i stanem aplikacji
  */
 
-import { toggleMute, isSoundMuted } from './audio.js';
-import { initQuizEngine, startQuiz, resetMistakes } from './quiz-engine.js';
-import { initWorkoutEngine, startWorkout } from './workout-engine.js';
+(function() {
+'use strict';
 
 // Stan aplikacji
 const state = {
@@ -13,7 +12,7 @@ const state = {
   currentTab: 'quizzes',
   quizzes: [],
   workouts: [],
-  manifest: null
+  currentUser: null
 };
 
 // Elementy DOM
@@ -57,17 +56,24 @@ const elements = {
  * Inicjalizacja aplikacji
  */
 async function init() {
-  console.log('🚀 Inicjalizacja aplikacji...');
+  console.log('🚀 Inicjalizacja aplikacji v2.0...');
   
-  // Inicjalizuj moduły
-  initQuizEngine(showScreen, state);
-  initWorkoutEngine(showScreen, state);
+  // Inicjalizuj moduły (bez importów - używamy globalnych funkcji)
+  if (typeof initQuizEngine === 'function') {
+    initQuizEngine(showScreen, state);
+  }
+  if (typeof initWorkoutEngine === 'function') {
+    initWorkoutEngine(showScreen, state);
+  }
   
   // Podłącz event listenery
   attachEventListeners();
   
-  // Wczytaj dane
-  await loadManifest();
+  // Sprawdź stan autentykacji
+  await checkAuthState();
+  
+  // Wczytaj dane z Supabase
+  await loadData();
   
   // Sprawdź zapisaną sesję
   checkSavedSession();
@@ -100,93 +106,68 @@ function attachEventListeners() {
   
   // Przyciski powrotu do menu
   elements.quizHome.addEventListener('click', () => {
-    resetMistakes(); // Resetuj błędy przy wyjściu z podsumowania
+    if (typeof resetMistakes === 'function') {
+      resetMistakes(); // Resetuj błędy przy wyjściu z podsumowania
+    }
     showScreen('main');
   });
   elements.workoutHome.addEventListener('click', () => showScreen('main'));
 }
 
 /**
- * Wczytuje manifest z listą plików
+ * Sprawdza stan autentykacji użytkownika
  */
-async function loadManifest() {
+async function checkAuthState() {
   try {
-    elements.loader.classList.remove('hidden');
-    elements.errorMessage.classList.add('hidden');
-    
-    const response = await fetch('data/manifest.json');
-    if (!response.ok) {
-      throw new Error('Nie udało się wczytać manifestu');
-    }
-    
-    state.manifest = await response.json();
-    console.log('✅ Manifest wczytany:', state.manifest);
-    
-    // Wczytaj metadane quizów i treningów
-    await loadQuizzesMetadata();
-    await loadWorkoutsMetadata();
-    
+    state.currentUser = await getCurrentUser();
+    console.log('👤 Stan autentykacji:', state.currentUser ? 'Zalogowany' : 'Gość');
   } catch (error) {
-    console.error('❌ Błąd wczytywania manifestu:', error);
-    showError('Nie udało się wczytać listy treści. Sprawdź połączenie i odśwież stronę.');
-  } finally {
-    elements.loader.classList.add('hidden');
+    console.error('Błąd sprawdzania autentykacji:', error);
+    state.currentUser = null;
   }
 }
 
 /**
- * Wczytuje metadane quizów (tytuł, opis)
+ * Wczytuje dane z Supabase (quizy i treningi)
  */
-async function loadQuizzesMetadata() {
-  const promises = state.manifest.quizzes.map(async (filename) => {
-    try {
-      const response = await fetch(`data/quizzes/${filename}`);
-      const data = await response.json();
-      return {
-        filename,
-        title: data.title,
-        description: data.description,
-        questionCount: data.questions?.length || 0
-      };
-    } catch (error) {
-      console.error(`Błąd wczytywania ${filename}:`, error);
-      return null;
-    }
-  });
-  
-  const results = await Promise.all(promises);
-  state.quizzes = results.filter(q => q !== null);
-  console.log('📝 Wczytano quizy:', state.quizzes);
-}
-
-/**
- * Wczytuje metadane treningów (tytuł, opis)
- */
-async function loadWorkoutsMetadata() {
-  const promises = state.manifest.workouts.map(async (filename) => {
-    try {
-      const response = await fetch(`data/workouts/${filename}`);
-      const data = await response.json();
-      
-      // Policz łączną liczbę ćwiczeń
-      const exerciseCount = data.phases?.reduce((sum, phase) => 
-        sum + (phase.exercises?.length || 0), 0) || 0;
-      
-      return {
-        filename,
-        title: data.title,
-        description: data.description,
-        exerciseCount
-      };
-    } catch (error) {
-      console.error(`Błąd wczytywania ${filename}:`, error);
-      return null;
-    }
-  });
-  
-  const results = await Promise.all(promises);
-  state.workouts = results.filter(w => w !== null);
-  console.log('💪 Wczytano treningi:', state.workouts);
+async function loadData() {
+  try {
+    elements.loader.classList.remove('hidden');
+    elements.errorMessage.classList.add('hidden');
+    
+    // Wczytaj quizy i treningi równolegle
+    const [quizzes, workouts] = await Promise.all([
+      dataService.fetchQuizzes(false), // false = pobierz sample + własne
+      dataService.fetchWorkouts(false)
+    ]);
+    
+    // Przekształć dane do formatu używanego przez UI
+    state.quizzes = quizzes.map(quiz => ({
+      id: quiz.id,
+      title: quiz.title,
+      description: quiz.description,
+      isSample: quiz.is_sample,
+      questionCount: 0 // Będzie wczytane przy starcie quizu
+    }));
+    
+    state.workouts = workouts.map(workout => ({
+      id: workout.id,
+      title: workout.title,
+      description: workout.description,
+      isSample: workout.is_sample,
+      exerciseCount: 0 // Będzie wczytane przy starcie treningu
+    }));
+    
+    console.log('✅ Dane wczytane z Supabase');
+    console.log('📝 Quizy:', state.quizzes.length);
+    console.log('💪 Treningi:', state.workouts.length);
+    
+  } catch (error) {
+    console.error('❌ Błąd wczytywania danych:', error);
+    showError('Nie udało się wczytać treści. Sprawdź połączenie i odśwież stronę.');
+  } finally {
+    elements.loader.classList.add('hidden');
+  }
 }
 
 /**
@@ -218,7 +199,7 @@ function renderCards() {
     elements.contentCards.innerHTML = `
       <div class="col-span-full text-center py-12 text-gray-400">
         <p class="text-xl mb-2">Brak dostępnych treści</p>
-        <p class="text-sm">Dodaj pliki JSON do folderu data/${state.currentTab}/</p>
+        <p class="text-sm">${state.currentUser ? 'Zaimportuj swoje treści lub przeglądaj przykłady' : 'Zaloguj się, aby dodać własne treści'}</p>
       </div>
     `;
     return;
@@ -226,31 +207,31 @@ function renderCards() {
   
   elements.contentCards.innerHTML = items.map(item => {
     const icon = state.currentTab === 'quizzes' ? '📝' : '💪';
-    const countLabel = state.currentTab === 'quizzes' 
-      ? `${item.questionCount} pytań` 
-      : `${item.exerciseCount} ćwiczeń`;
+    const badge = item.isSample ? '<span class="text-xs bg-blue-600 px-2 py-1 rounded">Przykład</span>' : '';
     
     return `
       <div class="bg-gray-800 p-6 rounded-xl hover:bg-gray-750 transition cursor-pointer group"
-           data-filename="${item.filename}">
-        <div class="text-4xl mb-3">${icon}</div>
+           data-id="${item.id}">
+        <div class="flex justify-between items-start mb-3">
+          <div class="text-4xl">${icon}</div>
+          ${badge}
+        </div>
         <h3 class="text-xl font-bold text-white mb-2 group-hover:text-blue-400 transition">
           ${item.title}
         </h3>
-        <p class="text-gray-400 text-sm mb-3">${item.description}</p>
-        <p class="text-xs text-gray-500">${countLabel}</p>
+        <p class="text-gray-400 text-sm">${item.description || 'Brak opisu'}</p>
       </div>
     `;
   }).join('');
   
   // Dodaj event listenery do kart
-  elements.contentCards.querySelectorAll('[data-filename]').forEach(card => {
+  elements.contentCards.querySelectorAll('[data-id]').forEach(card => {
     card.addEventListener('click', () => {
-      const filename = card.dataset.filename;
+      const id = card.dataset.id;
       if (state.currentTab === 'quizzes') {
-        loadAndStartQuiz(filename);
+        loadAndStartQuiz(id);
       } else {
-        loadAndStartWorkout(filename);
+        loadAndStartWorkout(id);
       }
     });
   });
@@ -259,7 +240,7 @@ function renderCards() {
 /**
  * Wczytuje i rozpoczyna quiz
  */
-async function loadAndStartQuiz(filename, skipSessionCheck = false) {
+async function loadAndStartQuiz(quizId, skipSessionCheck = false) {
   // Sprawdź czy jest zapisana sesja dla tego quizu (chyba że skipSessionCheck = true)
   if (!skipSessionCheck) {
     const savedSession = localStorage.getItem('currentSession');
@@ -267,7 +248,7 @@ async function loadAndStartQuiz(filename, skipSessionCheck = false) {
       const session = JSON.parse(savedSession);
       
       // Jeśli to ten sam quiz i sesja nie jest starsza niż 24h
-      if (session.type === 'quiz' && session.filename === filename) {
+      if (session.type === 'quiz' && session.id === quizId) {
         const sessionAge = Date.now() - session.timestamp;
         if (sessionAge < 24 * 60 * 60 * 1000) {
           // Pokaż dialog kontynuacji
@@ -280,11 +261,11 @@ async function loadAndStartQuiz(filename, skipSessionCheck = false) {
   
   try {
     showScreen('loading');
-    const response = await fetch(`data/quizzes/${filename}`);
-    if (!response.ok) throw new Error('Nie udało się wczytać quizu');
+    const quizData = await dataService.fetchQuizById(quizId);
     
-    const quizData = await response.json();
-    startQuiz(quizData, filename);
+    if (typeof startQuiz === 'function') {
+      startQuiz(quizData, quizId);
+    }
     showScreen('quiz');
   } catch (error) {
     console.error('Błąd wczytywania quizu:', error);
@@ -296,14 +277,14 @@ async function loadAndStartQuiz(filename, skipSessionCheck = false) {
 /**
  * Wczytuje i rozpoczyna trening
  */
-async function loadAndStartWorkout(filename) {
+async function loadAndStartWorkout(workoutId) {
   try {
     showScreen('loading');
-    const response = await fetch(`data/workouts/${filename}`);
-    if (!response.ok) throw new Error('Nie udało się wczytać treningu');
+    const workoutData = await dataService.fetchWorkoutById(workoutId);
     
-    const workoutData = await response.json();
-    startWorkout(workoutData, filename);
+    if (typeof startWorkout === 'function') {
+      startWorkout(workoutData, workoutId);
+    }
     showScreen('workout');
   } catch (error) {
     console.error('Błąd wczytywania treningu:', error);
@@ -315,7 +296,7 @@ async function loadAndStartWorkout(filename) {
 /**
  * Przełącza widoki aplikacji
  */
-export function showScreen(screenName) {
+function showScreen(screenName) {
   // Ukryj wszystkie ekrany
   elements.mainScreen.classList.add('hidden');
   elements.quizScreen.classList.add('hidden');
@@ -422,9 +403,9 @@ function handleContinueYes() {
   
   const session = state.savedSession;
   if (session.type === 'quiz') {
-    loadAndStartQuiz(session.filename, true); // skipSessionCheck = true, bo już jesteśmy w dialogu
+    loadAndStartQuiz(session.id, true); // skipSessionCheck = true, bo już jesteśmy w dialogu
   } else if (session.type === 'workout') {
-    loadAndStartWorkout(session.filename);
+    loadAndStartWorkout(session.id);
   }
 }
 
@@ -486,3 +467,4 @@ if (document.readyState === 'loading') {
   init();
 }
 
+})(); // End of IIFE

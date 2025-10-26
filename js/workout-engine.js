@@ -3,7 +3,8 @@
  * Obsługuje renderowanie i logikę treningów z timerem i Wake Lock API
  */
 
-import { playTimerEndSound } from './audio.js';
+(function() {
+'use strict';
 
 let showScreenFn = null;
 let appState = null;
@@ -51,7 +52,7 @@ const icons = {
 /**
  * Inicjalizacja silnika treningów
  */
-export function initWorkoutEngine(showScreen, state) {
+function initWorkoutEngine(showScreen, state) {
   showScreenFn = showScreen;
   appState = state;
   
@@ -67,7 +68,7 @@ export function initWorkoutEngine(showScreen, state) {
 /**
  * Rozpoczyna trening
  */
-export function startWorkout(workoutData, filename) {
+function startWorkout(workoutData, filename) {
   workoutState.data = workoutData;
   workoutState.filename = filename;
   workoutState.currentPhaseIndex = 0;
@@ -339,3 +340,15 @@ function handleVisibilityChange() {
   }
 }
 
+
+
+// ============================================
+// EXPORTS (Global scope for non-module usage)
+// ============================================
+
+window.initWorkoutEngine = initWorkoutEngine;
+window.startWorkout = startWorkout;
+
+console.log("✅ Workout engine initialized");
+
+})(); // End of IIFE

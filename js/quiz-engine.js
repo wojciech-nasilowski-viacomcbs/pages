@@ -3,7 +3,8 @@
  * Obsługuje renderowanie i logikę wszystkich typów pytań
  */
 
-import { playCorrectSound, playIncorrectSound, speakText, stopSpeaking, isTTSAvailable } from './audio.js';
+(function() {
+'use strict';
 
 let showScreenFn = null;
 let appState = null;
@@ -27,7 +28,7 @@ let elements = {};
 /**
  * Inicjalizacja silnika quizów
  */
-export function initQuizEngine(showScreen, state) {
+function initQuizEngine(showScreen, state) {
   showScreenFn = showScreen;
   appState = state;
   
@@ -70,7 +71,7 @@ export function initQuizEngine(showScreen, state) {
 /**
  * Resetuje listę błędów (wywołane przy wyjściu z quizu)
  */
-export function resetMistakes() {
+function resetMistakes() {
   quizState.mistakeQuestions = [];
   quizState.originalQuestions = null;
 }
@@ -78,7 +79,7 @@ export function resetMistakes() {
 /**
  * Rozpoczyna quiz (pokazuje opcje)
  */
-export function startQuiz(quizData, filename, mistakesOnly = false) {
+function startQuiz(quizData, filename, mistakesOnly = false) {
   quizState.data = quizData;
   quizState.filename = filename;
   quizState.currentQuestionIndex = 0;
@@ -1013,3 +1014,14 @@ function loadProgress() {
   }
 }
 
+// ============================================
+// EXPORTS (Global scope for non-module usage)
+// ============================================
+
+window.initQuizEngine = initQuizEngine;
+window.startQuiz = startQuiz;
+window.resetMistakes = resetMistakes;
+
+console.log('✅ Quiz engine initialized');
+
+})(); // End of IIFE
