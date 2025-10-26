@@ -237,6 +237,7 @@ function displayQuestion() {
       renderMultipleChoice(questionData);
       break;
     case 'fill-in-the-blank':
+    case 'fill-in-blank':  // v2 format
       renderFillInTheBlank(questionData);
       break;
     case 'true-false':
@@ -419,12 +420,16 @@ function renderMultipleChoice(questionData) {
   
   elements.answersContainer.innerHTML = `
     ${audioBtn}
-    ${questionData.options.map((option, index) => `
-      <button class="quiz-option w-full text-left p-4 rounded-lg bg-gray-700 hover:bg-gray-600 transition border-2 border-transparent"
-              data-index="${index}">
-        <span class="font-medium">${String.fromCharCode(65 + index)}.</span> ${option.text}
-      </button>
-    `).join('')}
+    ${questionData.options.map((option, index) => {
+      // Obsługa obu formatów: string (v2) lub obiekt {text, isCorrect} (v1)
+      const optionText = typeof option === 'string' ? option : option.text;
+      return `
+        <button class="quiz-option w-full text-left p-4 rounded-lg bg-gray-700 hover:bg-gray-600 transition border-2 border-transparent"
+                data-index="${index}">
+          <span class="font-medium">${String.fromCharCode(65 + index)}.</span> ${optionText}
+        </button>
+      `;
+    }).join('')}
   `;
   
   attachAudioListeners();
@@ -443,7 +448,10 @@ function handleMultipleChoiceAnswer(questionData, selectedIndex) {
   quizState.isAnswered = true;
   
   const selectedOption = questionData.options[selectedIndex];
-  const isCorrect = selectedOption.isCorrect;
+  // Obsługa obu formatów: v2 (correctAnswer: index) lub v1 (isCorrect w opcji)
+  const isCorrect = questionData.correctAnswer !== undefined 
+    ? selectedIndex === questionData.correctAnswer 
+    : selectedOption.isCorrect;
   
   // Aktualizuj wynik
   if (isCorrect) {
@@ -457,11 +465,14 @@ function handleMultipleChoiceAnswer(questionData, selectedIndex) {
   
   // Pokoloruj odpowiedzi
   const buttons = elements.answersContainer.querySelectorAll('.quiz-option');
+  const correctIndex = questionData.correctAnswer !== undefined 
+    ? questionData.correctAnswer 
+    : questionData.options.findIndex(opt => opt.isCorrect);
+  
   buttons.forEach((btn, index) => {
     btn.disabled = true;
-    const option = questionData.options[index];
     
-    if (option.isCorrect) {
+    if (index === correctIndex) {
       btn.classList.add('bg-green-600', 'border-green-400');
       btn.classList.remove('bg-gray-700', 'hover:bg-gray-600');
     } else if (index === selectedIndex) {
@@ -473,7 +484,10 @@ function handleMultipleChoiceAnswer(questionData, selectedIndex) {
   });
   
   // Pokaż feedback
-  showFeedback(isCorrect, selectedOption.explanation);
+  const explanation = typeof selectedOption === 'string' 
+    ? questionData.explanation 
+    : selectedOption.explanation;
+  showFeedback(isCorrect, explanation);
 }
 
 /**
@@ -599,7 +613,11 @@ function handleTrueFalseAnswer(questionData, userAnswer) {
   if (quizState.isAnswered) return;
   quizState.isAnswered = true;
   
-  const isCorrect = userAnswer === questionData.isCorrect;
+  // Obsługa obu formatów: v2 (correctAnswer) lub v1 (isCorrect)
+  const correctAnswer = questionData.correctAnswer !== undefined 
+    ? questionData.correctAnswer 
+    : questionData.isCorrect;
+  const isCorrect = userAnswer === correctAnswer;
   
   if (isCorrect) {
     quizState.score++;

@@ -1,0 +1,26 @@
+# Test files
+test-*.json
+
+# Old data files (migrated to Supabase)
+data/quizzes/*.json
+data/workouts/*.json
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+npm-debug.log*
+
+# Environment variables
+.env
+.env.local
+
