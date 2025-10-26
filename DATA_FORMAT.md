@@ -35,6 +35,33 @@ Wszystkie pliki z quizami znajdują się w folderze: `/data/quizzes/`
 
 ---
 
+## Opcje Quizu
+
+Przed rozpoczęciem quizu użytkownik może wybrać następujące opcje:
+
+### Losowa kolejność pytań
+- Checkbox: "Losowa kolejność pytań"
+- Funkcja: Jeśli zaznaczone, pytania w quizie będą wyświetlane w losowej kolejności
+- Preferencja użytkownika jest zapisywana w `localStorage` i przywracana przy kolejnych quizach
+
+### Pomiń pytania słuchowe
+- Checkbox: "Pomiń pytania słuchowe"
+- Funkcja: Jeśli zaznaczone, wszystkie pytania typu `"listening"` zostaną pominięte w quizie
+- Przydatne gdy użytkownik nie ma możliwości słuchania audio (np. w miejscu publicznym)
+- Preferencja użytkownika jest zapisywana w `localStorage` i przywracana przy kolejnych quizach
+
+### Zapisywanie postępu
+- System automatycznie zapisuje postęp quizu w `localStorage`
+- Przy ponownym otwarciu tego samego quizu użytkownik może kontynuować od miejsca, w którym zakończył
+- Postęp zapisuje: numer aktualnego pytania, wynik, udzielone odpowiedzi, kolejność pytań (jeśli była losowana)
+
+### Powtórzenie błędów
+- Po zakończeniu quizu, jeśli użytkownik popełnił błędy, dostępny jest przycisk "Powtórz tylko błędy"
+- Funkcja umożliwia przećwiczenie tylko tych pytań, na które odpowiedział błędnie
+- Lista błędnych pytań jest zachowywana podczas sesji
+
+---
+
 ## Typy Pytań
 
 ### 1. Multiple Choice (Wybór wielokrotny)
@@ -89,7 +116,11 @@ Użytkownik wpisuje brakujące słowo lub frazę.
 - `correctAnswer`: poprawna odpowiedź (string)
 - `explanation`: wyjaśnienie poprawnej odpowiedzi
 
-**Uwaga:** Odpowiedź użytkownika jest sprawdzana bez względu na wielkość liter i polskie znaki diakrytyczne (ą→a, ó→o, etc.).
+**Uwaga:** 
+- Odpowiedź użytkownika jest sprawdzana bez względu na wielkość liter i znaki diakrytyczne.
+- Normalizacja usuwa: akcenty (ą→a, ó→o, ñ→n, é→e, etc.) i konwertuje na małe litery.
+- Biała przestrzeń na początku i końcu jest usuwana (`trim()`).
+- **Ważne:** W przeciwieństwie do pytań `listening`, znaki interpunkcyjne NIE są usuwane w `fill-in-the-blank`.
 
 ---
 
@@ -137,7 +168,14 @@ Użytkownik dopasowuje elementy z lewej kolumny do prawej.
   - `item`: element z lewej kolumny
   - `match`: odpowiadający element z prawej kolumny
 
-**Interfejs:** Lewa kolumna pokazuje `item`, prawa kolumna pokazuje `match` w losowej kolejności.
+**Interfejs:** 
+- Lewa kolumna pokazuje `item`, prawa kolumna pokazuje `match` w losowej kolejności.
+- Użytkownik klika element z lewej, a następnie odpowiadający element z prawej
+- Dopasowane pary są oznaczone kolorem fioletowym
+- Kliknięcie na dopasowaną parę cofa dopasowanie (umożliwia poprawkę)
+- Przycisk "Sprawdź odpowiedzi" jest aktywny tylko gdy wszystkie pary są dopasowane
+- Po sprawdzeniu: poprawne pary są zielone, błędne są czerwone
+- Jeśli nie wszystkie pary są poprawne, wyświetlana jest lista prawidłowych dopasowań
 
 ---
 
@@ -172,8 +210,12 @@ Użytkownik słucha tekstu odczytanego przez syntezator mowy (TTS) i wpisuje, co
 
 **Uwaga:** 
 - Odpowiedź użytkownika jest sprawdzana bez wielkości liter, akcentów i znaków interpunkcyjnych.
+  - Normalizacja usuwa: akcenty/znaki diakrytyczne (ą→a, ó→o, ñ→n, é→e), wielkość liter, znaki interpunkcyjne
+  - Przykład: "¿Cómo estás?" jest równoważne z "como estas" lub "Como estas"
 - Użytkownik może wielokrotnie odtworzyć nagranie przyciskiem "🔊 Odtwórz" lub "🐌 Wolniej" (70% prędkości).
+- Po udzieleniu odpowiedzi audio zostaje automatycznie zatrzymane.
 - TTS wykorzystuje Web Speech API dostępne w przeglądarkach (Chrome, Edge, Safari).
+- Funkcja `autoPlay: false` pozwala wyłączyć automatyczne odtwarzanie przy pierwszym wyświetleniu pytania.
 
 ---
 
@@ -296,6 +338,30 @@ Każde ćwiczenie ma jeden z dwóch typów: **na czas** lub **na powtórzenia**.
 - `mediaUrl`: opcjonalny link do obrazka/GIF-a (string, na razie pusty `""`)
 
 **Uwaga:** Pole `duration` NIE występuje w ćwiczeniach typu `"reps"`.
+
+---
+
+## Funkcje Treningów
+
+### Wake Lock API
+- System automatycznie aktywuje Wake Lock API podczas treningu, aby zapobiec wygaszaniu ekranu
+- Funkcja działa w przeglądarkach wspierających Wake Lock API (Chrome, Edge)
+- Wake Lock jest automatycznie zwalniany po zakończeniu treningu
+
+### Zapisywanie postępu
+- System automatycznie zapisuje postęp treningu w `localStorage`
+- Przy ponownym otwarciu tego samego treningu użytkownik może kontynuować od miejsca, w którym zakończył
+- Postęp zapisuje: numer aktualnej fazy, numer aktualnego ćwiczenia
+
+### Timer dla ćwiczeń czasowych
+- Dla ćwiczeń typu `"time"` automatycznie uruchamia się timer odliczający
+- W ostatnich 5 sekundach timer pulsuje na czerwono z animacją
+- Po zakończeniu timera odtwarzany jest dźwięk powiadomienia (dwa krótkie "bip-bip")
+- Wibracja urządzenia (jeśli dostępna) sygnalizuje koniec timera
+
+### Pomijanie ćwiczeń
+- Użytkownik może pominąć aktualne ćwiczenie przyciskiem "Pomiń ćwiczenie"
+- Funkcja przydatna gdy użytkownik nie może wykonać konkretnego ćwiczenia
 
 ---
 
@@ -445,4 +511,69 @@ Upewnij się, że:
 - Każde ćwiczenie ma szczegółowy opis
 - Format JSON jest poprawny
 ```
+
+---
+
+## Obsługiwane Języki TTS
+
+System TTS (Text-to-Speech) wykorzystuje Web Speech API dostępne w przeglądarce. Poniżej lista najczęściej używanych kodów języków:
+
+### Języki europejskie
+- `pl-PL` - Polski
+- `en-US` - Angielski (USA)
+- `en-GB` - Angielski (Wielka Brytania)
+- `es-ES` - Hiszpański (Hiszpania)
+- `es-MX` - Hiszpański (Meksyk)
+- `de-DE` - Niemiecki
+- `fr-FR` - Francuski
+- `it-IT` - Włoski
+- `pt-PT` - Portugalski (Portugalia)
+- `pt-BR` - Portugalski (Brazylia)
+
+### Inne języki
+- `ja-JP` - Japoński
+- `zh-CN` - Chiński (uproszczony)
+- `ko-KR` - Koreański
+- `ru-RU` - Rosyjski
+- `ar-SA` - Arabski
+
+**Uwaga:** Dostępność głosów zależy od przeglądarki i systemu operacyjnego użytkownika. Najlepsze wsparcie oferują Chrome i Edge.
+
+---
+
+## Najlepsze Praktyki
+
+### Dla Quizów
+1. **Wyjaśnienia** - Każde pytanie powinno mieć wyjaśnienie, najlepiej z dodatkowym kontekstem
+2. **Zróżnicowanie** - Używaj różnych typów pytań dla lepszego doświadczenia uczenia
+3. **Audio** - Dla quizów językowych dodawaj opcjonalne audio do pytań multiple-choice i fill-in-the-blank
+4. **Pytania słuchowe** - Używaj `acceptableAnswers` dla różnych poprawnych wariantów odpowiedzi
+5. **Długość** - Optymalnie 15-30 pytań na quiz (użytkownik może przerwać i wrócić później)
+
+### Dla Treningów  
+1. **Struktura** - Zawsze rozpoczynaj rozgrzewką, kończ rozciąganiem
+2. **Opis techniki** - Szczegółowe opisy wykonania ćwiczeń są kluczowe dla bezpieczeństwa
+3. **Odpoczynek** - Pamiętaj o ćwiczeniach odpoczynkowych między obwodami
+4. **Czas ćwiczeń** - Dla początkujących 30-60s, dla zaawansowanych do 90s
+5. **Nazewnictwo faz** - Jasne nazwy faz (np. "Rozgrzewka", "Obwód 1/3", "Rozciąganie")
+
+---
+
+## Historia Zmian w Formacie
+
+### Aktualna wersja (v1)
+- ✅ Wszystkie 5 typów pytań w quizach
+- ✅ Pytania słuchowe (listening) z TTS
+- ✅ Opcjonalne audio dla wszystkich typów pytań
+- ✅ Ćwiczenia na czas i powtórzenia
+- ✅ Wake Lock API dla treningów
+- ✅ Zapisywanie postępu quizów i treningów
+- ✅ Losowanie pytań w quizach
+- ✅ Pomijanie pytań słuchowych
+- ✅ Powtarzanie błędnych pytań
+
+### Planowane funkcje (v2)
+- 🔄 Wsparcie dla obrazków i GIF-ów w ćwiczeniach (`mediaUrl`)
+- 🔄 Więcej typów pytań quizowych
+- 🔄 Zaawansowane statystyki i śledzenie postępu
 
