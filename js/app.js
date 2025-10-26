@@ -216,7 +216,10 @@ function attachEventListeners() {
   elements.importCancel.addEventListener('click', closeImportModal);
   elements.importTabFile.addEventListener('click', () => switchImportTab('file'));
   elements.importTabPaste.addEventListener('click', () => switchImportTab('paste'));
-  elements.fileSelectBtn.addEventListener('click', () => elements.fileInput.click());
+  elements.fileSelectBtn.addEventListener('click', (e) => {
+    e.stopPropagation(); // Zapobiega bubblowaniu do dropZone
+    elements.fileInput.click();
+  });
   elements.fileInput.addEventListener('change', handleFileSelect);
   elements.dropZone.addEventListener('click', () => elements.fileInput.click());
   elements.dropZone.addEventListener('dragover', handleDragOver);
@@ -387,7 +390,7 @@ function renderCards() {
     ` : '';
     
     return `
-      <div class="bg-gray-800 p-6 rounded-xl hover:bg-gray-750 transition cursor-pointer group relative"
+      <div class="content-card bg-gray-800 p-6 rounded-xl hover:bg-gray-750 transition cursor-pointer group relative"
            data-id="${item.id}">
         ${deleteButton}
         <div class="flex justify-between items-start mb-3">
@@ -402,26 +405,33 @@ function renderCards() {
     `;
   }).join('');
   
-  // Dodaj event listenery do kart
-  elements.contentCards.querySelectorAll('[data-id]').forEach(card => {
-    card.addEventListener('click', () => {
+  // Dodaj event listenery do przycisków usuń NAJPIERW (przed kartami)
+  elements.contentCards.querySelectorAll('.delete-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation(); // Zatrzymaj natychmiast wszystkie handlery
+      const id = btn.dataset.id;
+      const title = btn.dataset.title;
+      confirmDelete(id, title);
+      return false;
+    });
+  });
+  
+  // Dodaj event listenery do kart (sprawdź czy klik nie był na przycisku delete)
+  elements.contentCards.querySelectorAll('.content-card').forEach(card => {
+    card.addEventListener('click', (e) => {
+      // Jeśli kliknięto w przycisk delete lub jego dziecko, ignoruj
+      if (e.target.closest('.delete-btn')) {
+        return;
+      }
+      
       const id = card.dataset.id;
       if (state.currentTab === 'quizzes') {
         loadAndStartQuiz(id);
       } else {
         loadAndStartWorkout(id);
       }
-    });
-  });
-  
-  // Dodaj event listenery do przycisków usuń
-  elements.contentCards.querySelectorAll('.delete-btn').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      const id = btn.dataset.id;
-      const title = btn.dataset.title;
-      confirmDelete(id, title);
     });
   });
 }
@@ -1062,9 +1072,8 @@ function validateWorkoutJSON(data) {
             errors.push(`Faza ${idx + 1}, Ćwiczenie ${exIdx + 1}: nieprawidłowy typ "${ex.type}"`);
           }
           
-          if (ex.type === 'reps' && (!ex.reps || typeof ex.reps !== 'number')) {
-            errors.push(`Faza ${idx + 1}, Ćwiczenie ${exIdx + 1}: brak "reps"`);
-          }
+          // Dla typu "reps": pole reps jest opcjonalne (może być w details)
+          // Nie walidujemy - workout engine obsługuje oba przypadki
           
           if (ex.type === 'time' && (!ex.duration || typeof ex.duration !== 'number')) {
             errors.push(`Faza ${idx + 1}, Ćwiczenie ${exIdx + 1}: brak "duration"`);
