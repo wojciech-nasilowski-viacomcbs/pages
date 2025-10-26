@@ -45,7 +45,7 @@ Przed rozpoczęciem quizu użytkownik może wybrać następujące opcje:
 - Preferencja użytkownika jest zapisywana w `localStorage` i przywracana przy kolejnych quizach
 
 ### Pomiń pytania słuchowe
-- Checkbox: "Pomiń pytania słuchowe"  
+- Checkbox: "Pomiń pytania słuchowe"
 - Funkcja: Jeśli zaznaczone, wszystkie pytania typu `"listening"` zostaną pominięte w quizie
 - Przydatne gdy użytkownik nie ma możliwości słuchania audio (np. w miejscu publicznym)
 - Preferencja użytkownika jest zapisywana w `localStorage` i przywracana przy kolejnych quizach
