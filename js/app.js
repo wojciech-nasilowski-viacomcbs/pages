@@ -689,12 +689,12 @@ function setupAuthListener() {
     
     if (event === 'SIGNED_IN' || event === 'USER_UPDATED') {
       state.currentUser = session?.user || null;
-      updateAuthUI();
-      await loadData(); // Przeładuj dane po zalogowaniu
+      await loadData(); // NAJPIERW załaduj dane
+      updateAuthUI(); // POTEM zaktualizuj UI
     } else if (event === 'SIGNED_OUT') {
       state.currentUser = null;
-      updateAuthUI();
-      await loadData(); // Przeładuj dane (tylko sample content)
+      await loadData(); // NAJPIERW wyczyść dane
+      updateAuthUI(); // POTEM zaktualizuj UI
     }
   });
 }

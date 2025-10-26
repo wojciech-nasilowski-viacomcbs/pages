@@ -1,0 +1,11 @@
+{
+  "name": "quiz-workout-app",
+  "version": "2.0.0",
+  "description": "Quiz & Workout App with Supabase backend",
+  "scripts": {
+    "build": "node scripts/generate-config.js"
+  },
+  "author": "",
+  "license": "MIT"
+}
+

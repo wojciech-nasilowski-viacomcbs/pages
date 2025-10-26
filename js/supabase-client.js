@@ -5,10 +5,15 @@
 (function() {
 'use strict';
 
-// Supabase configuration
-// Replace these with your actual values
-const SUPABASE_URL = 'https://gygijehqwtnmnoopwqyg.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd5Z2lqZWhxd3RubW5vb3B3cXlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE0MzkzODIsImV4cCI6MjA3NzAxNTM4Mn0.ocOoAYTRPcMF5dP243zPM42rWkLqnHVbgsBtp4jY50g';
+// Supabase configuration from config.js
+const SUPABASE_URL = window.APP_CONFIG?.SUPABASE_URL;
+const SUPABASE_ANON_KEY = window.APP_CONFIG?.SUPABASE_ANON_KEY;
+
+// Validate configuration
+if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+    console.error('❌ Missing Supabase configuration! Make sure js/config.js exists and contains valid values.');
+    throw new Error('Supabase configuration missing. Copy js/config.example.js to js/config.js and fill in your values.');
+}
 
 // Initialize Supabase client
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
