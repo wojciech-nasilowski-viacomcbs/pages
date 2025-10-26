@@ -777,15 +777,7 @@ const contentManager = {
     const prompt = elements.aiPrompt.value.trim();
     const contentType = state.currentTab === 'quizzes' ? 'quiz' : 'workout';
     
-    // Pobierz API Key z config
-    const apiKey = window.APP_CONFIG?.OPENROUTER_API_KEY;
-    
     // Walidacja
-    if (!apiKey || apiKey === 'YOUR_OPENROUTER_API_KEY') {
-      this.showAIError('Brak klucza OpenRouter API. Skonfiguruj OPENROUTER_API_KEY w config.js', elements);
-      return;
-    }
-    
     if (!prompt) {
       this.showAIError('Opisz co chcesz wygenerować', elements);
       return;
@@ -798,8 +790,8 @@ const contentManager = {
     elements.aiGenerate.disabled = true;
     
     try {
-      // Wywołaj OpenAI API
-      const generatedData = await this.callOpenAI(apiKey, prompt, contentType);
+      // Wywołaj AI API (przez Vercel Function lub bezpośrednio)
+      const generatedData = await this.callAIAPI(prompt, contentType);
       
       // Waliduj wygenerowane dane
       const errors = contentType === 'quiz' 
@@ -838,9 +830,9 @@ const contentManager = {
   },
   
   /**
-   * Wywołanie OpenAI API
+   * Wywołaj AI API (Vercel Function lub bezpośrednio OpenRouter)
    */
-  async callOpenAI(apiKey, userPrompt, contentType) {
+  async callAIAPI(userPrompt, contentType) {
     // Pobierz szablon promptu z AI_PROMPTS
     const promptTemplate = contentType === 'quiz' 
       ? window.AI_PROMPTS.quiz
@@ -849,31 +841,69 @@ const contentManager = {
     // Zastąp {USER_PROMPT} rzeczywistym promptem użytkownika
     const systemPrompt = promptTemplate.replace('{USER_PROMPT}', userPrompt);
     
-    const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${apiKey}`,
-        'HTTP-Referer': window.location.origin,
-        'X-Title': 'Quizy & Treningi - AI Generator'
-      },
-      body: JSON.stringify({
-        model: 'openai/gpt-4o-mini', // OpenRouter format: provider/model
-        messages: [
-          { role: 'user', content: systemPrompt }
-        ],
-        temperature: 0.7,
-        max_tokens: 4000
-      })
-    });
+    // Sprawdź czy jesteśmy na produkcji (Vercel) czy lokalnie
+    const isProduction = window.location.hostname !== 'localhost' && 
+                        window.location.hostname !== '127.0.0.1' &&
+                        !window.location.hostname.includes('192.168');
     
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error?.message || 'Błąd API OpenRouter');
+    let content;
+    
+    if (isProduction) {
+      // PRODUKCJA: Użyj Vercel Serverless Function
+      const response = await fetch('/api/ai-generate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          systemPrompt,
+          userPrompt,
+          contentType
+        })
+      });
+      
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Błąd podczas generowania AI');
+      }
+      
+      const data = await response.json();
+      content = data.content;
+      
+    } else {
+      // LOKALNIE: Użyj bezpośrednio OpenRouter API
+      const apiKey = window.APP_CONFIG?.OPENROUTER_API_KEY;
+      
+      if (!apiKey || apiKey === 'YOUR_OPENROUTER_API_KEY') {
+        throw new Error('Brak klucza OpenRouter API. Skonfiguruj OPENROUTER_API_KEY w config.js');
+      }
+      
+      const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${apiKey}`,
+          'HTTP-Referer': window.location.origin,
+          'X-Title': 'Quizy & Treningi - AI Generator'
+        },
+        body: JSON.stringify({
+          model: 'openai/gpt-4o-mini',
+          messages: [
+            { role: 'user', content: systemPrompt }
+          ],
+          temperature: 0.7,
+          max_tokens: 4000
+        })
+      });
+      
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error?.message || 'Błąd API OpenRouter');
+      }
+      
+      const data = await response.json();
+      content = data.choices[0].message.content;
     }
-    
-    const data = await response.json();
-    const content = data.choices[0].message.content;
     
     // Parsuj JSON z odpowiedzi (usuń markdown jeśli jest)
     let jsonString = content.trim();
