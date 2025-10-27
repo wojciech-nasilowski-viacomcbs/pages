@@ -45,7 +45,11 @@ export default async function handler(req, res) {
         'X-Title': 'Quiz & Workout Generator'
       },
       body: JSON.stringify({
-        model: 'google/gemini-pro',
+        // Available OpenRouter models (2025):
+        // - google/gemini-1.5-pro: Stable, multimodal, large context (recommended)
+        // - google/gemini-2.5-flash: Latest, fast, cost-effective
+        // - google/gemini-2.5-pro: Latest, best quality for complex reasoning
+        model: 'google/gemini-1.5-pro',
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userPrompt }

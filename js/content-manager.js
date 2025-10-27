@@ -887,7 +887,11 @@ const contentManager = {
           'X-Title': 'Quizy & Treningi - AI Generator'
         },
         body: JSON.stringify({
-          model: 'openai/gpt-4o-mini',
+          // Available OpenRouter models (2025):
+          // - google/gemini-1.5-pro: Stable, multimodal, large context (recommended)
+          // - google/gemini-2.5-flash: Latest, fast, cost-effective
+          // - google/gemini-2.5-pro: Latest, best quality for complex reasoning
+          model: 'google/gemini-1.5-pro',
           messages: [
             { role: 'user', content: systemPrompt }
           ],
