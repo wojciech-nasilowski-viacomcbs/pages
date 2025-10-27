@@ -45,7 +45,7 @@ export default async function handler(req, res) {
         'X-Title': 'Quiz & Workout Generator'
       },
       body: JSON.stringify({
-        model: 'openai/gpt-4o-mini',
+        model: 'google/gemini-pro',
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userPrompt }
