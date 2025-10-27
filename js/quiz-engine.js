@@ -317,7 +317,10 @@ function renderListening(questionData) {
              id="listening-input"
              class="w-full p-4 rounded-lg bg-gray-700 text-white border-2 border-gray-600 focus:border-blue-500 focus:outline-none text-lg"
              placeholder="Wpisz, co usłyszałeś/aś..."
-             autocomplete="off">
+             autocomplete="off"
+             autocorrect="off"
+             autocapitalize="off"
+             spellcheck="false">
       <button id="listening-submit" 
               class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition">
         Sprawdź odpowiedź
@@ -503,7 +506,10 @@ function renderFillInTheBlank(questionData) {
              id="fill-blank-input"
              class="w-full p-4 rounded-lg bg-gray-700 text-white border-2 border-gray-600 focus:border-blue-500 focus:outline-none text-lg"
              placeholder="Wpisz odpowiedź..."
-             autocomplete="off">
+             autocomplete="off"
+             autocorrect="off"
+             autocapitalize="off"
+             spellcheck="false">
       <button id="fill-blank-submit" 
               class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition">
         Sprawdź odpowiedź
@@ -634,7 +640,7 @@ function handleTrueFalseAnswer(questionData, userAnswer) {
     btn.disabled = true;
     const btnAnswer = btn.dataset.answer === 'true';
     
-    if (btnAnswer === questionData.isCorrect) {
+    if (btnAnswer === correctAnswer) {
       btn.classList.add('bg-green-600', 'border-green-400');
       btn.classList.remove('bg-gray-700', 'hover:bg-gray-600');
     } else if (btnAnswer === userAnswer) {
