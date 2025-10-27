@@ -19,7 +19,8 @@ const quizState = {
   isAnswered: false,
   questionOrder: null, // Przechowuje indeksy pytań jeśli były losowane
   mistakeQuestions: [], // Pytania z błędnymi odpowiedziami (w bieżącej sesji)
-  originalQuestions: null // Oryginalne pytania przed filtrowaniem błędów
+  originalQuestions: null, // Oryginalne pytania przed filtrowaniem błędów
+  isMistakesOnlyMode: false // Flaga określająca czy jesteśmy w trybie poprawy błędów
 };
 
 // Elementy DOM - będą pobrane przy inicjalizacji
@@ -74,6 +75,7 @@ function initQuizEngine(showScreen, state) {
 function resetMistakes() {
   quizState.mistakeQuestions = [];
   quizState.originalQuestions = null;
+  quizState.isMistakesOnlyMode = false;
 }
 
 /**
@@ -86,6 +88,7 @@ function startQuiz(quizData, filename, mistakesOnly = false) {
   quizState.score = 0;
   quizState.answers = [];
   quizState.isAnswered = false;
+  quizState.isMistakesOnlyMode = mistakesOnly;
   
   // Jeśli to nie jest tryb błędów, zapisz oryginalne pytania i resetuj błędy
   if (!mistakesOnly) {
@@ -153,8 +156,8 @@ function handleStartQuiz() {
   localStorage.setItem('skipListeningQuestions', shouldSkipListening);
   
   // Filtruj pytania słuchowe jeśli użytkownik zaznaczył tę opcję
-  // WAŻNE: Filtrowanie musi być wykonane PRZED losowaniem
-  if (shouldSkipListening) {
+  // WAŻNE: NIE filtruj w trybie poprawy błędów - użytkownik musi powtórzyć wszystkie błędne pytania
+  if (shouldSkipListening && !quizState.isMistakesOnlyMode) {
     filterListeningQuestions();
   }
   
@@ -946,6 +949,7 @@ function handleRetry() {
       // Reset błędów - nowy quiz od początku
       quizState.mistakeQuestions = [];
       quizState.originalQuestions = null;
+      quizState.isMistakesOnlyMode = false;
       
       startQuiz(quizData, filename);
       showScreenFn('quiz');
