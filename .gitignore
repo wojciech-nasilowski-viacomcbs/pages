@@ -27,3 +27,12 @@ npm-debug.log*
 # Configuration files with secrets
 js/config.js
 
+# Dependencies
+node_modules/
+package-lock.json
+
+# Test reports and coverage
+coverage/
+test-report.html
+*.lcov
+
