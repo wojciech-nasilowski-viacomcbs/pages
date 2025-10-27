@@ -49,7 +49,7 @@ export default async function handler(req, res) {
         // - google/gemini-1.5-pro: Stable, multimodal, large context (recommended)
         // - google/gemini-2.5-flash: Latest, fast, cost-effective
         // - google/gemini-2.5-pro: Latest, best quality for complex reasoning
-        model: 'google/gemini-1.5-pro',
+        model: 'anthropic/claude-sonnet-4.5',
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userPrompt }
