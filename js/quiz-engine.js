@@ -634,7 +634,7 @@ function handleTrueFalseAnswer(questionData, userAnswer) {
     btn.disabled = true;
     const btnAnswer = btn.dataset.answer === 'true';
     
-    if (btnAnswer === questionData.isCorrect) {
+    if (btnAnswer === correctAnswer) {
       btn.classList.add('bg-green-600', 'border-green-400');
       btn.classList.remove('bg-gray-700', 'hover:bg-gray-600');
     } else if (btnAnswer === userAnswer) {
