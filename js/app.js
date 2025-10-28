@@ -286,7 +286,7 @@ function attachEventListeners() {
     sessionManager.handleContinueYes(elements, contentManager, state, uiManager);
   });
   elements.continueNo.addEventListener('click', () => {
-    sessionManager.handleContinueNo(elements, state);
+    sessionManager.handleContinueNo(elements, state, contentManager, uiManager);
   });
   
   // Dialog wyjścia

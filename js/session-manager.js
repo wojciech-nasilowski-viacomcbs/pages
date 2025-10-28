@@ -73,10 +73,19 @@ const sessionManager = {
   /**
    * Obsługa: Nie, zacznij od nowa
    */
-  handleContinueNo(elements, state) {
+  handleContinueNo(elements, state, contentManager, uiManager) {
     elements.continueDialog.classList.add('hidden');
     localStorage.removeItem('currentSession');
+    
+    const session = this.savedSession;
     this.savedSession = null;
+    
+    // Rozpocznij quiz/trening od nowa
+    if (session && session.type === 'quiz') {
+      contentManager.loadAndStartQuiz(session.id, state, elements, null, uiManager, true); // skipSessionCheck = true
+    } else if (session && session.type === 'workout') {
+      contentManager.loadAndStartWorkout(session.id, state, elements, uiManager, this);
+    }
   },
   
   /**
