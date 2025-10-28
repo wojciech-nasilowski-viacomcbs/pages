@@ -310,9 +310,55 @@ INSERT INTO exercises (phase_id, "order", data) VALUES
 }'::jsonb);
 
 -- ============================================
+-- SAMPLE LISTENING SET: "Spanish A1: ESTAR and IR Verbs"
+-- ============================================
+
+-- Insert sample listening set (user_id = NULL, is_sample = TRUE)
+INSERT INTO listening_sets (id, user_id, title, description, lang1_code, lang2_code, content, is_sample, created_at)
+VALUES (
+    '00000000-0000-0000-0000-000000000006',
+    NULL,
+    'Hiszpański A1: Czasowniki ESTAR i IR',
+    'Podstawowe czasowniki w czasie teraźniejszym z przykładami użycia.',
+    'pl-PL',
+    'es-ES',
+    '[
+        {"pl": "--- CZASOWNIK: ESTAR (Być - stany, położenie) ---", "es": "--- VERBO: ESTAR (Presente) ---"},
+        {"pl": "(Ja) jestem", "es": "(Yo) estoy"},
+        {"pl": "(Ty) jesteś", "es": "(Tú) estás"},
+        {"pl": "(On/Ona) jest", "es": "(Él/Ella) está"},
+        {"pl": "(My) jesteśmy", "es": "(Nosotros) estamos"},
+        {"pl": "(Wy) jesteście", "es": "(Vosotros) estáis"},
+        {"pl": "(Oni) są", "es": "(Ellos) están"},
+        {"pl": "--- PRZYKŁADY: ESTAR ---", "es": "--- EJEMPLOS: ESTAR ---"},
+        {"pl": "Jestem zmęczony.", "es": "Estoy cansado."},
+        {"pl": "Książka jest na stole.", "es": "El libro está en la mesa."},
+        {"pl": "Jesteśmy szczęśliwi.", "es": "Estamos felices."},
+        {"pl": "Gdzie jesteś?", "es": "¿Dónde estás?"},
+        {"pl": "Oni są w domu.", "es": "Ellos están en casa."},
+        {"pl": "--- CZASOWNIK: IR (Iść, jechać) ---", "es": "--- VERBO: IR (Presente) ---"},
+        {"pl": "(Ja) idę", "es": "(Yo) voy"},
+        {"pl": "(Ty) idziesz", "es": "(Tú) vas"},
+        {"pl": "(On/Ona) idzie", "es": "(Él/Ella) va"},
+        {"pl": "(My) idziemy", "es": "(Nosotros) vamos"},
+        {"pl": "(Wy) idziecie", "es": "(Vosotros) vais"},
+        {"pl": "(Oni) idą", "es": "(Ellos) van"},
+        {"pl": "--- PRZYKŁADY: IR ---", "es": "--- EJEMPLOS: IR ---"},
+        {"pl": "Idę do szkoły.", "es": "Voy a la escuela."},
+        {"pl": "Idziemy do kina.", "es": "Vamos al cine."},
+        {"pl": "Dokąd idziesz?", "es": "¿Adónde vas?"},
+        {"pl": "Ona idzie do pracy.", "es": "Ella va al trabajo."},
+        {"pl": "Oni idą na plażę.", "es": "Ellos van a la playa."}
+    ]'::jsonb,
+    TRUE,
+    NOW()
+);
+
+-- ============================================
 -- COMPLETED
 -- ============================================
 -- Sample content inserted successfully!
 -- 1 Quiz: "General Knowledge Quiz" (10 questions)
 -- 1 Workout: "Basic Fitness Routine" (3 phases, multiple exercises)
+-- 1 Listening Set: "Hiszpański A1: Czasowniki ESTAR i IR" (26 pairs)
 

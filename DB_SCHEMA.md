@@ -76,9 +76,44 @@ Przechowuje poszczególne ćwiczenia w ramach danej fazy.
 
 ---
 
-## 4. Bezpieczeństwo - Row Level Security (RLS)
+## 4. Zestawy do Nauki Słuchu
 
-RLS to kluczowy element zapewniający prywatność danych. Dla każdej tabeli (`quizzes`, `workouts` etc.) zostaną zdefiniowane polityki, które gwarantują, że:
+Nowa funkcjonalność umożliwiająca naukę języków przez słuchanie par słówek/zdań z syntezatorem mowy (TTS).
+
+### Tabela: `listening_sets`
+Przechowuje zestawy językowe z parami słówek/zdań do nauki.
+
+| Kolumna | Typ | Opis |
+|---|---|---|
+| `id` | `uuid` | Klucz główny (auto-generowany). |
+| `user_id` | `uuid` | Klucz obcy do `auth.users.id`. Wskazuje właściciela. |
+| `title` | `text` | Tytuł zestawu (np. "Hiszpański A1: Czasowniki"). |
+| `description`| `text` | Opis zestawu. |
+| `lang1_code` | `text` | Kod języka pierwszego (np. "pl-PL"). |
+| `lang2_code` | `text` | Kod języka drugiego (np. "es-ES"). |
+| `content` | `jsonb` | Tablica par językowych. Każdy element to obiekt z kluczami odpowiadającymi kodom języków. |
+| `is_sample` | `boolean`| `true` jeśli jest to zestaw demonstracyjny. |
+| `created_at`| `timestampz`| Data utworzenia. |
+
+**Przykład struktury `content`:**
+```json
+[
+  {"pl": "--- CZASOWNIK: ESTAR ---", "es": "--- VERBO: ESTAR ---"},
+  {"pl": "(Ja) jestem", "es": "(Yo) estoy"},
+  {"pl": "Jestem zmęczony.", "es": "Estoy cansado."}
+]
+```
+
+**Uwagi:**
+- Klucze w obiektach (`"pl"`, `"es"`) są dynamiczne i mogą być dowolne (np. `"en"`, `"de"`, `"fr"`)
+- Pary rozpoczynające się od `---` i kończące na `---` są traktowane jako nagłówki sekcji
+- Nagłówki są anonsowane przez lektora z dłuższą przerwą po nich
+
+---
+
+## 5. Bezpieczeństwo - Row Level Security (RLS)
+
+RLS to kluczowy element zapewniający prywatność danych. Dla każdej tabeli (`quizzes`, `workouts`, `listening_sets` etc.) zostały zdefiniowane polityki, które gwarantują, że:
 - Użytkownik może odczytać (`SELECT`) tylko te wiersze, które sam stworzył (gdzie `user_id` zgadza się z jego ID, pobranym przez `auth.uid()`) ORAZ te, które są oznaczone jako `is_sample = true`.
 - Użytkownik może tworzyć (`INSERT`), modyfikować (`UPDATE`) i usuwać (`DELETE`) tylko własne wiersze.
 

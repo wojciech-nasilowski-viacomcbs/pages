@@ -17,6 +17,8 @@ const uiManager = {
     elements.quizSummaryScreen.classList.add('hidden');
     elements.workoutScreen.classList.add('hidden');
     elements.workoutEndScreen.classList.add('hidden');
+    if (elements.moreScreen) elements.moreScreen.classList.add('hidden');
+    if (elements.listeningScreen) elements.listeningScreen.classList.add('hidden'); // NOWE
     
     // Pokaż wybrany ekran
     switch (screenName) {
@@ -43,6 +45,14 @@ const uiManager = {
         elements.workoutEndScreen.classList.remove('hidden');
         state.currentView = 'workout-end';
         break;
+      case 'more':
+        if (elements.moreScreen) elements.moreScreen.classList.remove('hidden');
+        state.currentView = 'more';
+        break;
+      case 'listening':
+        if (elements.listeningScreen) elements.listeningScreen.classList.remove('hidden'); // NOWE
+        state.currentView = 'listening';
+        break;
       case 'loading':
         // Pokaż loader na głównym ekranie
         elements.mainScreen.classList.remove('hidden');
@@ -54,23 +64,43 @@ const uiManager = {
   },
   
   /**
-   * Przełącza zakładki (Quizy / Treningi)
+   * Przełącza zakładki (Quizy / Treningi / Słuchanie / Więcej)
    */
   switchTab(tab, state, elements, contentManager, sessionManager) {
     state.currentTab = tab;
     
-    // Aktualizuj style zakładek
-    if (tab === 'quizzes') {
-      elements.tabQuizzes.className = 'flex-1 py-3 px-4 rounded-lg font-semibold transition bg-blue-600 text-white';
-      elements.tabWorkouts.className = 'flex-1 py-3 px-4 rounded-lg font-semibold transition bg-gray-800 text-gray-300 hover:bg-gray-700';
-    } else {
-      elements.tabWorkouts.className = 'flex-1 py-3 px-4 rounded-lg font-semibold transition bg-blue-600 text-white';
-      elements.tabQuizzes.className = 'flex-1 py-3 px-4 rounded-lg font-semibold transition bg-gray-800 text-gray-300 hover:bg-gray-700';
+    // Zapisz aktualną zakładkę w localStorage
+    try {
+      localStorage.setItem('lastActiveTab', tab);
+    } catch (e) {
+      console.warn('Nie można zapisać zakładki w localStorage:', e);
     }
     
-    // Renderuj karty
-    if (contentManager) {
-      contentManager.renderCards(state, elements, this, sessionManager);
+    // Usuń klasę 'active' ze wszystkich tabów
+    [elements.tabQuizzes, elements.tabWorkouts, elements.tabListening, elements.tabMore]
+      .forEach(btn => btn?.classList.remove('active'));
+    
+    // Dodaj klasę 'active' do aktywnego taba
+    const activeTabButton = {
+      'quizzes': elements.tabQuizzes,
+      'workouts': elements.tabWorkouts,
+      'listening': elements.tabListening,
+      'more': elements.tabMore
+    }[tab];
+    activeTabButton?.classList.add('active');
+    
+    // Pokaż odpowiedni widok
+    if (tab === 'more') {
+      this.showScreen('more', state, elements, contentManager, sessionManager);
+    } else if (tab === 'listening') {
+      this.showScreen('listening', state, elements, contentManager, sessionManager);
+      // Pokaż listę zestawów
+      if (typeof showListeningList === 'function') {
+        showListeningList();
+      }
+    } else {
+      // Dla quizzes i workouts - renderuj karty
+      this.showScreen('main', state, elements, contentManager, sessionManager);
     }
   },
   
@@ -114,20 +144,10 @@ const uiManager = {
       elements.guestButtons.classList.add('hidden');
       elements.userInfo.classList.remove('hidden');
       elements.userEmail.textContent = state.currentUser.email;
-      
-      // Pokaż zakładki i przyciski
-      elements.tabQuizzes.parentElement.classList.remove('hidden');
-      elements.addContentButton.classList.remove('hidden');
-      elements.aiGeneratorButton.classList.remove('hidden');
     } else {
       // Gość
       elements.guestButtons.classList.remove('hidden');
       elements.userInfo.classList.add('hidden');
-      
-      // Ukryj zakładki i przyciski
-      elements.tabQuizzes.parentElement.classList.add('hidden');
-      elements.addContentButton.classList.add('hidden');
-      elements.aiGeneratorButton.classList.add('hidden');
     }
     
     // Odśwież widok

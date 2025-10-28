@@ -9,9 +9,10 @@
 // Stan aplikacji
 const state = {
   currentView: 'main',
-  currentTab: 'quizzes',
+  currentTab: 'quizzes', // możliwe: 'quizzes', 'workouts', 'listening', 'more' - będzie nadpisane z localStorage
   quizzes: [],
   workouts: [],
+  listeningSets: [], // NOWE
   currentUser: null
 };
 
@@ -23,12 +24,16 @@ const elements = {
   quizSummaryScreen: document.getElementById('quiz-summary-screen'),
   workoutScreen: document.getElementById('workout-screen'),
   workoutEndScreen: document.getElementById('workout-end-screen'),
+  listeningScreen: document.getElementById('listening-screen'), // NOWE
   continueDialog: document.getElementById('continue-dialog'),
   exitDialog: document.getElementById('exit-dialog'),
   
   // Główny ekran
   tabQuizzes: document.getElementById('tab-quizzes'),
   tabWorkouts: document.getElementById('tab-workouts'),
+  tabListening: document.getElementById('tab-listening'), // NOWE
+  tabMore: document.getElementById('tab-more'), // NOWE
+  moreScreen: document.getElementById('more-screen'), // NOWE
   contentCards: document.getElementById('content-cards'),
   loader: document.getElementById('loader'),
   errorMessage: document.getElementById('error-message'),
@@ -93,7 +98,8 @@ const elements = {
   newPasswordSuccess: document.getElementById('new-password-success'),
   
   // Import JSON
-  addContentButton: document.getElementById('add-content-button'),
+  addContentButton: document.getElementById('add-content-button'), // stary (usunięty z HTML)
+  addContentButtonMore: document.getElementById('add-content-button-more'), // NOWE
   importModal: document.getElementById('import-modal'),
   importTitle: document.getElementById('import-title'),
   importTabFile: document.getElementById('import-tab-file'),
@@ -119,7 +125,8 @@ const elements = {
   deleteCancel: document.getElementById('delete-cancel'),
   
   // AI Generator
-  aiGeneratorButton: document.getElementById('ai-generator-button'),
+  aiGeneratorButton: document.getElementById('ai-generator-button'), // stary (usunięty z HTML)
+  aiGeneratorButtonMore: document.getElementById('ai-generator-button-more'), // NOWE
   aiGeneratorModal: document.getElementById('ai-generator-modal'),
   aiTypeLabel: document.getElementById('ai-type-label'),
   aiPrompt: document.getElementById('ai-prompt'),
@@ -137,6 +144,17 @@ const elements = {
 async function init() {
   console.log('🚀 Inicjalizacja aplikacji v2.0...');
   
+  // Przywróć ostatnią aktywną zakładkę z localStorage
+  try {
+    const lastTab = localStorage.getItem('lastActiveTab');
+    if (lastTab && ['quizzes', 'workouts', 'listening', 'more'].includes(lastTab)) {
+      state.currentTab = lastTab;
+      console.log(`📌 Przywrócono zakładkę: ${lastTab}`);
+    }
+  } catch (e) {
+    console.warn('Nie można odczytać zakładki z localStorage:', e);
+  }
+  
   // Inicjalizuj moduły
   if (typeof initQuizEngine === 'function') {
     initQuizEngine(
@@ -146,6 +164,12 @@ async function init() {
   }
   if (typeof initWorkoutEngine === 'function') {
     initWorkoutEngine(
+      (screen) => uiManager.showScreen(screen, state, elements, contentManager, sessionManager),
+      state
+    );
+  }
+  if (typeof initListeningEngine === 'function') {
+    initListeningEngine(
       (screen) => uiManager.showScreen(screen, state, elements, contentManager, sessionManager),
       state
     );
@@ -174,18 +198,46 @@ async function init() {
   
   // Aktualizuj UI autentykacji
   uiManager.updateAuthUI(state, elements, contentManager, sessionManager);
+  
+  // Dodaj potwierdzenie przed opuszczeniem strony
+  setupBeforeUnloadWarning();
+}
+
+/**
+ * Dodaje ostrzeżenie przed opuszczeniem strony (refresh/back/zamknięcie)
+ */
+function setupBeforeUnloadWarning() {
+  window.addEventListener('beforeunload', (e) => {
+    // Pokaż ostrzeżenie tylko jeśli użytkownik jest w trakcie aktywności
+    const isActive = 
+      state.currentView !== 'main' || // Jest w quizie/treningu/odtwarzaczu
+      (window.listeningEngine && window.listeningEngine.isPlaying && window.listeningEngine.isPlaying()); // Odtwarza listening
+    
+    if (isActive) {
+      // Standardowa wiadomość przeglądarki
+      e.preventDefault();
+      e.returnValue = ''; // Chrome wymaga tego
+      return ''; // Niektóre przeglądarki
+    }
+  });
 }
 
 /**
  * Podłącza event listenery
  */
 function attachEventListeners() {
-  // Zakładki
+  // Zakładki (Tab Bar)
   elements.tabQuizzes.addEventListener('click', () => {
     uiManager.switchTab('quizzes', state, elements, contentManager, sessionManager);
   });
   elements.tabWorkouts.addEventListener('click', () => {
     uiManager.switchTab('workouts', state, elements, contentManager, sessionManager);
+  });
+  elements.tabListening.addEventListener('click', () => {
+    uiManager.switchTab('listening', state, elements, contentManager, sessionManager);
+  });
+  elements.tabMore.addEventListener('click', () => {
+    uiManager.switchTab('more', state, elements, contentManager, sessionManager);
   });
   
   // Przycisk powrotu do strony głównej
@@ -247,7 +299,14 @@ function attachEventListeners() {
   elements.newPasswordForm.addEventListener('submit', handleNewPassword);
   
   // Import JSON
-  elements.addContentButton.addEventListener('click', () => {
+  // Stary przycisk (jeśli istnieje - dla kompatybilności)
+  if (elements.addContentButton) {
+    elements.addContentButton.addEventListener('click', () => {
+      contentManager.openImportModal(state, elements);
+    });
+  }
+  // Nowy przycisk w ekranie "Więcej"
+  elements.addContentButtonMore.addEventListener('click', () => {
     contentManager.openImportModal(state, elements);
   });
   elements.importClose.addEventListener('click', () => {
@@ -292,7 +351,14 @@ function attachEventListeners() {
   });
   
   // AI Generator
-  elements.aiGeneratorButton.addEventListener('click', () => {
+  // Stary przycisk (jeśli istnieje - dla kompatybilności)
+  if (elements.aiGeneratorButton) {
+    elements.aiGeneratorButton.addEventListener('click', () => {
+      contentManager.openAIGeneratorModal(state, elements);
+    });
+  }
+  // Nowy przycisk w ekranie "Więcej"
+  elements.aiGeneratorButtonMore.addEventListener('click', () => {
     contentManager.openAIGeneratorModal(state, elements);
   });
   elements.aiGenerate.addEventListener('click', () => {
@@ -330,10 +396,14 @@ function setupAuthListener() {
       state.currentUser = session?.user || null;
       await contentManager.loadData(state, elements, uiManager);
       uiManager.updateAuthUI(state, elements, contentManager, sessionManager);
+      // Przywróć zapisaną zakładkę po załadowaniu danych
+      uiManager.switchTab(state.currentTab, state, elements, contentManager, sessionManager);
     } else if (event === 'SIGNED_OUT') {
       state.currentUser = null;
       await contentManager.loadData(state, elements, uiManager);
       uiManager.updateAuthUI(state, elements, contentManager, sessionManager);
+      // Przywróć zapisaną zakładkę po załadowaniu danych
+      uiManager.switchTab(state.currentTab, state, elements, contentManager, sessionManager);
     }
   });
 }

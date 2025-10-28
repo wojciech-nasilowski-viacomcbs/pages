@@ -54,12 +54,59 @@
         .hidden {
             display: none !important;
         }
+        
+        /* Tab Bar Styling */
+        .tab-button {
+            position: relative;
+            padding: 12px 8px;
+            min-width: 80px;
+            margin: 0 2px;
+        }
+        
+        .tab-button.active {
+            color: #60a5fa; /* blue-400 */
+            background-color: rgba(96, 165, 250, 0.1);
+        }
+        
+        .tab-button.active::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50%;
+            height: 4px;
+            background: linear-gradient(90deg, transparent, #60a5fa, transparent);
+            border-radius: 0 0 4px 4px;
+        }
+        
+        .tab-button:active {
+            transform: scale(0.92);
+        }
+        
+        .tab-button:hover:not(.active) {
+            background-color: rgba(55, 65, 81, 0.4);
+        }
+        
+        /* Safe area dla iOS (notch) */
+        .safe-area-bottom {
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+        
+        /* Lepsze touch targets na mobile */
+        @media (max-width: 640px) {
+            .tab-button {
+                min-width: 70px;
+                padding: 10px 4px;
+                margin: 0 1px;
+            }
+        }
     </style>
 </head>
 <body class="bg-gray-900 text-gray-100 min-h-screen">
 
     <!-- Główny kontener -->
-    <div class="max-w-4xl mx-auto p-4 pb-8">
+    <div class="max-w-4xl mx-auto p-4" style="padding-bottom: 120px;">
         
         <!-- Nagłówek -->
         <header class="flex justify-between items-center mb-6 pt-4">
@@ -104,22 +151,6 @@
 
         <!-- EKRAN GŁÓWNY -->
         <div id="main-screen" class="fade-in">
-            <!-- Zakładki + Przycisk Dodaj -->
-            <div class="flex gap-2 mb-6">
-                <button id="tab-quizzes" class="flex-1 py-3 px-4 rounded-lg font-semibold transition bg-blue-600 text-white">
-                    📝 Quizy
-                </button>
-                <button id="tab-workouts" class="flex-1 py-3 px-4 rounded-lg font-semibold transition bg-gray-800 text-gray-300 hover:bg-gray-700">
-                    💪 Treningi
-                </button>
-                <button id="add-content-button" class="hidden px-6 py-3 rounded-lg font-semibold transition bg-green-600 text-white hover:bg-green-700">
-                    + Dodaj
-                </button>
-                <button id="ai-generator-button" class="hidden px-6 py-3 rounded-lg font-semibold transition bg-purple-600 text-white hover:bg-purple-700" title="Generator AI (wymaga OpenAI API key)">
-                    🤖 Generator AI
-                </button>
-            </div>
-
             <!-- Kontener na karty -->
             <div id="content-cards" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <!-- Karty będą generowane dynamicznie przez JS -->
@@ -262,6 +293,156 @@
                     <button id="workout-home" class="flex-1 bg-gray-700 hover:bg-gray-600 text-white font-bold py-4 px-6 rounded-lg transition">
                         🏠 Powrót do menu
                     </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- EKRAN: SŁUCHANIE -->
+        <div id="listening-screen" class="hidden fade-in">
+            
+            <!-- Lista zestawów -->
+            <div id="listening-list">
+                <h2 class="text-2xl font-bold mb-6">🎧 Nauka ze Słuchu</h2>
+                
+                <!-- Loader -->
+                <div id="listening-list-loader" class="text-center py-8">
+                    <div class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-gray-600 border-t-blue-500"></div>
+                </div>
+                
+                <!-- Error -->
+                <div id="listening-list-error" class="hidden bg-red-900/30 border border-red-700 text-red-300 px-4 py-3 rounded mb-4"></div>
+                
+                <!-- Karty zestawów -->
+                <div id="listening-list-cards" class="grid gap-4"></div>
+            </div>
+            
+            <!-- Odtwarzacz -->
+            <div id="listening-player" class="hidden">
+                
+                <!-- Header -->
+                <div class="mb-6">
+                    <button id="btn-back-to-list" class="flex items-center gap-2 text-gray-400 hover:text-white mb-4">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                        </svg>
+                        <span>Powrót do listy</span>
+                    </button>
+                    
+                    <h2 id="player-title" class="text-2xl font-bold mb-2"></h2>
+                    <p id="player-description" class="text-gray-400 text-sm"></p>
+                </div>
+                
+                <!-- Pasek postępu -->
+                <div class="mb-6">
+                    <div class="bg-gray-700 h-2 rounded-full overflow-hidden mb-2">
+                        <div id="player-progress" class="bg-blue-500 h-full transition-all duration-300" style="width: 0%"></div>
+                    </div>
+                    <p id="player-progress-text" class="text-center text-sm text-gray-400">0 / 0</p>
+                </div>
+                
+                <!-- Aktualnie odtwarzana para -->
+                <div id="player-current-pair" class="bg-gray-800 rounded-lg p-6 mb-6">
+                    <div class="space-y-4">
+                        <div class="text-center">
+                            <p id="player-lang1-text" class="text-xl font-medium text-white"></p>
+                        </div>
+                        <div class="border-t border-gray-700"></div>
+                        <div class="text-center">
+                            <p id="player-lang2-text" class="text-xl font-medium text-blue-400"></p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Kontrolki -->
+                <div class="space-y-4">
+                    
+                    <!-- Główne kontrolki -->
+                    <div class="flex justify-center items-center gap-4">
+                        
+                        <!-- Poprzednia -->
+                        <button id="btn-previous" class="p-3 bg-gray-700 hover:bg-gray-600 rounded-full transition">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                            </svg>
+                        </button>
+                        
+                        <!-- Play/Pause -->
+                        <button id="btn-play-pause" class="p-6 bg-blue-600 hover:bg-blue-700 rounded-full transition shadow-lg">
+                            <svg id="btn-play-icon" class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M8 5v14l11-7z" />
+                            </svg>
+                            <svg id="btn-pause-icon" class="w-8 h-8 hidden" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z" />
+                            </svg>
+                        </button>
+                        
+                        <!-- Następna -->
+                        <button id="btn-next" class="p-3 bg-gray-700 hover:bg-gray-600 rounded-full transition">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                            </svg>
+                        </button>
+                        
+                    </div>
+                    
+                    <!-- Dodatkowe kontrolki -->
+                    <div class="flex justify-center items-center gap-3">
+                        
+                        <!-- Zapętlanie -->
+                        <button id="btn-loop" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg transition flex items-center gap-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                            </svg>
+                            <span class="text-sm">Zapętl</span>
+                        </button>
+                        
+                        <!-- Zmiana kolejności języków -->
+                        <button id="btn-switch-lang" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg transition flex items-center gap-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+                            </svg>
+                            <span id="lang-order-text" class="text-sm font-mono">PL → ES</span>
+                        </button>
+                        
+                    </div>
+                    
+                </div>
+                
+            </div>
+            
+        </div>
+
+        <!-- EKRAN: WIĘCEJ -->
+        <div id="more-screen" class="hidden fade-in">
+            <div class="space-y-4">
+                <h2 class="text-2xl font-bold mb-6">Więcej opcji</h2>
+                
+                <!-- Lista opcji -->
+                <div class="space-y-3">
+                    
+                    <!-- Generator AI -->
+                    <button id="ai-generator-button-more" class="w-full p-4 bg-gray-800 hover:bg-gray-700 rounded-lg flex items-center gap-3 transition">
+                        <span class="text-2xl">🤖</span>
+                        <div class="text-left">
+                            <div class="font-semibold">Generator AI</div>
+                            <div class="text-sm text-gray-400">Wygeneruj treści używając sztucznej inteligencji</div>
+                        </div>
+                    </button>
+                    
+                    <!-- Dodaj treść -->
+                    <button id="add-content-button-more" class="w-full p-4 bg-gray-800 hover:bg-gray-700 rounded-lg flex items-center gap-3 transition">
+                        <span class="text-2xl">➕</span>
+                        <div class="text-left">
+                            <div class="font-semibold">Dodaj treść</div>
+                            <div class="text-sm text-gray-400">Importuj quiz, trening lub zestaw do nauki</div>
+                        </div>
+                    </button>
+                    
+                    <!-- Placeholder dla przyszłych opcji -->
+                    <div class="p-4 bg-gray-800 rounded-lg opacity-50">
+                        <div class="text-sm text-gray-400">Więcej opcji wkrótce...</div>
+                    </div>
+                    
                 </div>
             </div>
         </div>
@@ -539,6 +720,45 @@
 
     </div>
 
+    <!-- Dolny pasek nawigacji (Tab Bar) -->
+    <nav id="tab-bar" class="fixed bottom-0 left-0 right-0 bg-gray-800 border-t-2 border-gray-700 safe-area-bottom z-50 shadow-2xl">
+        <div class="max-w-4xl mx-auto flex justify-around items-center px-2" style="height: 80px;">
+            
+            <!-- Tab: Quizy -->
+            <button id="tab-quizzes" class="tab-button flex flex-col items-center justify-center flex-1 h-full text-gray-400 hover:text-white transition active rounded-lg" data-tab="quizzes">
+                <svg class="w-7 h-7 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                <span class="text-xs font-semibold">Quizy</span>
+            </button>
+            
+            <!-- Tab: Treningi -->
+            <button id="tab-workouts" class="tab-button flex flex-col items-center justify-center flex-1 h-full text-gray-400 hover:text-white transition rounded-lg" data-tab="workouts">
+                <svg class="w-7 h-7 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+                <span class="text-xs font-semibold">Treningi</span>
+            </button>
+            
+            <!-- Tab: Słuchanie -->
+            <button id="tab-listening" class="tab-button flex flex-col items-center justify-center flex-1 h-full text-gray-400 hover:text-white transition rounded-lg" data-tab="listening">
+                <svg class="w-7 h-7 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+                </svg>
+                <span class="text-xs font-semibold">Słuchanie</span>
+            </button>
+            
+            <!-- Tab: Więcej -->
+            <button id="tab-more" class="tab-button flex flex-col items-center justify-center flex-1 h-full text-gray-400 hover:text-white transition rounded-lg" data-tab="more">
+                <svg class="w-7 h-7 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+                <span class="text-xs font-semibold">Więcej</span>
+            </button>
+            
+        </div>
+    </nav>
+
     <!-- Skrypty JS -->
     <script src="js/audio.js"></script>
     <script src="js/config.js"></script>
@@ -554,6 +774,7 @@
     
     <script src="js/quiz-engine.js"></script>
     <script src="js/workout-engine.js"></script>
+    <script src="js/listening-engine.js"></script>
     <script src="js/app.js"></script>
 
 </body>

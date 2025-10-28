@@ -303,6 +303,104 @@ const dataService = {
             console.error('Error deleting workout:', error);
             throw error;
         }
+    },
+    
+    // ============================================
+    // LISTENING SETS
+    // ============================================
+    
+    /**
+     * Fetch all listening sets (user's own + sample content)
+     * @returns {Promise<Array>} Array of listening set objects
+     */
+    async getListeningSets() {
+        try {
+            const { data, error } = await supabaseClient
+                .from('listening_sets')
+                .select('*')
+                .order('created_at', { ascending: false });
+            
+            if (error) throw error;
+            return data || [];
+        } catch (error) {
+            console.error('Error fetching listening sets:', error);
+            throw error;
+        }
+    },
+    
+    /**
+     * Fetch a single listening set by ID
+     * @param {string} id - UUID of the listening set
+     * @returns {Promise<Object>} Listening set object
+     */
+    async getListeningSet(id) {
+        try {
+            const { data, error } = await supabaseClient
+                .from('listening_sets')
+                .select('*')
+                .eq('id', id)
+                .single();
+            
+            if (error) throw error;
+            return data;
+        } catch (error) {
+            console.error('Error fetching listening set:', error);
+            throw error;
+        }
+    },
+    
+    /**
+     * Create a new listening set
+     * @param {string} title - Title of the set
+     * @param {string} description - Description
+     * @param {string} lang1Code - Language 1 code (e.g., 'pl-PL')
+     * @param {string} lang2Code - Language 2 code (e.g., 'es-ES')
+     * @param {Array} content - Array of language pairs
+     * @returns {Promise<Object>} Created listening set
+     */
+    async createListeningSet(title, description, lang1Code, lang2Code, content) {
+        try {
+            const user = await getCurrentUser();
+            if (!user) throw new Error('User must be authenticated');
+            
+            const { data, error } = await supabaseClient
+                .from('listening_sets')
+                .insert([{
+                    user_id: user.id,
+                    title,
+                    description,
+                    lang1_code: lang1Code,
+                    lang2_code: lang2Code,
+                    content,
+                    is_sample: false
+                }])
+                .select()
+                .single();
+            
+            if (error) throw error;
+            return data;
+        } catch (error) {
+            console.error('Error creating listening set:', error);
+            throw error;
+        }
+    },
+    
+    /**
+     * Delete a listening set
+     * @param {string} id - UUID of the listening set
+     */
+    async deleteListeningSet(id) {
+        try {
+            const { error } = await supabaseClient
+                .from('listening_sets')
+                .delete()
+                .eq('id', id);
+            
+            if (error) throw error;
+        } catch (error) {
+            console.error('Error deleting listening set:', error);
+            throw error;
+        }
     }
 };
 

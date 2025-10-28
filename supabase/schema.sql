@@ -62,6 +62,23 @@ CREATE TABLE exercises (
 );
 
 -- ============================================
+-- LISTENING SETS TABLE
+-- ============================================
+
+-- Main listening sets table (for language learning with TTS)
+CREATE TABLE listening_sets (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
+    title TEXT NOT NULL,
+    description TEXT,
+    lang1_code TEXT NOT NULL DEFAULT 'pl-PL',
+    lang2_code TEXT NOT NULL DEFAULT 'es-ES',
+    content JSONB NOT NULL,
+    is_sample BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- ============================================
 -- INDEXES FOR PERFORMANCE
 -- ============================================
 
@@ -72,6 +89,8 @@ CREATE INDEX idx_workouts_user_id ON workouts(user_id);
 CREATE INDEX idx_workouts_is_sample ON workouts(is_sample);
 CREATE INDEX idx_phases_workout_id ON phases(workout_id);
 CREATE INDEX idx_exercises_phase_id ON exercises(phase_id);
+CREATE INDEX idx_listening_sets_user_id ON listening_sets(user_id);
+CREATE INDEX idx_listening_sets_is_sample ON listening_sets(is_sample);
 
 -- ============================================
 -- ROW LEVEL SECURITY (RLS) POLICIES
@@ -83,6 +102,7 @@ ALTER TABLE questions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE workouts ENABLE ROW LEVEL SECURITY;
 ALTER TABLE phases ENABLE ROW LEVEL SECURITY;
 ALTER TABLE exercises ENABLE ROW LEVEL SECURITY;
+ALTER TABLE listening_sets ENABLE ROW LEVEL SECURITY;
 
 -- ============================================
 -- QUIZZES POLICIES
@@ -285,6 +305,30 @@ CREATE POLICY "Users can delete exercises for their workouts"
             AND workouts.is_sample = FALSE
         )
     );
+
+-- ============================================
+-- LISTENING SETS POLICIES
+-- ============================================
+
+-- Anyone can read sample listening sets OR their own listening sets
+CREATE POLICY "Public read access to sample listening sets"
+    ON listening_sets FOR SELECT
+    USING (is_sample = TRUE OR user_id = auth.uid());
+
+-- Only authenticated users can insert their own listening sets
+CREATE POLICY "Users can insert their own listening sets"
+    ON listening_sets FOR INSERT
+    WITH CHECK (auth.uid() IS NOT NULL AND user_id = auth.uid());
+
+-- Users can update only their own listening sets (not samples)
+CREATE POLICY "Users can update their own listening sets"
+    ON listening_sets FOR UPDATE
+    USING (user_id = auth.uid() AND is_sample = FALSE);
+
+-- Users can delete only their own listening sets (not samples)
+CREATE POLICY "Users can delete their own listening sets"
+    ON listening_sets FOR DELETE
+    USING (user_id = auth.uid() AND is_sample = FALSE);
 
 -- ============================================
 -- COMPLETED
