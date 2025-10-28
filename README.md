@@ -1,6 +1,6 @@
-# Interaktywna Strona z Quizami i Treningami
+# eTrener - Interaktywna Platforma Edukacyjna
 
-Statyczna strona internetowa (SPA) z quizami i interaktywnymi treningami, hostowana na GitHub Pages.
+Nowoczesna aplikacja webowa do nauki i treningów - quizy, treningi fitness i nauka języków przez słuchanie.
 
 ## 📋 Spis Treści
 
@@ -16,10 +16,14 @@ Statyczna strona internetowa (SPA) z quizami i interaktywnymi treningami, hostow
 
 ## Opis Projektu
 
-Prosta, responsywna aplikacja webowa umożliwiająca:
-- Rozwiązywanie **quizów** z różnymi typami pytań (wybór wielokrotny, uzupełnianie luk, prawda/fałsz, dopasowywanie)
+**eTrener** to nowoczesna, responsywna aplikacja webowa umożliwiająca:
+- Rozwiązywanie **quizów** z różnymi typami pytań (wybór wielokrotny, uzupełnianie luk, prawda/fałsz, dopasowywanie, słuchowe)
 - Przeprowadzanie **interaktywnych treningów** z timerem i liczeniem powtórzeń
-- Zapisywanie postępu w sesji (localStorage)
+- Naukę języków przez **słuchanie** z automatycznym TTS
+- Generowanie treści przez **AI** (OpenRouter)
+- Import i eksport treści w formacie JSON
+- Zapisywanie danych w chmurze (Supabase)
+- System autentykacji użytkowników
 - Sygnały dźwiękowe generowane dynamicznie (Web Audio API)
 
 **Technologie**: HTML5, Tailwind CSS, Vanilla JavaScript, JSON

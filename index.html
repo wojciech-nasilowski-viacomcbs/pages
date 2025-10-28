@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quizy i Treningi</title>
-    <meta name="description" content="Interaktywne quizy i treningi fitness">
+    <title>eTrener</title>
+    <meta name="description" content="Interaktywna platforma do nauki i treningów - quizy, treningi fitness i nauka języków">
     
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
@@ -110,7 +110,7 @@
         
         <!-- Nagłówek -->
         <header class="flex justify-between items-center mb-6 pt-4">
-            <h1 class="text-2xl font-bold text-white">Quizy & Treningi</h1>
+            <h1 class="text-2xl font-bold text-white">eTrener</h1>
             
             <div class="flex items-center gap-2">
                 <!-- Przyciski dla gości (niezalogowanych) -->
@@ -770,8 +770,24 @@
                 <span class="text-xs font-semibold">Słuchanie</span>
             </button>
             
+            <!-- Tab: Import (może być w tab barze lub w "Więcej") -->
+            <button id="tab-import" class="tab-button flex flex-col items-center justify-center flex-1 h-full text-gray-400 hover:text-white transition rounded-lg hidden" data-tab="import">
+                <svg class="w-7 h-7 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                </svg>
+                <span class="text-xs font-semibold">Import</span>
+            </button>
+            
+            <!-- Tab: AI Generator (może być w tab barze lub w "Więcej") -->
+            <button id="tab-ai-generator" class="tab-button flex flex-col items-center justify-center flex-1 h-full text-gray-400 hover:text-white transition rounded-lg hidden" data-tab="ai-generator">
+                <svg class="w-7 h-7 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                </svg>
+                <span class="text-xs font-semibold">AI</span>
+            </button>
+            
             <!-- Tab: Więcej -->
-            <button id="tab-more" class="tab-button flex flex-col items-center justify-center flex-1 h-full text-gray-400 hover:text-white transition rounded-lg" data-tab="more">
+            <button id="tab-more" class="tab-button flex flex-col items-center justify-center flex-1 h-full text-gray-400 hover:text-white transition rounded-lg hidden" data-tab="more">
                 <svg class="w-7 h-7 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
                 </svg>
@@ -784,6 +800,7 @@
     <!-- Skrypty JS -->
     <script src="js/audio.js"></script>
     <script src="js/config.js"></script>
+    <script src="js/feature-flags.js"></script>
     <script src="js/supabase-client.js"></script>
     <script src="js/auth-service.js"></script>
     <script src="js/data-service.js"></script>

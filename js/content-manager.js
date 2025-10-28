@@ -19,30 +19,74 @@ const contentManager = {
    * Renderuje karty quizów lub treningów
    */
   renderCards(state, elements, uiManager = null, sessionManager = null) {
-    // Jeśli użytkownik nie jest zalogowany, pokaż landing page
-    if (!state.currentUser) {
+    const coreTabs = featureFlags.getActiveCoreTabs();
+    const isMoreTabEnabled = featureFlags.getEnabledTabs().includes('more');
+
+    // Sprawdź, czy jakikolwiek moduł jest włączony
+    if (coreTabs.length === 0 && !isMoreTabEnabled) {
       elements.contentCards.innerHTML = `
         <div class="col-span-full text-center py-16">
           <div class="max-w-2xl mx-auto">
-            <h2 class="text-4xl font-bold text-white mb-4">Witaj w Quizy & Treningi!</h2>
+            <h2 class="text-4xl font-bold text-white mb-4">Brak aktywnych modułów</h2>
+            <p class="text-xl text-gray-300">
+              Administrator nie włączył żadnych funkcjonalności. Skontaktuj się z pomocą techniczną.
+            </p>
+          </div>
+        </div>
+      `;
+      return;
+    }
+
+    // Jeśli użytkownik nie jest zalogowany, pokaż landing page
+    if (!state.currentUser) {
+      // Buduj dynamicznie karty funkcji na podstawie włączonych modułów
+      let featureCards = '';
+      
+      if (featureFlags.isQuizzesEnabled()) {
+        featureCards += `
+          <div class="bg-gray-800 p-6 rounded-xl">
+            <div class="text-4xl mb-3">📝</div>
+            <h3 class="text-xl font-bold text-white mb-2">Quizy</h3>
+            <p class="text-gray-400 text-sm">
+              Różne typy pytań: wielokrotnego wyboru, prawda/fałsz, uzupełnianie, dopasowywanie, słuchowe.
+            </p>
+          </div>
+        `;
+      }
+      
+      if (featureFlags.isWorkoutsEnabled()) {
+        featureCards += `
+          <div class="bg-gray-800 p-6 rounded-xl">
+            <div class="text-4xl mb-3">💪</div>
+            <h3 class="text-xl font-bold text-white mb-2">Treningi</h3>
+            <p class="text-gray-400 text-sm">
+              Interaktywne treningi z timerem, licznikiem powtórzeń i Wake Lock API.
+            </p>
+          </div>
+        `;
+      }
+      
+      if (featureFlags.isListeningEnabled()) {
+        featureCards += `
+          <div class="bg-gray-800 p-6 rounded-xl">
+            <div class="text-4xl mb-3">🎧</div>
+            <h3 class="text-xl font-bold text-white mb-2">Słuchanie</h3>
+            <p class="text-gray-400 text-sm">
+              Nauka języków przez słuchanie i powtarzanie par słów z automatycznym TTS.
+            </p>
+          </div>
+        `;
+      }
+      
+      elements.contentCards.innerHTML = `
+        <div class="col-span-full text-center py-16">
+          <div class="max-w-2xl mx-auto">
+            <h2 class="text-4xl font-bold text-white mb-4">Witaj w eTrener!</h2>
             <p class="text-xl text-gray-300 mb-8">
-              Twórz własne quizy i treningi, importuj z JSON lub generuj za pomocą AI.
+              Twórz własne treści, importuj z JSON lub generuj za pomocą AI.
             </p>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 text-left">
-              <div class="bg-gray-800 p-6 rounded-xl">
-                <div class="text-4xl mb-3">📝</div>
-                <h3 class="text-xl font-bold text-white mb-2">Quizy</h3>
-                <p class="text-gray-400 text-sm">
-                  Różne typy pytań: wielokrotnego wyboru, prawda/fałsz, uzupełnianie, dopasowywanie, słuchowe.
-                </p>
-              </div>
-              <div class="bg-gray-800 p-6 rounded-xl">
-                <div class="text-4xl mb-3">💪</div>
-                <h3 class="text-xl font-bold text-white mb-2">Treningi</h3>
-                <p class="text-gray-400 text-sm">
-                  Interaktywne treningi z timerem, licznikiem powtórzeń i Wake Lock API.
-                </p>
-              </div>
+              ${featureCards}
             </div>
             <div class="flex gap-4 justify-center">
               <button onclick="document.getElementById('login-button').click()" 
@@ -950,7 +994,7 @@ const contentManager = {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${apiKey}`,
           'HTTP-Referer': window.location.origin,
-          'X-Title': 'Quizy & Treningi - AI Generator'
+          'X-Title': 'eTrener - AI Generator'
         },
         body: JSON.stringify({
           // Available OpenRouter models (2025):

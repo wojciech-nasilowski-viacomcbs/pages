@@ -67,17 +67,34 @@ const uiManager = {
    * Przełącza zakładki (Quizy / Treningi / Słuchanie / Więcej)
    */
   switchTab(tab, state, elements, contentManager, sessionManager) {
-    state.currentTab = tab;
+    // Sprawdź, czy wybrana zakładka jest włączona
+    const enabledTabs = featureFlags.getEnabledTabs();
+    let targetTab = tab;
+
+    if (!enabledTabs.includes(targetTab)) {
+      // Jeśli wybrana zakładka jest wyłączona, przełącz na pierwszą dostępną
+      targetTab = enabledTabs.length > 0 ? enabledTabs[0] : null;
+      if (!targetTab) {
+        console.warn('Brak włączonych zakładek do wyświetlenia.');
+        // Opcjonalnie: ukryj tab bar całkowicie, jeśli nie ma żadnych zakładek
+        const tabBar = document.getElementById('tab-bar');
+        if (tabBar) tabBar.classList.add('hidden');
+        return; // Nie rób nic więcej
+      }
+    }
+
+    state.currentTab = targetTab;
     
     // Zapisz aktualną zakładkę w localStorage
     try {
-      localStorage.setItem('lastActiveTab', tab);
+      localStorage.setItem('lastActiveTab', targetTab);
     } catch (e) {
       console.warn('Nie można zapisać zakładki w localStorage:', e);
     }
     
     // Usuń klasę 'active' ze wszystkich tabów
-    [elements.tabQuizzes, elements.tabWorkouts, elements.tabListening, elements.tabMore]
+    [elements.tabQuizzes, elements.tabWorkouts, elements.tabListening, 
+     elements.tabImport, elements.tabAIGenerator, elements.tabMore]
       .forEach(btn => btn?.classList.remove('active'));
     
     // Dodaj klasę 'active' do aktywnego taba
@@ -85,14 +102,16 @@ const uiManager = {
       'quizzes': elements.tabQuizzes,
       'workouts': elements.tabWorkouts,
       'listening': elements.tabListening,
+      'import': elements.tabImport,
+      'ai-generator': elements.tabAIGenerator,
       'more': elements.tabMore
-    }[tab];
+    }[targetTab];
     activeTabButton?.classList.add('active');
     
     // Pokaż odpowiedni widok
-    if (tab === 'more') {
+    if (targetTab === 'more') {
       this.showScreen('more', state, elements, contentManager, sessionManager);
-    } else if (tab === 'listening') {
+    } else if (targetTab === 'listening') {
       this.showScreen('listening', state, elements, contentManager, sessionManager);
       // Pokaż listę zestawów
       if (typeof showListeningList === 'function') {

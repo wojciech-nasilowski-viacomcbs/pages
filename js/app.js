@@ -31,9 +31,11 @@ const elements = {
   // Główny ekran
   tabQuizzes: document.getElementById('tab-quizzes'),
   tabWorkouts: document.getElementById('tab-workouts'),
-  tabListening: document.getElementById('tab-listening'), // NOWE
-  tabMore: document.getElementById('tab-more'), // NOWE
-  moreScreen: document.getElementById('more-screen'), // NOWE
+  tabListening: document.getElementById('tab-listening'),
+  tabImport: document.getElementById('tab-import'), // NOWE - bezpośrednia zakładka Import
+  tabAIGenerator: document.getElementById('tab-ai-generator'), // NOWE - bezpośrednia zakładka AI
+  tabMore: document.getElementById('tab-more'),
+  moreScreen: document.getElementById('more-screen'),
   contentCards: document.getElementById('content-cards'),
   loader: document.getElementById('loader'),
   errorMessage: document.getElementById('error-message'),
@@ -147,6 +149,9 @@ const elements = {
 async function init() {
   console.log('🚀 Inicjalizacja aplikacji v2.0...');
   
+  // Zastosuj feature flagi do UI
+  applyFeatureFlags(elements);
+
   // Przywróć ostatnią aktywną zakładkę z localStorage
   try {
     const lastTab = localStorage.getItem('lastActiveTab');
@@ -158,20 +163,20 @@ async function init() {
     console.warn('Nie można odczytać zakładki z localStorage:', e);
   }
   
-  // Inicjalizuj moduły
-  if (typeof initQuizEngine === 'function') {
+  // Inicjalizuj moduły (tylko jeśli są włączone)
+  if (featureFlags.isQuizzesEnabled() && typeof initQuizEngine === 'function') {
     initQuizEngine(
       (screen) => uiManager.showScreen(screen, state, elements, contentManager, sessionManager),
       state
     );
   }
-  if (typeof initWorkoutEngine === 'function') {
+  if (featureFlags.isWorkoutsEnabled() && typeof initWorkoutEngine === 'function') {
     initWorkoutEngine(
       (screen) => uiManager.showScreen(screen, state, elements, contentManager, sessionManager),
       state
     );
   }
-  if (typeof initListeningEngine === 'function') {
+  if (featureFlags.isListeningEnabled() && typeof initListeningEngine === 'function') {
     initListeningEngine(
       (screen) => uiManager.showScreen(screen, state, elements, contentManager, sessionManager),
       state
@@ -196,8 +201,10 @@ async function init() {
   // Sprawdź zapisaną sesję
   sessionManager.checkSavedSession();
   
-  // Pokaż domyślną zakładkę
-  uiManager.switchTab('quizzes', state, elements, contentManager, sessionManager);
+  // Pokaż domyślną zakładkę (pierwszą z włączonych)
+  const enabledTabs = featureFlags.getActiveCoreTabs();
+  const defaultTab = enabledTabs.length > 0 ? enabledTabs[0] : 'more';
+  uiManager.switchTab(defaultTab, state, elements, contentManager, sessionManager);
   
   // Aktualizuj UI autentykacji
   uiManager.updateAuthUI(state, elements, contentManager, sessionManager);
@@ -229,19 +236,40 @@ function setupBeforeUnloadWarning() {
  * Podłącza event listenery
  */
 function attachEventListeners() {
-  // Zakładki (Tab Bar)
-  elements.tabQuizzes.addEventListener('click', () => {
-    uiManager.switchTab('quizzes', state, elements, contentManager, sessionManager);
-  });
-  elements.tabWorkouts.addEventListener('click', () => {
-    uiManager.switchTab('workouts', state, elements, contentManager, sessionManager);
-  });
-  elements.tabListening.addEventListener('click', () => {
-    uiManager.switchTab('listening', state, elements, contentManager, sessionManager);
-  });
-  elements.tabMore.addEventListener('click', () => {
-    uiManager.switchTab('more', state, elements, contentManager, sessionManager);
-  });
+  // Zakładki (Tab Bar) - tylko dla włączonych modułów
+  if (featureFlags.isQuizzesEnabled()) {
+    elements.tabQuizzes.addEventListener('click', () => {
+      uiManager.switchTab('quizzes', state, elements, contentManager, sessionManager);
+    });
+  }
+  if (featureFlags.isWorkoutsEnabled()) {
+    elements.tabWorkouts.addEventListener('click', () => {
+      uiManager.switchTab('workouts', state, elements, contentManager, sessionManager);
+    });
+  }
+  if (featureFlags.isListeningEnabled()) {
+    elements.tabListening.addEventListener('click', () => {
+      uiManager.switchTab('listening', state, elements, contentManager, sessionManager);
+    });
+  }
+  
+  // Zakładki dla funkcji dodatkowych (jeśli są w tab barze)
+  if (featureFlags.getEnabledTabs().includes('import')) {
+    elements.tabImport.addEventListener('click', () => {
+      contentManager.openImportModal(state, elements);
+    });
+  }
+  if (featureFlags.getEnabledTabs().includes('ai-generator')) {
+    elements.tabAIGenerator.addEventListener('click', () => {
+      contentManager.openAIGeneratorModal(state, elements);
+    });
+  }
+  
+  if (featureFlags.getEnabledTabs().includes('more')) {
+    elements.tabMore.addEventListener('click', () => {
+      uiManager.switchTab('more', state, elements, contentManager, sessionManager);
+    });
+  }
   
   // Przycisk powrotu do strony głównej
   elements.homeButton.addEventListener('click', () => {
@@ -309,9 +337,11 @@ function attachEventListeners() {
     });
   }
   // Nowy przycisk w ekranie "Więcej"
-  elements.addContentButtonMore.addEventListener('click', () => {
-    contentManager.openImportModal(state, elements);
-  });
+  if (featureFlags.isFileImportEnabled()) {
+    elements.addContentButtonMore.addEventListener('click', () => {
+      contentManager.openImportModal(state, elements);
+    });
+  }
   elements.importClose.addEventListener('click', () => {
     contentManager.closeImportModal(elements);
   });
@@ -361,9 +391,11 @@ function attachEventListeners() {
     });
   }
   // Nowy przycisk w ekranie "Więcej"
-  elements.aiGeneratorButtonMore.addEventListener('click', () => {
-    contentManager.openAIGeneratorModal(state, elements);
-  });
+  if (featureFlags.isAIGeneratorEnabled()) {
+    elements.aiGeneratorButtonMore.addEventListener('click', () => {
+      contentManager.openAIGeneratorModal(state, elements);
+    });
+  }
   // Przyciski wyboru typu treści
   elements.aiTypeQuiz.addEventListener('click', () => {
     contentManager.selectedAIType = 'quiz';
@@ -382,6 +414,76 @@ function attachEventListeners() {
   elements.aiClose.addEventListener('click', () => {
     contentManager.closeAIGeneratorModal(elements);
   });
+}
+
+/**
+ * Ukrywa/pokazuje elementy UI na podstawie feature flags
+ */
+function applyFeatureFlags(elements) {
+    const enabledTabs = featureFlags.getEnabledTabs();
+    
+    // Główne moduły (zakładki)
+    if (!featureFlags.isQuizzesEnabled()) {
+        elements.tabQuizzes.classList.add('hidden');
+    } else {
+        elements.tabQuizzes.classList.remove('hidden');
+    }
+    
+    if (!featureFlags.isWorkoutsEnabled()) {
+        elements.tabWorkouts.classList.add('hidden');
+    } else {
+        elements.tabWorkouts.classList.remove('hidden');
+    }
+    
+    if (!featureFlags.isListeningEnabled()) {
+        elements.tabListening.classList.add('hidden');
+    } else {
+        elements.tabListening.classList.remove('hidden');
+    }
+    
+    // Funkcje dodatkowe - mogą być w tab barze lub w "Więcej"
+    if (enabledTabs.includes('import')) {
+        // Import ma swoją zakładkę w tab barze
+        elements.tabImport.classList.remove('hidden');
+    } else {
+        elements.tabImport.classList.add('hidden');
+    }
+    
+    if (enabledTabs.includes('ai-generator')) {
+        // AI Generator ma swoją zakładkę w tab barze
+        elements.tabAIGenerator.classList.remove('hidden');
+    } else {
+        elements.tabAIGenerator.classList.add('hidden');
+    }
+    
+    // Zakładka "Więcej"
+    if (enabledTabs.includes('more')) {
+        elements.tabMore.classList.remove('hidden');
+        
+        // Przyciski wewnątrz "Więcej" - pokazuj tylko te, które NIE są w tab barze
+        if (featureFlags.isFileImportEnabled() && !enabledTabs.includes('import')) {
+            elements.addContentButtonMore.classList.remove('hidden');
+        } else {
+            elements.addContentButtonMore.classList.add('hidden');
+        }
+        
+        if (featureFlags.isAIGeneratorEnabled() && !enabledTabs.includes('ai-generator')) {
+            elements.aiGeneratorButtonMore.classList.remove('hidden');
+        } else {
+            elements.aiGeneratorButtonMore.classList.add('hidden');
+        }
+    } else {
+        elements.tabMore.classList.add('hidden');
+    }
+    
+    // Sprawdź, czy jakikolwiek moduł jest włączony
+    if (enabledTabs.length === 0) {
+        // Ukryj cały tab bar, jeśli nic nie jest aktywne
+        const tabBar = document.getElementById('tab-bar');
+        if (tabBar) {
+            tabBar.classList.add('hidden');
+        }
+    }
 }
 
 /**
