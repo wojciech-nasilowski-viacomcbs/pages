@@ -28,6 +28,7 @@ WYMAGANIA:
   • "true-false" - correctAnswer = true lub false
   • "fill-in-blank" - correctAnswer = string (krótka odpowiedź)
   • "listening" - TYLKO dla nauki języków! audioText (tekst do TTS), audioLang (kod języka), correctAnswer = string
+- **WAŻNE DLA PYTAŃ WIELOKROTNEGO WYBORU:** Prawidłowa odpowiedź musi być w LOSOWEJ pozycji! NIE umieszczaj zawsze prawidłowej odpowiedzi na pierwszej pozycji (index 0). Różnicuj pozycje dla każdego pytania (np. raz index 2, raz 0, raz 3, raz 1).
 - Wszystkie teksty po polsku (chyba że użytkownik poprosi inaczej)
 - Minimum 5 pytań, maksimum 20
 - Jeśli użytkownik nie wskaże typów pytań, użyj różnych typów dla urozmaicenia
@@ -39,10 +40,14 @@ TYPY PYTAŃ - SZCZEGÓŁY:
 {
   "question": "Jaka jest stolica Polski?",
   "type": "multiple-choice",
-  "options": ["Warszawa", "Kraków", "Gdańsk", "Wrocław"],
-  "correctAnswer": 0
+  "options": ["Kraków", "Warszawa", "Gdańsk", "Wrocław"],
+  "correctAnswer": 1
 }
-UWAGA: correctAnswer musi być liczbą (0, 1, 2, 3), NIE stringiem ("0", "1", etc.)!
+UWAGA: 
+- correctAnswer musi być liczbą (0, 1, 2, 3), NIE stringiem ("0", "1", etc.)!
+- **WAŻNE:** Prawidłowa odpowiedź powinna być umieszczona w LOSOWEJ pozycji w tablicy options!
+- NIE umieszczaj zawsze prawidłowej odpowiedzi na pozycji 0 (pierwszej)!
+- Losuj pozycję prawidłowej odpowiedzi dla każdego pytania (np. raz 0, raz 2, raz 3, raz 1)
 
 2. TRUE/FALSE (prawda/fałsz):
 {
@@ -92,8 +97,8 @@ PRZYKŁAD 1 - Quiz językowy (z listening):
     {
       "question": "Co oznacza 'apple'?",
       "type": "multiple-choice",
-      "options": ["Jabłko", "Gruszka", "Banan", "Pomarańcza"],
-      "correctAnswer": 0
+      "options": ["Gruszka", "Banan", "Jabłko", "Pomarańcza"],
+      "correctAnswer": 2
     },
     {
       "question": "Posłuchaj i wpisz usłyszane słowo",
@@ -118,8 +123,8 @@ PRZYKŁAD 2 - Quiz ogólny (BEZ listening):
     {
       "question": "Jaka jest stolica Niemiec?",
       "type": "multiple-choice",
-      "options": ["Berlin", "Monachium", "Hamburg", "Frankfurt"],
-      "correctAnswer": 0
+      "options": ["Monachium", "Hamburg", "Berlin", "Frankfurt"],
+      "correctAnswer": 2
     },
     {
       "question": "Francja graniczy z Hiszpanią",
