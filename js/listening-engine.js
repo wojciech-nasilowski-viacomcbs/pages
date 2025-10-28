@@ -402,8 +402,6 @@ async function playCurrentPair() {
     const headerText1 = currentPair[order[0]];
     const headerText2 = currentPair[order[1]];
     
-    console.log(`📢 Nagłówek: "${headerText1}" (${codes[0]}) → "${headerText2}" (${codes[1]})`);
-    
     // Odtwórz nagłówek w pierwszym języku
     await speakText(headerText1, codes[0]);
     if (!playerState.isPlaying) return;
@@ -481,13 +479,11 @@ function speakText(text, langCode) {
     const waitForSilence = () => {
       // Sprawdź czy nadal odtwarzamy
       if (!playerState.isPlaying) {
-        console.log('⏹️ Przerwano czekanie na TTS');
         resolve();
         return;
       }
       
       if (playerState.synth.speaking) {
-        console.log('⏳ Czekam na zakończenie poprzedniego utterance...');
         setTimeout(waitForSilence, 50);
       } else {
         startSpeaking();
@@ -497,7 +493,6 @@ function speakText(text, langCode) {
     const startSpeaking = () => {
       // Sprawdź ponownie czy nadal odtwarzamy
       if (!playerState.isPlaying) {
-        console.log('⏹️ Przerwano przed rozpoczęciem TTS');
         resolve();
         return;
       }
@@ -514,28 +509,13 @@ function speakText(text, langCode) {
       
       // Spróbuj znaleźć odpowiedni głos dla języka
       const voices = playerState.synth.getVoices();
-      console.log(`🔍 Szukam głosu dla: ${langCode}, dostępnych głosów: ${voices.length}`);
-      
       const preferredVoice = findBestVoice(voices, langCode);
       if (preferredVoice) {
         utterance.voice = preferredVoice;
-        console.log(`✅ Używam głosu: "${preferredVoice.name}" (${preferredVoice.lang}) dla tekstu: "${normalizedText.substring(0, 30)}..."`);
-      } else {
-        console.warn(`⚠️ Nie znaleziono głosu dla ${langCode}, używam domyślnego. Tekst: "${normalizedText.substring(0, 30)}..."`);
       }
       
-      utterance.onstart = () => {
-        console.log(`  🎤 TTS rozpoczął mówienie: "${normalizedText.substring(0, 20)}..."`);
-      };
-      
-      utterance.onend = () => {
-        console.log(`  🏁 TTS zakończył mówienie: "${normalizedText.substring(0, 20)}..."`);
-        resolve();
-      };
-      utterance.onerror = (err) => {
-        console.error('❌ Błąd TTS:', err);
-        resolve();
-      };
+      utterance.onend = () => resolve();
+      utterance.onerror = () => resolve();
       
       // WAŻNE: Dodaj opóźnienie przed speak() żeby uniknąć ucinania początku
       // Web Speech API ma bug gdzie pierwsze głoski są ucięte
@@ -591,15 +571,7 @@ function findBestVoice(voices, langCode) {
   const lang = langCode.split('-')[0].toLowerCase();
   const country = langCode.split('-')[1]?.toLowerCase();
   
-  console.log(`🔎 Szukam głosu dla: ${langCode} (język: ${lang}, kraj: ${country || 'brak'})`);
-  
-  // Pokaż dostępne głosy dla tego języka
-  const langVoices = voices.filter(v => v.lang.toLowerCase().startsWith(lang));
-  if (langVoices.length > 0) {
-    console.log(`  📋 Dostępne głosy dla ${lang}:`, langVoices.map(v => `${v.name} (${v.lang})`).join(', '));
-  } else {
-    console.warn(`  ⚠️ Brak głosów dla języka ${lang}!`);
-  }
+  // Znajdź najlepszy głos dla języka
   
   // NOWY PRIORYTET: Google głosy są najlepszej jakości i nie ucinają początku
   
@@ -608,27 +580,18 @@ function findBestVoice(voices, langCode) {
     v.name.toLowerCase().includes('google') && 
     v.lang.toLowerCase() === langCode.toLowerCase()
   );
-  if (voice) {
-    console.log(`  ✅ Znaleziono (priorytet 1 - Google exact): ${voice.name} (${voice.lang})`);
-    return voice;
-  }
+  if (voice) return voice;
   
   // Priorytet 2: Google głos z tym samym językiem
   voice = voices.find(v => 
     v.name.toLowerCase().includes('google') && 
     v.lang.toLowerCase().startsWith(lang)
   );
-  if (voice) {
-    console.log(`  ✅ Znaleziono (priorytet 2 - Google lang): ${voice.name} (${voice.lang})`);
-    return voice;
-  }
+  if (voice) return voice;
   
-  // Priorytet 3: Głos z dokładnym kodem języka i kraju (np. pl-PL)
+  // Priorytet 3: Głos z dokładnym kodem języka i kraju
   voice = voices.find(v => v.lang.toLowerCase() === langCode.toLowerCase());
-  if (voice) {
-    console.log(`  ✅ Znaleziono (priorytet 3 - exact): ${voice.name} (${voice.lang})`);
-    return voice;
-  }
+  if (voice) return voice;
   
   // Priorytet 4: Głos z tym samym językiem i krajem
   if (country) {
@@ -637,28 +600,17 @@ function findBestVoice(voices, langCode) {
       const vCountry = v.lang.split('-')[1]?.toLowerCase();
       return vLang === lang && vCountry === country;
     });
-    if (voice) {
-      console.log(`  ✅ Znaleziono (priorytet 4 - lang+country): ${voice.name} (${voice.lang})`);
-      return voice;
-    }
+    if (voice) return voice;
   }
   
-  // Priorytet 5: Dowolny głos z tym samym językiem (np. pl-*)
+  // Priorytet 5: Dowolny głos z tym samym językiem
   voice = voices.find(v => v.lang.toLowerCase().startsWith(lang));
-  if (voice) {
-    console.log(`  ✅ Znaleziono (priorytet 5 - any lang): ${voice.name} (${voice.lang})`);
-    return voice;
-  }
+  if (voice) return voice;
   
-  // Priorytet 6: Głos lokalny (local) dla danego języka
+  // Priorytet 6: Głos lokalny dla danego języka
   voice = voices.find(v => v.localService && v.lang.toLowerCase().startsWith(lang));
-  if (voice) {
-    console.log(`  ✅ Znaleziono (priorytet 6 - lokalny): ${voice.name} (${voice.lang})`);
-    return voice;
-  }
+  if (voice) return voice;
   
-  // Jeśli nic nie znaleziono, zwróć null (użyje domyślnego)
-  console.warn(`  ❌ Nie znaleziono głosu dla ${langCode}`);
   return null;
 }
 
