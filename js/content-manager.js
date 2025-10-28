@@ -12,6 +12,9 @@ const contentManager = {
   selectedFile: null,
   itemToDelete: null,
   
+  // Zmienne stanu dla generatora AI
+  selectedAIType: 'quiz', // 'quiz' lub 'workout'
+  
   /**
    * Renderuje karty quizów lub treningów
    */
@@ -749,8 +752,8 @@ const contentManager = {
    * Otwórz modal generatora AI
    */
   openAIGeneratorModal(state, elements) {
-    const type = state.currentTab === 'quizzes' ? 'quiz' : 'trening';
-    elements.aiTypeLabel.textContent = type;
+    // Domyślnie wybierz typ na podstawie aktualnej zakładki
+    this.selectedAIType = state.currentTab === 'quizzes' ? 'quiz' : 'workout';
     
     // Resetuj formularz
     elements.aiPrompt.value = '';
@@ -758,8 +761,40 @@ const contentManager = {
     elements.aiSuccess.classList.add('hidden');
     elements.aiLoading.classList.add('hidden');
     
+    // Ustaw aktywny przycisk typu
+    this.updateAITypeButtons(elements);
+    
     // Pokaż modal
     elements.aiGeneratorModal.classList.remove('hidden');
+  },
+  
+  /**
+   * Aktualizuj przyciski wyboru typu AI
+   */
+  updateAITypeButtons(elements) {
+    const quizBtn = elements.aiTypeQuiz;
+    const workoutBtn = elements.aiTypeWorkout;
+    const hintQuiz = elements.aiHintQuiz;
+    const hintWorkout = elements.aiHintWorkout;
+    const promptInput = elements.aiPrompt;
+    
+    if (this.selectedAIType === 'quiz') {
+      quizBtn.classList.add('bg-blue-600', 'border-blue-600', 'text-white');
+      quizBtn.classList.remove('border-gray-600', 'text-gray-300');
+      workoutBtn.classList.add('border-gray-600', 'text-gray-300');
+      workoutBtn.classList.remove('bg-green-600', 'border-green-600', 'text-white');
+      hintQuiz.classList.remove('hidden');
+      hintWorkout.classList.add('hidden');
+      promptInput.placeholder = 'Przykład: Quiz o angielskim dla początkujących, 10 pytań: 5 multiple-choice, 3 listening (en-US), 2 fill-in-blank';
+    } else {
+      workoutBtn.classList.add('bg-green-600', 'border-green-600', 'text-white');
+      workoutBtn.classList.remove('border-gray-600', 'text-gray-300');
+      quizBtn.classList.add('border-gray-600', 'text-gray-300');
+      quizBtn.classList.remove('bg-blue-600', 'border-blue-600', 'text-white');
+      hintWorkout.classList.remove('hidden');
+      hintQuiz.classList.add('hidden');
+      promptInput.placeholder = 'Przykład: Trening FBW dla początkujących, 30 minut, bez sprzętu, 3 fazy';
+    }
   },
   
   /**
@@ -775,7 +810,7 @@ const contentManager = {
   async handleAIGenerate(state, elements, uiManager) {
     // Pobierz dane z formularza
     const prompt = elements.aiPrompt.value.trim();
-    const contentType = state.currentTab === 'quizzes' ? 'quiz' : 'workout';
+    const contentType = this.selectedAIType; // Użyj wybranego typu zamiast currentTab
     
     // Walidacja
     if (!prompt) {
@@ -842,13 +877,32 @@ const contentManager = {
     const systemPrompt = promptTemplate.replace('{USER_PROMPT}', userPrompt);
     
     // Sprawdź czy jesteśmy na produkcji (Vercel) czy lokalnie
-    const isProduction = window.location.hostname !== 'localhost' && 
-                        window.location.hostname !== '127.0.0.1' &&
-                        !window.location.hostname.includes('192.168');
+    const hostname = window.location.hostname;
+    const protocol = window.location.protocol;
+    
+    // Jeśli używamy file:// lub nie mamy hostname, zawsze używaj OpenRouter bezpośrednio
+    const isFileProtocol = protocol === 'file:' || hostname === '';
+    
+    // Sprawdź czy jesteśmy na Vercel (produkcja)
+    const isVercel = hostname.includes('vercel.app') || hostname.includes('vercel.com');
+    
+    // Dla innych domen sprawdź czy to nie localhost
+    const isLocalhost = hostname === 'localhost' || 
+                       hostname === '127.0.0.1' ||
+                       hostname.includes('192.168') ||
+                       hostname.includes('.local');
+    
+    // Używaj Vercel Function tylko jeśli jesteśmy na Vercel
+    const useVercelFunction = isVercel && !isLocalhost && !isFileProtocol;
+    
+    console.log(`🤖 Generowanie ${contentType} przez AI...`);
+    console.log(`📍 Hostname: ${hostname || 'file://'}`);
+    console.log(`📍 Protocol: ${protocol}`);
+    console.log(`📍 Środowisko: ${useVercelFunction ? 'Produkcja (Vercel Function)' : 'Lokalne (OpenRouter Direct)'}`);
     
     let content;
     
-    if (isProduction) {
+    if (useVercelFunction) {
       // PRODUKCJA: Użyj Vercel Serverless Function
       const response = await fetch('/api/ai-generate', {
         method: 'POST',
@@ -863,12 +917,24 @@ const contentManager = {
       });
       
       if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || 'Błąd podczas generowania AI');
+        let errorMessage = 'Błąd podczas generowania AI';
+        try {
+          const error = await response.json();
+          errorMessage = error.error || errorMessage;
+        } catch (e) {
+          // Jeśli nie można sparsować jako JSON, użyj tekstu
+          const text = await response.text();
+          errorMessage = `Błąd ${response.status}: ${text.substring(0, 200)}`;
+        }
+        throw new Error(errorMessage);
       }
       
       const data = await response.json();
       content = data.content;
+      
+      if (!content) {
+        throw new Error('Brak odpowiedzi od serwera. Spróbuj ponownie.');
+      }
       
     } else {
       // LOKALNIE: Użyj bezpośrednio OpenRouter API
@@ -888,10 +954,10 @@ const contentManager = {
         },
         body: JSON.stringify({
           // Available OpenRouter models (2025):
-          // - google/gemini-1.5-pro: Stable, multimodal, large context (recommended)
-          // - google/gemini-2.5-flash: Latest, fast, cost-effective
-          // - google/gemini-2.5-pro: Latest, best quality for complex reasoning
-          model: 'google/gemini-1.5-pro',
+          // - anthropic/claude-sonnet-4.5: Najlepsza jakość, najnowszy model (zalecane)
+          // - anthropic/claude-3.5-sonnet: Stabilny, świetny stosunek ceny do jakości
+          // - anthropic/claude-3-opus: Najwyższa jakość dla złożonych zadań (droższy)
+          model: 'anthropic/claude-sonnet-4.5',
           messages: [
             { role: 'user', content: systemPrompt }
           ],
@@ -901,23 +967,49 @@ const contentManager = {
       });
       
       if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error?.message || 'Błąd API OpenRouter');
+        let errorMessage = 'Błąd API OpenRouter';
+        try {
+          const error = await response.json();
+          errorMessage = error.error?.message || errorMessage;
+        } catch (e) {
+          // Jeśli nie można sparsować jako JSON, użyj tekstu
+          const text = await response.text();
+          errorMessage = `Błąd ${response.status}: ${text.substring(0, 200)}`;
+        }
+        throw new Error(errorMessage);
       }
       
       const data = await response.json();
-      content = data.choices[0].message.content;
+      content = data.choices?.[0]?.message?.content;
+      
+      if (!content) {
+        throw new Error('Brak odpowiedzi od AI. Sprawdź klucz API i spróbuj ponownie.');
+      }
     }
     
     // Parsuj JSON z odpowiedzi (usuń markdown jeśli jest)
     let jsonString = content.trim();
+    
+    // Sprawdź czy odpowiedź nie jest HTML-em (błąd)
+    if (jsonString.startsWith('<!DOCTYPE') || jsonString.startsWith('<html')) {
+      throw new Error('AI zwróciło nieprawidłową odpowiedź (HTML). Sprawdź klucz API i spróbuj ponownie.');
+    }
+    
+    // Usuń markdown
     if (jsonString.startsWith('```json')) {
       jsonString = jsonString.replace(/```json\n?/g, '').replace(/```\n?/g, '');
     } else if (jsonString.startsWith('```')) {
       jsonString = jsonString.replace(/```\n?/g, '');
     }
     
-    return JSON.parse(jsonString);
+    // Spróbuj sparsować JSON
+    try {
+      return JSON.parse(jsonString);
+    } catch (parseError) {
+      console.error('Błąd parsowania JSON:', parseError);
+      console.error('Otrzymana odpowiedź:', jsonString.substring(0, 500));
+      throw new Error('AI zwróciło nieprawidłowy format JSON. Spróbuj ponownie lub zmień opis.');
+    }
   },
   
   showAIError(message, elements) {

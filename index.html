@@ -661,12 +661,34 @@
                     <button id="ai-close" class="text-gray-400 hover:text-white text-2xl">&times;</button>
                 </div>
 
-                <p class="text-gray-300 mb-4">Opisz czego potrzebujesz, a AI wygeneruje <span id="ai-type-label">quiz</span> dla Ciebie.</p>
+                <p class="text-gray-300 mb-4">Wybierz typ treści i opisz czego potrzebujesz.</p>
                 
-                <div class="bg-blue-900/30 border border-blue-600/50 rounded-lg p-3 mb-4">
+                <!-- Wybór typu treści -->
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-300 mb-2">Co chcesz wygenerować?</label>
+                    <div class="grid grid-cols-2 gap-3">
+                        <button id="ai-type-quiz" class="ai-type-btn px-4 py-3 rounded-lg border-2 transition bg-blue-600 border-blue-600 text-white" data-type="quiz">
+                            <div class="text-2xl mb-1">📝</div>
+                            <div class="font-semibold">Quiz</div>
+                        </button>
+                        <button id="ai-type-workout" class="ai-type-btn px-4 py-3 rounded-lg border-2 transition border-gray-600 text-gray-300 hover:border-gray-500" data-type="workout">
+                            <div class="text-2xl mb-1">💪</div>
+                            <div class="font-semibold">Trening</div>
+                        </button>
+                    </div>
+                </div>
+                
+                <div id="ai-hint-quiz" class="bg-blue-900/30 border border-blue-600/50 rounded-lg p-3 mb-4">
                     <p class="text-blue-200 text-sm">
                         💡 <strong>Wskazówka:</strong> Możesz określić typy pytań, np:
                         <br>"Quiz o angielskim, 10 pytań: 5 multiple-choice, 3 listening, 2 fill-in-blank"
+                    </p>
+                </div>
+                
+                <div id="ai-hint-workout" class="hidden bg-green-900/30 border border-green-600/50 rounded-lg p-3 mb-4">
+                    <p class="text-green-200 text-sm">
+                        💡 <strong>Wskazówka:</strong> Opisz rodzaj treningu i poziom, np:
+                        <br>"Trening FBW dla początkujących, 30 minut, bez sprzętu"
                     </p>
                 </div>
 

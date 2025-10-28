@@ -128,7 +128,10 @@ const elements = {
   aiGeneratorButton: document.getElementById('ai-generator-button'), // stary (usunięty z HTML)
   aiGeneratorButtonMore: document.getElementById('ai-generator-button-more'), // NOWE
   aiGeneratorModal: document.getElementById('ai-generator-modal'),
-  aiTypeLabel: document.getElementById('ai-type-label'),
+  aiTypeQuiz: document.getElementById('ai-type-quiz'),
+  aiTypeWorkout: document.getElementById('ai-type-workout'),
+  aiHintQuiz: document.getElementById('ai-hint-quiz'),
+  aiHintWorkout: document.getElementById('ai-hint-workout'),
   aiPrompt: document.getElementById('ai-prompt'),
   aiError: document.getElementById('ai-error'),
   aiSuccess: document.getElementById('ai-success'),
@@ -360,6 +363,15 @@ function attachEventListeners() {
   // Nowy przycisk w ekranie "Więcej"
   elements.aiGeneratorButtonMore.addEventListener('click', () => {
     contentManager.openAIGeneratorModal(state, elements);
+  });
+  // Przyciski wyboru typu treści
+  elements.aiTypeQuiz.addEventListener('click', () => {
+    contentManager.selectedAIType = 'quiz';
+    contentManager.updateAITypeButtons(elements);
+  });
+  elements.aiTypeWorkout.addEventListener('click', () => {
+    contentManager.selectedAIType = 'workout';
+    contentManager.updateAITypeButtons(elements);
   });
   elements.aiGenerate.addEventListener('click', () => {
     contentManager.handleAIGenerate(state, elements, uiManager);
