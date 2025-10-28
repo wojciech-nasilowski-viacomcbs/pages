@@ -206,6 +206,7 @@ const contentManager = {
     if (!state.currentUser) {
       state.quizzes = [];
       state.workouts = [];
+      elements.loader.classList.add('hidden'); // Ukryj loader dla gości
       console.log('👤 Gość - brak danych do wyświetlenia');
       return;
     }
