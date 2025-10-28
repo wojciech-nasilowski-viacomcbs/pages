@@ -60,31 +60,62 @@
 - ✅ `createListeningSet()` - tworzenie nowego zestawu
 - ✅ `deleteListeningSet(id)` - usuwanie zestawu
 
-## ⚠️ Znane Problemy
+## ✅ Rozwiązane Problemy
 
-### 1. Ucinanie Pierwszych Głosek (Częściowo Rozwiązane)
-**Problem:** TTS ucina pierwsze głoski z początku każdego tekstu (np. "(Ja) jestem" → "a) jestem")
+### 1. Ucinanie Pierwszych Głosek ✅
+**Problem:** TTS ucinał pierwsze głoski z początku każdego tekstu (np. "(Ja) jestem" → "a) jestem", "Nosotros" → "sotros")
 
-**Przyczyna:** Bug Web Speech API - głos nie jest w pełni "gotowy" przed rozpoczęciem mówienia
+**Rozwiązanie:** 
+- Zmieniono priorytet wyboru głosu - **Google głosy na pierwszym miejscu** (lepsza jakość, nie ucinają początku)
+- Dodano opóźnienie 250ms przed `speak()` dla dodatkowego bezpieczeństwa
+- Google głosy: "Google polski" (zamiast "Zosia"), "Google español" (zamiast "Mónica")
 
-**Rozwiązanie:** Dodano opóźnienie 100ms przed `speak()` (linia 505 w `listening-engine.js`)
+**Status:** ✅ Rozwiązane
 
-**Status:** Wymaga testowania - może potrzebować zwiększenia do 150ms lub 200ms
+### 2. Nakładanie się tekstów przy manualnym przejściu ✅
+**Problem:** Kiedy użytkownik klikał strzałkę (następna para), stary TTS nadal się odtwarzał i nakładał na nowy
 
-### 2. Błędy "interrupted" w Konsoli
-**Problem:** Czasami pojawia się błąd `SpeechSynthesisErrorEvent { error: 'interrupted' }`
+**Rozwiązanie:**
+- Dodano mechanizm tymczasowego zatrzymania `isPlaying` podczas manualnego przejścia
+- `synth.cancel()` + opóźnienie 100ms żeby Promise się zakończyły
+- Sprawdzanie `isPlaying` w `waitForSilence()` i `startSpeaking()`
 
-**Przyczyna:** `synth.cancel()` jest wywoływany podczas manualne przejścia do następnej pary
+**Status:** ✅ Rozwiązane
 
-**Status:** Nie wpływa na funkcjonalność, ale generuje logi błędów
+### 3. Czytanie wielkich liter jako akronimów ✅
+**Problem:** "ESTAR" było czytane jako "E-S-T-A-R" zamiast "Estar"
+
+**Rozwiązanie:**
+- Ulepszona funkcja `normalizeTextForTTS()` - konwertuje cały tekst na lowercase z kapitalizacją
+- Kapitalizacja pierwszej litery, po kropce/wykrzykniku/pytajniku, i po nawiasie otwierającym
+
+**Status:** ✅ Rozwiązane
+
+### 4. Nagłówki tylko w jednym języku ✅
+**Problem:** Nagłówki sekcji były czytane tylko po polsku lub tylko po hiszpańsku
+
+**Rozwiązanie:**
+- Zmieniono logikę - nagłówki są teraz czytane w **obu językach** jak normalne pary
+- Nagłówek po polsku → pauza → Nagłówek po hiszpańsku → długa pauza
+
+**Status:** ✅ Rozwiązane
+
+### 5. Odświeżanie strony bez ostrzeżenia ✅
+**Problem:** Przypadkowe odświeżenie strony (Cmd+R) powodowało utratę postępu
+
+**Rozwiązanie:**
+- Dodano `beforeunload` event listener w `app.js`
+- Ostrzeżenie wyświetla się tylko gdy użytkownik jest w trakcie aktywności (quiz/trening/listening)
+
+**Status:** ✅ Rozwiązane
 
 ## 🔄 Do Przetestowania
 
-1. **Ucinanie głosek** - czy opóźnienie 100ms jest wystarczające?
-2. **Różne przeglądarki** - Safari, Chrome, Firefox (różne implementacje Web Speech API)
-3. **Różne języki** - czy wszystkie języki są poprawnie odtwarzane?
-4. **Długie teksty** - jak zachowuje się TTS z dłuższymi zdaniami?
-5. **Mobile** - czy działa na iOS/Android?
+1. **Różne przeglądarki** - Safari, Chrome, Firefox (różne implementacje Web Speech API)
+2. **Różne języki** - czy wszystkie języki są poprawnie odtwarzane z Google głosami?
+3. **Długie teksty** - jak zachowuje się TTS z dłuższymi zdaniami?
+4. **Mobile** - czy działa na iOS/Android? Czy Google głosy są dostępne?
+5. **Zapętlanie** - czy działa poprawnie po zakończeniu zestawu?
 
 ## 📋 Backlog (Przyszłe Funkcje)
 
@@ -163,8 +194,17 @@
 - **Języki:** Wsparcie dla wszystkich języków dostępnych w Web Speech API (34+ języków)
 - **Przykładowy zestaw:** 26 par (czasowniki ESTAR i IR w hiszpańskim)
 
+## 🎯 Kluczowe Usprawnienia
+
+1. **Google głosy** - Priorytetyzacja Google głosów dla lepszej jakości (nie ucinają początku)
+2. **Inteligentne przerywanie** - Mechanizm zatrzymywania TTS przy manualnym przejściu
+3. **Normalizacja tekstu** - Zapobiega czytaniu wielkich liter jako akronimów
+4. **Nagłówki dwujęzyczne** - Nagłówki czytane w obu językach
+5. **Ostrzeżenie przed opuszczeniem** - Zapobiega przypadkowej utracie postępu
+6. **Czysty kod** - Usunięto nadmierne logi, brak hakerskich workaroundów
+
 ---
 
 **Ostatnia aktualizacja:** 28 października 2025  
-**Status:** ✅ Funkcjonalność działa, wymaga testowania ucinania głosek
+**Status:** ✅ Funkcjonalność w pełni działająca, gotowa do użycia
 

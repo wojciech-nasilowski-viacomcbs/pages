@@ -424,21 +424,15 @@ async function playCurrentPair() {
     const text1 = currentPair[order[0]];
     const text2 = currentPair[order[1]];
     
-    console.log(`🗣️ Para ${playerState.currentIndex + 1}: "${text1}" (${codes[0]}) → "${text2}" (${codes[1]})`);
-    
     // Odtwórz pierwszy język
-    console.log(`  ▶️ Odtwarzam język 1: "${text1}"`);
     await speakText(text1, codes[0]);
-    if (!playerState.isPlaying) return; // Sprawdź czy nie zatrzymano
-    console.log(`  ✅ Zakończono język 1, pauza ${playerState.pauseBetweenLangs}ms`);
+    if (!playerState.isPlaying) return;
     await wait(playerState.pauseBetweenLangs);
     
     // Odtwórz drugi język
-    if (!playerState.isPlaying) return; // Sprawdź czy nie zatrzymano
-    console.log(`  ▶️ Odtwarzam język 2: "${text2}"`);
+    if (!playerState.isPlaying) return;
     await speakText(text2, codes[1]);
-    if (!playerState.isPlaying) return; // Sprawdź czy nie zatrzymano
-    console.log(`  ✅ Zakończono język 2, długa pauza ${playerState.pauseBetweenPairs}ms`);
+    if (!playerState.isPlaying) return;
     await wait(playerState.pauseBetweenPairs);
   }
   
@@ -644,7 +638,6 @@ function navigatePair(direction, autoAdvance = false) {
     playerState.isPlaying = false;
     
     if (playerState.synth) {
-      console.log('⏹️ Zatrzymuję TTS przed przejściem do następnej pary');
       playerState.synth.cancel();
     }
     
@@ -695,7 +688,6 @@ function navigatePair(direction, autoAdvance = false) {
  */
 function toggleLoop() {
   playerState.isLooping = !playerState.isLooping;
-  console.log('🔁 Zapętlanie:', playerState.isLooping ? 'ON' : 'OFF');
   updatePlayerUI();
 }
 
@@ -707,7 +699,6 @@ function switchLanguageOrder() {
     playerState.langOrder === 'lang1-first' 
       ? 'lang2-first' 
       : 'lang1-first';
-  console.log('🔄 Kolejność języków:', playerState.langOrder);
   updatePlayerUI();
 }
 
