@@ -258,6 +258,7 @@ Wszystkie pliki z treningami znajdują się w folderze: `/data/workouts/`
 {
   "title": "Nazwa Treningu",
   "description": "Krótki opis treningu i potrzebnego sprzętu",
+  "emoji": "💪",
   "phases": [
     // Tablica faz treningu (patrz niżej)
   ]
@@ -270,7 +271,23 @@ Wszystkie pliki z treningami znajdują się w folderze: `/data/workouts/`
 |------|-----|----------|------|
 | `title` | string | ✅ | Nazwa treningu |
 | `description` | string | ✅ | Opis i lista sprzętu |
+| `emoji` | string | ⚠️ Opcjonalne | Emotikona reprezentująca typ treningu (domyślnie: 💪) |
 | `phases` | array | ✅ | Tablica faz treningu (min. 1) |
+
+**Dostępne emotikony dla treningów:**
+- 💪 - Trening siłowy, FBW, ogólny trening (domyślna)
+- 🏃 - Cardio, bieganie, wytrzymałość
+- 🥊 - Boks, sporty walki
+- 🧘 - Joga, stretching, relaks
+- 🏋️ - Trening na siłowni, ciężary
+- 🤸 - Akrobatyka, gimnastyka
+- 🚴 - Rower, spinning
+- 🏊 - Pływanie
+- ⚡ - HIIT, intensywny trening
+- 🎯 - Trening celowany (np. brzuch, nogi)
+- 🔥 - Fat burning, spalanie tłuszczu
+- 🦵 - Trening nóg
+- 💯 - Challenge, wyzwanie
 
 ---
 
@@ -576,6 +593,7 @@ System TTS (Text-to-Speech) wykorzystuje Web Speech API dostępne w przeglądarc
 - 🔄 Wsparcie dla obrazków i GIF-ów w ćwiczeniach (`mediaUrl`)
 - 🔄 Więcej typów pytań quizowych
 - 🔄 Zaawansowane statystyki i śledzenie postępu
+- 🔄 Ręczna edycja emotikonek w interfejsie użytkownika
 
 ---
 

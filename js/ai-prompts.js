@@ -158,6 +158,9 @@ ZADANIE: Wygeneruj trening w formacie JSON na podstawie opisu użytkownika.
 
 WYMAGANIA:
 - Tytuł i opis powinny być konkretne i motywujące
+- **WAŻNE:** Dodaj pole "emoji" z jedną emotikoną pasującą do tematu treningu
+- **NUMERACJA:** Dodaj numer treningu na początku tytułu w formacie "#N - " gdzie N to {WORKOUT_NUMBER}
+  Przykład: jeśli {WORKOUT_NUMBER} = 3, to tytuł powinien zaczynać się od "#3 - "
 - Struktura: min. 2-3 fazy (np. Rozgrzewka → Trening główny → Rozciąganie)
 - Każde ćwiczenie z dokładnym opisem wykonania
 - Używaj TYLKO tych typów:
@@ -165,6 +168,21 @@ WYMAGANIA:
   • "reps" - liczba powtórzeń (np. 10, 15, 20)
 - Wszystkie teksty po polsku (chyba że użytkownik poprosi inaczej)
 - Ćwiczenia dopasowane do poziomu (początkujący/średni/zaawansowany)
+
+EMOTIKONY - DOBIERZ PASUJĄCĄ DO TEMATU:
+- 💪 - Trening siłowy, FBW, ogólny trening
+- 🏃 - Cardio, bieganie, wytrzymałość
+- 🥊 - Boks, sporty walki
+- 🧘 - Joga, stretching, relaks
+- 🏋️ - Trening na siłowni, ciężary
+- 🤸 - Akrobatyka, gimnastyka
+- 🚴 - Rower, spinning
+- 🏊 - Pływanie
+- ⚡ - HIIT, intensywny trening
+- 🎯 - Trening celowany (np. brzuch, nogi)
+- 🔥 - Fat burning, spalanie tłuszczu
+- 🦵 - Trening nóg
+- 💯 - Challenge, wyzwanie
 
 TYPY ĆWICZEŃ - SZCZEGÓŁY:
 
@@ -186,8 +204,9 @@ TYPY ĆWICZEŃ - SZCZEGÓŁY:
 
 FORMAT JSON (KOMPLETNY PRZYKŁAD):
 {
-  "title": "Trening FBW dla początkujących",
+  "title": "#{WORKOUT_NUMBER} - Trening FBW dla początkujących",
   "description": "30-minutowy trening całego ciała bez sprzętu",
+  "emoji": "💪",
   "phases": [
     {
       "name": "Rozgrzewka",
@@ -240,7 +259,12 @@ FORMAT JSON (KOMPLETNY PRZYKŁAD):
 OPIS UŻYTKOWNIKA:
 {USER_PROMPT}
 
-WAŻNE: Zwróć TYLKO czysty JSON, bez markdown (\`\`\`json), komentarzy czy dodatkowego tekstu.`,
+NUMER TRENINGU:
+{WORKOUT_NUMBER}
+
+WAŻNE: 
+1. Tytuł MUSI zaczynać się od "#{WORKOUT_NUMBER} - "
+2. Zwróć TYLKO czysty JSON, bez markdown (\`\`\`json), komentarzy czy dodatkowego tekstu.`,
 
   /**
    * Prompt dla generowania zestawów do nauki ze słuchu (Listening)

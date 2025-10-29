@@ -241,6 +241,7 @@ const dataService = {
                     user_id: user.id,
                     title: workoutData.title,
                     description: workoutData.description || '',
+                    emoji: workoutData.emoji || '💪', // Dodaj emoji
                     is_sample: false
                 })
                 .select()

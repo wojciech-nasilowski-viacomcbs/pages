@@ -1,6 +1,7 @@
 {
   "title": "Codzienny",
   "description": "Codzienny trening łączący siłę, cardio i boks. Przygotuj: kettlebell, ciężarki, worek bokserski i skakankę.",
+  "emoji": "🥊",
   "phases": [
     {
       "name": "Trening Główny",

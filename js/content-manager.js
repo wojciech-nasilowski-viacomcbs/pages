@@ -121,7 +121,8 @@ const contentManager = {
     }
     
     elements.contentCards.innerHTML = items.map(item => {
-      const icon = state.currentTab === 'quizzes' ? '📝' : '💪';
+      // Dla quizów zawsze 📝, dla treningów użyj emoji z danych lub domyślnie 💪
+      const icon = state.currentTab === 'quizzes' ? '📝' : (item.emoji || '💪');
       const badge = item.isSample ? '<span class="text-xs bg-blue-600 px-2 py-1 rounded">Przykład</span>' : '';
       const actionButtons = !item.isSample ? `
         <div class="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-all duration-200 flex gap-2 z-10">
@@ -234,6 +235,7 @@ const contentManager = {
         id: workout.id,
         title: workout.title,
         description: workout.description,
+        emoji: workout.emoji, // Dodaj emoji z danych
         isSample: workout.is_sample,
         exerciseCount: 0
       }));
@@ -322,6 +324,8 @@ const contentManager = {
       if (state.currentTab === 'quizzes') {
         cleanData.questions = data.questions;
       } else {
+        // Dla treningów: dodaj emoji (lub domyślną 💪 jeśli brak)
+        cleanData.emoji = data.emoji || '💪';
         cleanData.phases = data.phases;
       }
       
@@ -708,6 +712,11 @@ const contentManager = {
       errors.push('Brak pola "description" lub nieprawidłowy typ');
     }
     
+    // Emoji jest opcjonalne - jeśli brak, użyj domyślnej 💪
+    if (!data.emoji) {
+      data.emoji = '💪';
+    }
+    
     if (!Array.isArray(data.phases) || data.phases.length === 0) {
       errors.push('Brak faz lub "phases" nie jest tablicą');
     }
@@ -1006,8 +1015,19 @@ const contentManager = {
     elements.aiGenerate.disabled = true;
     
     try {
+      // Dla treningów: pobierz liczbę istniejących treningów użytkownika (do numeracji)
+      let workoutNumber = null;
+      if (contentType === 'workout') {
+        try {
+          const userWorkouts = await dataService.fetchWorkouts(true); // tylko treningi użytkownika
+          workoutNumber = userWorkouts.length + 1;
+        } catch (error) {
+          console.warn('Nie udało się pobrać liczby treningów, numeracja będzie pominięta:', error);
+        }
+      }
+      
       // Wywołaj AI API (przez Vercel Function lub bezpośrednio)
-      const generatedData = await this.callAIAPI(prompt, contentType, elements);
+      const generatedData = await this.callAIAPI(prompt, contentType, elements, workoutNumber);
       
       // Waliduj wygenerowane dane
       let errors = [];
@@ -1061,7 +1081,7 @@ const contentManager = {
   /**
    * Wywołaj AI API (Vercel Function lub bezpośrednio OpenRouter)
    */
-  async callAIAPI(userPrompt, contentType, elements) {
+  async callAIAPI(userPrompt, contentType, elements, workoutNumber = null) {
     // Pobierz szablon promptu z AI_PROMPTS
     let promptTemplate;
     if (contentType === 'quiz') {
@@ -1074,6 +1094,11 @@ const contentManager = {
     
     // Zastąp {USER_PROMPT} rzeczywistym promptem użytkownika
     let systemPrompt = promptTemplate.replace('{USER_PROMPT}', userPrompt);
+    
+    // Dla treningów: dodaj informację o numerze
+    if (contentType === 'workout' && workoutNumber !== null) {
+      systemPrompt = systemPrompt.replace('{WORKOUT_NUMBER}', workoutNumber);
+    }
     
     // Dla Listening: zastąp również kody języków
     if (contentType === 'listening') {
