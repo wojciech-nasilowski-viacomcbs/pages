@@ -47,12 +47,12 @@
   - Mechanizm `waitForSilence()` - czeka aż TTS zakończy poprzedni utterance
   - Sprawdzanie `synth.speaking` przed rozpoczęciem nowego utterance
 - ✅ Zatrzymywanie TTS przy manualnym przejściu do następnej pary (kliknięcie strzałki)
-- ✅ Opóźnienie 100ms przed `speak()` żeby uniknąć ucinania pierwszych głosek
+- ✅ **Prefiksy z nazwami języków** - każda para zaczyna się od nazwy języka (np. "polski: Książka jest na stole.") - zapobiega ucinaniu początku tekstu przez TTS
 
 ### 6. Pauzy
-- ✅ Pauza między językami w parze: 1000ms
-- ✅ Długa pauza między parami: 3000ms
-- ✅ Pauza po nagłówku sekcji: 4000ms
+- ✅ Pauza między językami w parze: 700ms (skrócone z 1000ms dzięki prefiksom językowym)
+- ✅ Długa pauza między parami: 2000ms (skrócone z 3000ms)
+- ✅ Pauza po nagłówku sekcji: 2500ms (skrócone z 4000ms)
 
 ### 7. Data Service
 - ✅ `getListeningSets()` - pobieranie wszystkich zestawów
@@ -60,17 +60,27 @@
 - ✅ `createListeningSet()` - tworzenie nowego zestawu
 - ✅ `deleteListeningSet(id)` - usuwanie zestawu
 
+### 8. Generator AI (NOWE!)
+- ✅ Przycisk "🎧 Słuchanie" w modalu AI (obok Quiz i Trening)
+- ✅ Wybór 2 języków z dropdownów (14 języków dostępnych)
+- ✅ Prompt AI z instrukcjami dla generowania par językowych
+- ✅ Automatyczne podstawianie kodów języków do promptu
+- ✅ Walidacja JSON (sprawdzanie struktury, kluczy języków, par)
+- ✅ Zapis do Supabase przez `createListeningSet()`
+- ✅ Respektowanie feature flag `ENABLE_LISTENING` i `ENABLE_AI_GENERATOR`
+- ✅ Wsparcie dla 14 języków: Polski, Angielski (US/UK), Hiszpański (ES/MX), Niemiecki, Francuski, Włoski, Portugalski (BR/PT), Rosyjski, Japoński, Chiński, Koreański
+
 ## ✅ Rozwiązane Problemy
 
 ### 1. Ucinanie Pierwszych Głosek ✅
 **Problem:** TTS ucinał pierwsze głoski z początku każdego tekstu (np. "(Ja) jestem" → "a) jestem", "Nosotros" → "sotros")
 
-**Rozwiązanie:** 
-- Zmieniono priorytet wyboru głosu - **Google głosy na pierwszym miejscu** (lepsza jakość, nie ucinają początku)
-- Dodano opóźnienie 250ms przed `speak()` dla dodatkowego bezpieczeństwa
-- Google głosy: "Google polski" (zamiast "Zosia"), "Google español" (zamiast "Mónica")
+**Rozwiązania:** 
+1. Zmieniono priorytet wyboru głosu - **Google głosy na pierwszym miejscu** (lepsza jakość, nie ucinają początku)
+2. Dodano opóźnienie 250ms przed `speak()` dla dodatkowego bezpieczeństwa
+3. **NAJLEPSZE ROZWIĄZANIE:** Dodano prefiksy z nazwami języków (np. "polski: Książka jest na stole.") - nazwa języka działa jako "bufor bezpieczeństwa", więc nawet jeśli TTS utnie początek, straci tylko część nazwy języka, a nie treść
 
-**Status:** ✅ Rozwiązane
+**Status:** ✅ Rozwiązane całkowicie
 
 ### 2. Nakładanie się tekstów przy manualnym przejściu ✅
 **Problem:** Kiedy użytkownik klikał strzałkę (następna para), stary TTS nadal się odtwarzał i nakładał na nowy
@@ -119,12 +129,12 @@
 
 ## 📋 Backlog (Przyszłe Funkcje)
 
-### Etap 4: Integracja z AI (z IMPLEMENTATION_PLAN_LISTENING.md)
-- [ ] Przycisk "Generuj zestaw AI" w zakładce "Więcej"
-- [ ] Formularz z promptem użytkownika
-- [ ] Wywołanie OpenAI API
-- [ ] Parsowanie odpowiedzi AI do formatu JSONB
-- [ ] Zapisywanie wygenerowanego zestawu do Supabase
+### ~~Etap 4: Integracja z AI~~ ✅ UKOŃCZONE
+- ✅ Przycisk "Generuj zestaw AI" w zakładce "Więcej"
+- ✅ Formularz z promptem użytkownika + wybór języków
+- ✅ Wywołanie OpenRouter API (Claude Sonnet 4.5)
+- ✅ Parsowanie odpowiedzi AI do formatu JSONB
+- ✅ Zapisywanie wygenerowanego zestawu do Supabase
 
 ### Dodatkowe Funkcje
 - [ ] Edycja zestawów (dodawanie/usuwanie par)
@@ -147,12 +157,17 @@
 - `supabase/insert_samples.sql` - przykładowe dane
 - `DB_SCHEMA.md` - dokumentacja schematu
 
-### Frontend
-- `index.html` - dodano Tab Bar, `listening-screen`, `more-screen`, style CSS
-- `js/app.js` - inicjalizacja modułu, zapisywanie/przywracanie zakładki z localStorage
+### Frontend - Core
+- `index.html` - dodano Tab Bar, `listening-screen`, `more-screen`, modal AI z wyborem języków, style CSS
+- `js/app.js` - inicjalizacja modułu, zapisywanie/przywracanie zakładki z localStorage, elementy DOM dla AI
 - `js/ui-manager.js` - obsługa przełączania zakładek, zapisywanie do localStorage
-- `js/listening-engine.js` - **NOWY MODUŁ** - cała logika odtwarzacza i TTS
+- `js/listening-engine.js` - **NOWY MODUŁ** - cała logika odtwarzacza, TTS, prefiksy językowe
 - `js/data-service.js` - dodano funkcje CRUD dla `listening_sets`
+
+### Frontend - Generator AI (NOWE!)
+- `js/ai-prompts.js` - dodano prompt `listening` z instrukcjami dla AI, mapowanie języków
+- `js/content-manager.js` - rozszerzono o obsługę typu "listening", walidację JSON, wybór języków
+- `js/feature-flags.js` - respektowanie flag `ENABLE_LISTENING` i `ENABLE_AI_GENERATOR`
 
 ## 🐛 Debugging
 
@@ -186,6 +201,7 @@
 - `playCurrentPair()` - odtwarza aktualną parę (język1 → pauza → język2 → długa pauza → następna para)
 - `findBestVoice(voices, langCode)` - inteligentny wybór głosu
 - `normalizeTextForTTS(text)` - normalizacja tekstu (lowercase z kapitalizacją)
+- `getLanguageName(langCode)` - zwraca nazwę języka w jego własnym języku (endonym) - używane jako prefiks
 - `waitForSilence()` - czeka aż TTS zakończy mówienie przed rozpoczęciem nowego utterance
 
 ## 📊 Statystyki
@@ -197,14 +213,16 @@
 ## 🎯 Kluczowe Usprawnienia
 
 1. **Google głosy** - Priorytetyzacja Google głosów dla lepszej jakości (nie ucinają początku)
-2. **Inteligentne przerywanie** - Mechanizm zatrzymywania TTS przy manualnym przejściu
-3. **Normalizacja tekstu** - Zapobiega czytaniu wielkich liter jako akronimów
-4. **Nagłówki dwujęzyczne** - Nagłówki czytane w obu językach
-5. **Ostrzeżenie przed opuszczeniem** - Zapobiega przypadkowej utracie postępu
-6. **Czysty kod** - Usunięto nadmierne logi, brak hakerskich workaroundów
+2. **Prefiksy językowe** - Każda para zaczyna się od nazwy języka (np. "polski:", "español:") - zapobiega ucinaniu początku przez TTS
+3. **Inteligentne przerywanie** - Mechanizm zatrzymywania TTS przy manualnym przejściu
+4. **Normalizacja tekstu** - Zapobiega czytaniu wielkich liter jako akronimów
+5. **Nagłówki dwujęzyczne** - Nagłówki czytane w obu językach
+6. **Ostrzeżenie przed opuszczeniem** - Zapobiega przypadkowej utracie postępu
+7. **Czysty kod** - Usunięto nadmierne logi, brak hakerskich workaroundów
 
 ---
 
-**Ostatnia aktualizacja:** 28 października 2025  
-**Status:** ✅ Funkcjonalność w pełni działająca, gotowa do użycia
+**Ostatnia aktualizacja:** 29 października 2025  
+**Status:** ✅ Funkcjonalność w pełni działająca, gotowa do użycia  
+**Nowe:** Prefiksy językowe zapobiegające ucinaniu początku przez TTS + Generator AI dla zestawów Listening
 

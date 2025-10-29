@@ -132,8 +132,13 @@ const elements = {
   aiGeneratorModal: document.getElementById('ai-generator-modal'),
   aiTypeQuiz: document.getElementById('ai-type-quiz'),
   aiTypeWorkout: document.getElementById('ai-type-workout'),
+  aiTypeListening: document.getElementById('ai-type-listening'), // NOWE
   aiHintQuiz: document.getElementById('ai-hint-quiz'),
   aiHintWorkout: document.getElementById('ai-hint-workout'),
+  aiHintListening: document.getElementById('ai-hint-listening'), // NOWE
+  aiLanguageSelection: document.getElementById('ai-language-selection'), // NOWE
+  aiLang1: document.getElementById('ai-lang1'), // NOWE
+  aiLang2: document.getElementById('ai-lang2'), // NOWE
   aiPrompt: document.getElementById('ai-prompt'),
   aiError: document.getElementById('ai-error'),
   aiSuccess: document.getElementById('ai-success'),
@@ -403,6 +408,10 @@ function attachEventListeners() {
   });
   elements.aiTypeWorkout.addEventListener('click', () => {
     contentManager.selectedAIType = 'workout';
+    contentManager.updateAITypeButtons(elements);
+  });
+  elements.aiTypeListening.addEventListener('click', () => {
+    contentManager.selectedAIType = 'listening';
     contentManager.updateAITypeButtons(elements);
   });
   elements.aiGenerate.addEventListener('click', () => {

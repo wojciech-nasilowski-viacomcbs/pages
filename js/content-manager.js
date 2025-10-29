@@ -370,7 +370,7 @@ const contentManager = {
     this.selectedFile = null;
     
     // Ustaw tytuł
-    elements.importTitle.textContent = this.currentImportType === 'quiz' ? 'Dodaj Quiz' : 'Dodaj Trening';
+    elements.importTitle.textContent = 'Dodaj Zawartość';
     
     // Resetuj formularz
     elements.fileInput.value = '';
@@ -743,6 +743,74 @@ const contentManager = {
     return errors;
   },
   
+  /**
+   * Walidacja JSON zestawu Listening
+   */
+  validateListeningJSON(data) {
+    const errors = [];
+    
+    if (!data.title || typeof data.title !== 'string') {
+      errors.push('Brak pola "title" lub nieprawidłowy typ');
+    }
+    
+    if (!data.description || typeof data.description !== 'string') {
+      errors.push('Brak pola "description" lub nieprawidłowy typ');
+    }
+    
+    if (!data.lang1_code || typeof data.lang1_code !== 'string') {
+      errors.push('Brak pola "lang1_code" lub nieprawidłowy typ');
+    }
+    
+    if (!data.lang2_code || typeof data.lang2_code !== 'string') {
+      errors.push('Brak pola "lang2_code" lub nieprawidłowy typ');
+    }
+    
+    if (!Array.isArray(data.content) || data.content.length === 0) {
+      errors.push('Brak par lub "content" nie jest tablicą');
+    }
+    
+    if (Array.isArray(data.content)) {
+      // Wykryj klucze języków z pierwszej pary (nie-nagłówkowej)
+      const firstNonHeaderPair = data.content.find(pair => {
+        const values = Object.values(pair);
+        return !values.some(val => typeof val === 'string' && val.startsWith('---') && val.endsWith('---'));
+      });
+      
+      if (!firstNonHeaderPair) {
+        errors.push('Brak par językowych (tylko nagłówki)');
+        return errors;
+      }
+      
+      const expectedKeys = Object.keys(firstNonHeaderPair);
+      
+      if (expectedKeys.length !== 2) {
+        errors.push(`Każda para powinna mieć dokładnie 2 języki, znaleziono: ${expectedKeys.length}`);
+      }
+      
+      // Waliduj każdą parę
+      data.content.forEach((pair, idx) => {
+        const keys = Object.keys(pair);
+        
+        if (keys.length !== 2) {
+          errors.push(`Para ${idx + 1}: nieprawidłowa liczba kluczy (${keys.length})`);
+        }
+        
+        // Sprawdź czy klucze są zgodne z oczekiwanymi
+        expectedKeys.forEach(key => {
+          if (!pair.hasOwnProperty(key)) {
+            errors.push(`Para ${idx + 1}: brak klucza "${key}"`);
+          }
+          
+          if (typeof pair[key] !== 'string') {
+            errors.push(`Para ${idx + 1}: wartość dla "${key}" nie jest stringiem`);
+          }
+        });
+      });
+    }
+    
+    return errors;
+  },
+  
   // ============================================
   // USUWANIE TREŚCI
   // ============================================
@@ -798,10 +866,46 @@ const contentManager = {
    */
   openAIGeneratorModal(state, elements) {
     // Domyślnie wybierz typ na podstawie aktualnej zakładki
-    this.selectedAIType = state.currentTab === 'quizzes' ? 'quiz' : 'workout';
+    if (state.currentTab === 'quizzes') {
+      this.selectedAIType = 'quiz';
+    } else if (state.currentTab === 'workouts') {
+      this.selectedAIType = 'workout';
+    } else if (state.currentTab === 'listening') {
+      this.selectedAIType = 'listening';
+    } else {
+      // Fallback - wybierz pierwszy dostępny typ
+      if (window.featureFlags.isQuizzesEnabled()) {
+        this.selectedAIType = 'quiz';
+      } else if (window.featureFlags.isWorkoutsEnabled()) {
+        this.selectedAIType = 'workout';
+      } else if (window.featureFlags.isListeningEnabled()) {
+        this.selectedAIType = 'listening';
+      }
+    }
+    
+    // Ukryj przyciski typów które są wyłączone przez feature flags
+    if (!window.featureFlags.isQuizzesEnabled()) {
+      elements.aiTypeQuiz.classList.add('hidden');
+    } else {
+      elements.aiTypeQuiz.classList.remove('hidden');
+    }
+    
+    if (!window.featureFlags.isWorkoutsEnabled()) {
+      elements.aiTypeWorkout.classList.add('hidden');
+    } else {
+      elements.aiTypeWorkout.classList.remove('hidden');
+    }
+    
+    if (!window.featureFlags.isListeningEnabled()) {
+      elements.aiTypeListening.classList.add('hidden');
+    } else {
+      elements.aiTypeListening.classList.remove('hidden');
+    }
     
     // Resetuj formularz
     elements.aiPrompt.value = '';
+    elements.aiLang1.value = '';
+    elements.aiLang2.value = '';
     elements.aiError.classList.add('hidden');
     elements.aiSuccess.classList.add('hidden');
     elements.aiLoading.classList.add('hidden');
@@ -819,26 +923,42 @@ const contentManager = {
   updateAITypeButtons(elements) {
     const quizBtn = elements.aiTypeQuiz;
     const workoutBtn = elements.aiTypeWorkout;
+    const listeningBtn = elements.aiTypeListening;
     const hintQuiz = elements.aiHintQuiz;
     const hintWorkout = elements.aiHintWorkout;
+    const hintListening = elements.aiHintListening;
+    const languageSelection = elements.aiLanguageSelection;
     const promptInput = elements.aiPrompt;
     
+    // Reset wszystkich przycisków
+    [quizBtn, workoutBtn, listeningBtn].forEach(btn => {
+      btn.classList.add('border-gray-600', 'text-gray-300');
+      btn.classList.remove('bg-blue-600', 'border-blue-600', 'bg-green-600', 'border-green-600', 'bg-purple-600', 'border-purple-600', 'text-white');
+    });
+    
+    // Ukryj wszystkie hinty i sekcję języków
+    hintQuiz.classList.add('hidden');
+    hintWorkout.classList.add('hidden');
+    hintListening.classList.add('hidden');
+    languageSelection.classList.add('hidden');
+    
+    // Aktywuj wybrany typ
     if (this.selectedAIType === 'quiz') {
       quizBtn.classList.add('bg-blue-600', 'border-blue-600', 'text-white');
       quizBtn.classList.remove('border-gray-600', 'text-gray-300');
-      workoutBtn.classList.add('border-gray-600', 'text-gray-300');
-      workoutBtn.classList.remove('bg-green-600', 'border-green-600', 'text-white');
       hintQuiz.classList.remove('hidden');
-      hintWorkout.classList.add('hidden');
       promptInput.placeholder = 'Przykład: Quiz o angielskim dla początkujących, 10 pytań: 5 multiple-choice, 3 listening (en-US), 2 fill-in-blank';
-    } else {
+    } else if (this.selectedAIType === 'workout') {
       workoutBtn.classList.add('bg-green-600', 'border-green-600', 'text-white');
       workoutBtn.classList.remove('border-gray-600', 'text-gray-300');
-      quizBtn.classList.add('border-gray-600', 'text-gray-300');
-      quizBtn.classList.remove('bg-blue-600', 'border-blue-600', 'text-white');
       hintWorkout.classList.remove('hidden');
-      hintQuiz.classList.add('hidden');
       promptInput.placeholder = 'Przykład: Trening FBW dla początkujących, 30 minut, bez sprzętu, 3 fazy';
+    } else if (this.selectedAIType === 'listening') {
+      listeningBtn.classList.add('bg-purple-600', 'border-purple-600', 'text-white');
+      listeningBtn.classList.remove('border-gray-600', 'text-gray-300');
+      hintListening.classList.remove('hidden');
+      languageSelection.classList.remove('hidden');
+      promptInput.placeholder = 'Przykład: Podstawowe czasowniki w hiszpańskim, 20 par z przykładami użycia';
     }
   },
   
@@ -863,6 +983,22 @@ const contentManager = {
       return;
     }
     
+    // Dodatkowa walidacja dla Listening - sprawdź języki
+    if (contentType === 'listening') {
+      const lang1 = elements.aiLang1.value;
+      const lang2 = elements.aiLang2.value;
+      
+      if (!lang1 || !lang2) {
+        this.showAIError('Wybierz oba języki', elements);
+        return;
+      }
+      
+      if (lang1 === lang2) {
+        this.showAIError('Języki muszą być różne', elements);
+        return;
+      }
+    }
+    
     // Pokaż loading
     elements.aiError.classList.add('hidden');
     elements.aiSuccess.classList.add('hidden');
@@ -871,12 +1007,17 @@ const contentManager = {
     
     try {
       // Wywołaj AI API (przez Vercel Function lub bezpośrednio)
-      const generatedData = await this.callAIAPI(prompt, contentType);
+      const generatedData = await this.callAIAPI(prompt, contentType, elements);
       
       // Waliduj wygenerowane dane
-      const errors = contentType === 'quiz' 
-        ? this.validateQuizJSON(generatedData) 
-        : this.validateWorkoutJSON(generatedData);
+      let errors = [];
+      if (contentType === 'quiz') {
+        errors = this.validateQuizJSON(generatedData);
+      } else if (contentType === 'workout') {
+        errors = this.validateWorkoutJSON(generatedData);
+      } else if (contentType === 'listening') {
+        errors = this.validateListeningJSON(generatedData);
+      }
       
       if (errors.length > 0) {
         throw new Error('Wygenerowane dane są nieprawidłowe: ' + errors.join(', '));
@@ -885,8 +1026,16 @@ const contentManager = {
       // Zapisz do Supabase
       if (contentType === 'quiz') {
         await dataService.saveQuiz(generatedData);
-      } else {
+      } else if (contentType === 'workout') {
         await dataService.saveWorkout(generatedData);
+      } else if (contentType === 'listening') {
+        await dataService.createListeningSet(
+          generatedData.title,
+          generatedData.description,
+          generatedData.lang1_code,
+          generatedData.lang2_code,
+          generatedData.content
+        );
       }
       
       this.showAISuccess('✅ Treść wygenerowana i zapisana!', elements);
@@ -912,14 +1061,33 @@ const contentManager = {
   /**
    * Wywołaj AI API (Vercel Function lub bezpośrednio OpenRouter)
    */
-  async callAIAPI(userPrompt, contentType) {
+  async callAIAPI(userPrompt, contentType, elements) {
     // Pobierz szablon promptu z AI_PROMPTS
-    const promptTemplate = contentType === 'quiz' 
-      ? window.AI_PROMPTS.quiz
-      : window.AI_PROMPTS.workout;
+    let promptTemplate;
+    if (contentType === 'quiz') {
+      promptTemplate = window.AI_PROMPTS.quiz;
+    } else if (contentType === 'workout') {
+      promptTemplate = window.AI_PROMPTS.workout;
+    } else if (contentType === 'listening') {
+      promptTemplate = window.AI_PROMPTS.listening;
+    }
     
     // Zastąp {USER_PROMPT} rzeczywistym promptem użytkownika
-    const systemPrompt = promptTemplate.replace('{USER_PROMPT}', userPrompt);
+    let systemPrompt = promptTemplate.replace('{USER_PROMPT}', userPrompt);
+    
+    // Dla Listening: zastąp również kody języków
+    if (contentType === 'listening') {
+      const lang1Code = elements.aiLang1.value; // np. "pl-PL"
+      const lang2Code = elements.aiLang2.value; // np. "es-ES"
+      const lang1Key = lang1Code.split('-')[0].toLowerCase(); // "pl"
+      const lang2Key = lang2Code.split('-')[0].toLowerCase(); // "es"
+      
+      systemPrompt = systemPrompt
+        .replace(/{LANG1_CODE}/g, lang1Code)
+        .replace(/{LANG2_CODE}/g, lang2Code)
+        .replace(/{LANG1_KEY}/g, lang1Key)
+        .replace(/{LANG2_KEY}/g, lang2Key);
+    }
     
     // Sprawdź czy jesteśmy na produkcji (Vercel) czy lokalnie
     const hostname = window.location.hostname;

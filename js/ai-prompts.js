@@ -240,7 +240,152 @@ FORMAT JSON (KOMPLETNY PRZYKŁAD):
 OPIS UŻYTKOWNIKA:
 {USER_PROMPT}
 
-WAŻNE: Zwróć TYLKO czysty JSON, bez markdown (\`\`\`json), komentarzy czy dodatkowego tekstu.`
+WAŻNE: Zwróć TYLKO czysty JSON, bez markdown (\`\`\`json), komentarzy czy dodatkowego tekstu.`,
+
+  /**
+   * Prompt dla generowania zestawów do nauki ze słuchu (Listening)
+   */
+  listening: `Jesteś ekspertem w nauce języków obcych.
+
+ZADANIE: Wygeneruj zestaw par językowych do nauki ze słuchu w formacie JSON.
+
+WYMAGANIA:
+- Tytuł i opis powinny być konkretne i motywujące
+- Minimum 15 par, maksimum 40 par
+- Pary powinny być logicznie uporządkowane (od prostych do trudniejszych)
+- Możesz grupować pary w sekcje używając separatorów (opcjonalnie)
+- Różnorodność: słowa, frazy, zdania, przykłady użycia
+- Używaj naturalnego języka, tak jak mówią native speakerzy
+
+KODY JĘZYKÓW (lang1_code, lang2_code):
+Używaj pełnych kodów BCP 47:
+- Polski: "pl-PL"
+- Angielski (US): "en-US"
+- Angielski (UK): "en-GB"
+- Hiszpański (Hiszpania): "es-ES"
+- Hiszpański (Meksyk): "es-MX"
+- Niemiecki: "de-DE"
+- Francuski: "fr-FR"
+- Włoski: "it-IT"
+- Portugalski (Brazylia): "pt-BR"
+- Portugalski (Portugalia): "pt-PT"
+- Rosyjski: "ru-RU"
+- Japoński: "ja-JP"
+- Chiński (Mandaryński): "zh-CN"
+- Koreański: "ko-KR"
+
+KLUCZE W CONTENT (lang1_key, lang2_key):
+To skrócone kody języków używane jako klucze w obiektach par:
+- Polski: "pl"
+- Angielski: "en"
+- Hiszpański: "es"
+- Niemiecki: "de"
+- Francuski: "fr"
+- Włoski: "it"
+- Portugalski: "pt"
+- Rosyjski: "ru"
+- Japoński: "ja"
+- Chiński: "zh"
+- Koreański: "ko"
+
+SEPARATORY SEKCJI (opcjonalne):
+Możesz grupować pary w logiczne sekcje używając separatorów:
+{
+  "pl": "--- CZASOWNIK: ESTAR ---",
+  "es": "--- VERBO: ESTAR ---"
+}
+
+Separator to para, gdzie wartości zaczynają się i kończą na "---".
+Używaj separatorów TYLKO gdy ma to sens tematyczny (np. różne czasowniki, kategorie słówek).
+
+FORMAT JSON (KOMPLETNY PRZYKŁAD):
+{
+  "title": "Hiszpański A1: Czasowniki ESTAR i IR",
+  "description": "Podstawowe czasowniki w czasie teraźniejszym z przykładami",
+  "lang1_code": "pl-PL",
+  "lang2_code": "es-ES",
+  "content": [
+    {
+      "pl": "--- CZASOWNIK: ESTAR (Być - stany, położenie) ---",
+      "es": "--- VERBO: ESTAR (Presente) ---"
+    },
+    {
+      "pl": "(Ja) jestem",
+      "es": "(Yo) estoy"
+    },
+    {
+      "pl": "(Ty) jesteś",
+      "es": "(Tú) estás"
+    },
+    {
+      "pl": "(On/Ona) jest",
+      "es": "(Él/Ella) está"
+    },
+    {
+      "pl": "Jestem zmęczony.",
+      "es": "Estoy cansado."
+    },
+    {
+      "pl": "Książka jest na stole.",
+      "es": "El libro está en la mesa."
+    },
+    {
+      "pl": "--- CZASOWNIK: IR (Iść) ---",
+      "es": "--- VERBO: IR (Presente) ---"
+    },
+    {
+      "pl": "(Ja) idę",
+      "es": "(Yo) voy"
+    },
+    {
+      "pl": "(Ty) idziesz",
+      "es": "(Tú) vas"
+    },
+    {
+      "pl": "Idę do szkoły.",
+      "es": "Voy a la escuela."
+    }
+  ]
+}
+
+WSKAZÓWKI:
+1. Klucze w "content" (np. "pl", "es") muszą odpowiadać kodom języków
+2. Dla języka "pl-PL" użyj klucza "pl", dla "es-ES" użyj "es", itd.
+3. Dodaj kontekst w nawiasach gdy potrzebny, np. "(Ja) jestem", "(w restauracji)"
+4. Dla czasowników pokaż różne osoby (ja, ty, on/ona, my, wy, oni)
+5. Dla słówek dodaj przykłady użycia w zdaniach
+6. Separatory używaj rozsądnie - nie za dużo, nie za mało
+
+PRZYKŁAD BEZ SEPARATORÓW (proste słówka):
+{
+  "title": "Angielski: Kolory",
+  "description": "Podstawowe nazwy kolorów",
+  "lang1_code": "pl-PL",
+  "lang2_code": "en-US",
+  "content": [
+    {"pl": "czerwony", "en": "red"},
+    {"pl": "niebieski", "en": "blue"},
+    {"pl": "zielony", "en": "green"},
+    {"pl": "żółty", "en": "yellow"},
+    {"pl": "czarny", "en": "black"},
+    {"pl": "biały", "en": "white"},
+    {"pl": "Mój ulubiony kolor to niebieski.", "en": "My favorite color is blue."},
+    {"pl": "Niebo jest niebieskie.", "en": "The sky is blue."}
+  ]
+}
+
+OPIS UŻYTKOWNIKA:
+{USER_PROMPT}
+
+JĘZYKI (PODANE PRZEZ UŻYTKOWNIKA):
+Lang1: {LANG1_CODE} (klucz: {LANG1_KEY})
+Lang2: {LANG2_CODE} (klucz: {LANG2_KEY})
+
+KRYTYCZNE WYMAGANIA:
+1. Użyj DOKŁADNIE tych kodów języków: lang1_code="{LANG1_CODE}", lang2_code="{LANG2_CODE}"
+2. Użyj DOKŁADNIE tych kluczy w content: "{LANG1_KEY}" i "{LANG2_KEY}"
+3. Wszystkie pary muszą mieć oba klucze (np. {"pl": "...", "es": "..."})
+4. Zwróć TYLKO czysty JSON, bez markdown (\`\`\`json), komentarzy czy dodatkowego tekstu.`
 };
 
 // Eksportuj globalnie

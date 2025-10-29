@@ -19,9 +19,9 @@ const playerState = {
   lang2Key: 'es',
   synth: null,
   utterance: null,
-  pauseBetweenLangs: 1000, // ms
-  pauseBetweenPairs: 3000, // ms
-  pauseAfterHeader: 4000, // ms
+  pauseBetweenLangs: 700, // ms - skrócone (było 1000ms)
+  pauseBetweenPairs: 2000, // ms - skrócone (było 3000ms)
+  pauseAfterHeader: 2500, // ms - skrócone (było 4000ms)
   pendingTimeouts: [], // Tablica ID timeoutów do anulowania (pauzy między parami)
 };
 
@@ -461,7 +461,7 @@ async function playCurrentPair() {
     const headerText1 = currentPair[order[0]];
     const headerText2 = currentPair[order[1]];
     
-    // Odtwórz nagłówek w pierwszym języku
+    // Odtwórz nagłówek w pierwszym języku (bez prefiksu - nagłówki są już opisowe)
     await speakText(headerText1, codes[0]);
     if (!playerState.isPlaying) return;
     await wait(playerState.pauseBetweenLangs);
@@ -483,14 +483,22 @@ async function playCurrentPair() {
     const text1 = currentPair[order[0]];
     const text2 = currentPair[order[1]];
     
-    // Odtwórz pierwszy język
-    await speakText(text1, codes[0]);
+    // Pobierz nazwy języków (w ich własnym języku)
+    const langName1 = getLanguageName(codes[0]);
+    const langName2 = getLanguageName(codes[1]);
+    
+    // Odtwórz pierwszy język z prefiksem nazwy języka
+    const textWithPrefix1 = `${langName1}: ${text1}`;
+    console.log(`🗣️ Odtwarzam z prefiksem: "${textWithPrefix1}"`);
+    await speakText(textWithPrefix1, codes[0]);
     if (!playerState.isPlaying) return;
     await wait(playerState.pauseBetweenLangs);
     
-    // Odtwórz drugi język
+    // Odtwórz drugi język z prefiksem nazwy języka
     if (!playerState.isPlaying) return;
-    await speakText(text2, codes[1]);
+    const textWithPrefix2 = `${langName2}: ${text2}`;
+    console.log(`🗣️ Odtwarzam z prefiksem: "${textWithPrefix2}"`);
+    await speakText(textWithPrefix2, codes[1]);
     if (!playerState.isPlaying) return;
     await wait(playerState.pauseBetweenPairs);
   }
@@ -722,6 +730,64 @@ function wait(ms) {
 function isSectionHeader(pair) {
   const values = Object.values(pair);
   return values.some(val => val.startsWith('---') && val.endsWith('---'));
+}
+
+/**
+ * Zwróć nazwę języka w jego własnym języku (endonym)
+ * Używane jako prefiks przed tekstem, żeby uniknąć ucinania początku przez TTS
+ */
+function getLanguageName(langCode) {
+  // Mapowanie kodów języków na ich nazwy w danym języku
+  const languageNames = {
+    'pl-PL': 'polski',
+    'pl': 'polski',
+    'en-US': 'english',
+    'en-GB': 'english',
+    'en': 'english',
+    'es-ES': 'español',
+    'es-MX': 'español',
+    'es': 'español',
+    'de-DE': 'deutsch',
+    'de': 'deutsch',
+    'fr-FR': 'français',
+    'fr': 'français',
+    'it-IT': 'italiano',
+    'it': 'italiano',
+    'pt-BR': 'português',
+    'pt-PT': 'português',
+    'pt': 'português',
+    'ru-RU': 'русский',
+    'ru': 'русский',
+    'ja-JP': '日本語',
+    'ja': '日本語',
+    'zh-CN': '中文',
+    'zh': '中文',
+    'ko-KR': '한국어',
+    'ko': '한국어',
+    'nl-NL': 'nederlands',
+    'nl': 'nederlands',
+    'sv-SE': 'svenska',
+    'sv': 'svenska',
+    'no-NO': 'norsk',
+    'no': 'norsk',
+    'da-DK': 'dansk',
+    'da': 'dansk',
+    'fi-FI': 'suomi',
+    'fi': 'suomi',
+    'tr-TR': 'türkçe',
+    'tr': 'türkçe',
+    'ar-SA': 'العربية',
+    'ar': 'العربية',
+    'hi-IN': 'हिन्दी',
+    'hi': 'हिन्दी',
+    'th-TH': 'ไทย',
+    'th': 'ไทย',
+    'vi-VN': 'tiếng việt',
+    'vi': 'tiếng việt'
+  };
+  
+  // Zwróć nazwę języka lub fallback na kod
+  return languageNames[langCode] || languageNames[langCode.split('-')[0]] || langCode;
 }
 
 /**
