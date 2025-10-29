@@ -504,9 +504,24 @@ async function checkAuthState() {
  */
 function setupAuthListener() {
   authService.onAuthStateChange(async (event, session) => {
-    console.log('🔄 Auth state changed:', event);
-    
-    if (event === 'SIGNED_IN' || event === 'USER_UPDATED') {
+    if (event === 'SIGNED_IN') {
+      // WAŻNE: Wyczyść postęp sesji przy logowaniu (bezpieczeństwo/prywatność)
+      // Zapobiega wyświetlaniu postępu poprzedniego użytkownika lub gościa
+      const newUserId = session?.user?.id;
+      const previousUserId = state.currentUser?.id;
+      
+      // Wyczyść sesję jeśli to inny użytkownik (lub pierwszy login)
+      if (!previousUserId || previousUserId !== newUserId) {
+        localStorage.removeItem('currentSession');
+      }
+      
+      state.currentUser = session?.user || null;
+      await contentManager.loadData(state, elements, uiManager);
+      uiManager.updateAuthUI(state, elements, contentManager, sessionManager);
+      // Przywróć zapisaną zakładkę po załadowaniu danych
+      uiManager.switchTab(state.currentTab, state, elements, contentManager, sessionManager);
+    } else if (event === 'USER_UPDATED') {
+      // Przy USER_UPDATED nie czyścimy sesji - to ten sam użytkownik
       state.currentUser = session?.user || null;
       await contentManager.loadData(state, elements, uiManager);
       uiManager.updateAuthUI(state, elements, contentManager, sessionManager);
@@ -701,7 +716,9 @@ async function handleLogout() {
   const result = await authService.signOut();
   
   if (result.success) {
-    console.log('✅ Wylogowano');
+    // WAŻNE: Wyczyść postęp sesji przy wylogowaniu (bezpieczeństwo/prywatność)
+    localStorage.removeItem('currentSession');
+    
     // Auth listener automatycznie zaktualizuje UI
   } else {
     uiManager.showError('Błąd podczas wylogowywania: ' + result.error, elements);

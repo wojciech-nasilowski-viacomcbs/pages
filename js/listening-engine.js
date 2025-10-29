@@ -52,9 +52,15 @@ const elements = {
   btnPrevious: document.getElementById('btn-previous'),
   btnNext: document.getElementById('btn-next'),
   btnBackToList: document.getElementById('btn-back-to-list'),
+  btnRestart: document.getElementById('btn-listening-restart'),
   
   // Ikona kolejności języków
   langOrderText: document.getElementById('lang-order-text'),
+  
+  // Dialogi
+  restartDialog: document.getElementById('restart-dialog'),
+  restartConfirm: document.getElementById('restart-confirm'),
+  restartCancel: document.getElementById('restart-cancel')
 };
 
 // Referencje do funkcji z innych modułów
@@ -148,6 +154,11 @@ function setupEventListeners() {
   
   // Powrót do listy
   elements.btnBackToList?.addEventListener('click', showListeningList);
+  
+  // Restart
+  elements.btnRestart?.addEventListener('click', handleRestartClick);
+  elements.restartConfirm?.addEventListener('click', handleRestartConfirm);
+  elements.restartCancel?.addEventListener('click', handleRestartCancel);
 }
 
 /**
@@ -811,6 +822,58 @@ function escapeHtml(text) {
   const div = document.createElement('div');
   div.textContent = text;
   return div.innerHTML;
+}
+
+/**
+ * Obsługuje kliknięcie przycisku restart - pokazuje dialog potwierdzenia
+ */
+function handleRestartClick() {
+  if (elements.restartDialog) {
+    // Oznacz że restart został wywołany z listening
+    elements.restartDialog.dataset.source = 'listening';
+    elements.restartDialog.classList.remove('hidden');
+  }
+}
+
+/**
+ * Obsługuje potwierdzenie restartu - rozpoczyna zestaw od nowa
+ */
+function handleRestartConfirm() {
+  // Sprawdź czy dialog został wywołany z listening
+  if (elements.restartDialog && elements.restartDialog.dataset.source !== 'listening') {
+    return; // To nie nasz restart
+  }
+  
+  // Ukryj dialog
+  if (elements.restartDialog) {
+    elements.restartDialog.classList.add('hidden');
+    delete elements.restartDialog.dataset.source;
+  }
+  
+  // Zatrzymaj odtwarzanie
+  stopPlayback();
+  
+  // Resetuj do początku zestawu
+  playerState.currentIndex = 0;
+  playerState.isPlaying = false;
+  
+  // Odśwież UI
+  updatePlayerUI();
+}
+
+/**
+ * Obsługuje anulowanie restartu - ukrywa dialog
+ */
+function handleRestartCancel() {
+  // Sprawdź czy dialog został wywołany z listening
+  if (elements.restartDialog && elements.restartDialog.dataset.source !== 'listening') {
+    return; // To nie nasz restart
+  }
+  
+  if (elements.restartDialog) {
+    elements.restartDialog.classList.add('hidden');
+    delete elements.restartDialog.dataset.source;
+  }
 }
 
 // Eksportuj funkcje publiczne

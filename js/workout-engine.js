@@ -30,10 +30,16 @@ const elements = {
   buttonText: document.getElementById('workout-button-text'),
   buttonIcon: document.getElementById('workout-button-icon'),
   skipButton: document.getElementById('workout-skip-button'),
+  restartBtn: document.getElementById('workout-restart-btn'),
   
   // Ekran końcowy
   restartButton: document.getElementById('workout-restart'),
-  homeButton: document.getElementById('workout-home')
+  homeButton: document.getElementById('workout-home'),
+  
+  // Dialogi
+  restartDialog: document.getElementById('restart-dialog'),
+  restartConfirm: document.getElementById('restart-confirm'),
+  restartCancel: document.getElementById('restart-cancel')
 };
 
 // Ikony SVG
@@ -60,6 +66,9 @@ function initWorkoutEngine(showScreen, state) {
   elements.mainButton.addEventListener('click', handleMainButtonClick);
   elements.skipButton.addEventListener('click', handleSkip);
   elements.restartButton.addEventListener('click', handleRestart);
+  elements.restartBtn?.addEventListener('click', handleRestartClick);
+  elements.restartConfirm?.addEventListener('click', handleRestartConfirm);
+  elements.restartCancel?.addEventListener('click', handleRestartCancel);
   
   // Zwolnij Wake Lock przy opuszczeniu strony
   document.addEventListener('visibilitychange', handleVisibilityChange);
@@ -337,6 +346,72 @@ function handleVisibilityChange() {
     if (!workoutState.wakeLock) {
       requestWakeLock();
     }
+  }
+}
+
+/**
+ * Obsługuje kliknięcie przycisku restart - pokazuje dialog potwierdzenia
+ */
+function handleRestartClick() {
+  if (elements.restartDialog) {
+    // Oznacz że restart został wywołany z treningu
+    elements.restartDialog.dataset.source = 'workout';
+    elements.restartDialog.classList.remove('hidden');
+  }
+}
+
+/**
+ * Obsługuje potwierdzenie restartu - rozpoczyna trening od nowa
+ */
+function handleRestartConfirm() {
+  // Sprawdź czy dialog został wywołany z treningu
+  if (elements.restartDialog && elements.restartDialog.dataset.source !== 'workout') {
+    return; // To nie nasz restart
+  }
+  
+  // Ukryj dialog
+  if (elements.restartDialog) {
+    elements.restartDialog.classList.add('hidden');
+    delete elements.restartDialog.dataset.source;
+  }
+  
+  // Sprawdź czy mamy dane treningu
+  if (!workoutState.data) {
+    console.error('❌ Brak danych treningu do restartu');
+    return;
+  }
+  
+  // Zatrzymaj timer jeśli działa
+  if (workoutState.timerInterval) {
+    clearInterval(workoutState.timerInterval);
+    workoutState.timerInterval = null;
+  }
+  
+  // Przywróć domyślną funkcję przycisku
+  elements.mainButton.onclick = handleMainButtonClick;
+  
+  // Wyczyść zapisany postęp
+  localStorage.removeItem('currentSession');
+  
+  // Rozpocznij trening od początku
+  workoutState.currentPhaseIndex = 0;
+  workoutState.currentExerciseIndex = 0;
+  
+  displayExercise();
+}
+
+/**
+ * Obsługuje anulowanie restartu - ukrywa dialog
+ */
+function handleRestartCancel() {
+  // Sprawdź czy dialog został wywołany z treningu
+  if (elements.restartDialog && elements.restartDialog.dataset.source !== 'workout') {
+    return; // To nie nasz restart
+  }
+  
+  if (elements.restartDialog) {
+    elements.restartDialog.classList.add('hidden');
+    delete elements.restartDialog.dataset.source;
   }
 }
 

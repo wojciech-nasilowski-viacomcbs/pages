@@ -43,6 +43,7 @@ function initQuizEngine(showScreen, state) {
     randomizeCheckbox: document.getElementById('quiz-randomize'),
     skipListeningCheckbox: document.getElementById('quiz-skip-listening'), // Checkbox do pomijania pytań słuchowych
     startButton: document.getElementById('quiz-start-btn'),
+    restartButton: document.getElementById('quiz-restart-btn'),
     
     // Quiz
     progress: document.getElementById('quiz-progress'),
@@ -59,7 +60,12 @@ function initQuizEngine(showScreen, state) {
     mistakesInfo: document.getElementById('quiz-mistakes-info'),
     retryButton: document.getElementById('quiz-retry'),
     retryMistakesButton: document.getElementById('quiz-retry-mistakes'),
-    homeButton: document.getElementById('quiz-home')
+    homeButton: document.getElementById('quiz-home'),
+    
+    // Dialogi
+    restartDialog: document.getElementById('restart-dialog'),
+    restartConfirm: document.getElementById('restart-confirm'),
+    restartCancel: document.getElementById('restart-cancel')
   };
   
   // Event listenery
@@ -67,6 +73,9 @@ function initQuizEngine(showScreen, state) {
   elements.nextButton.addEventListener('click', handleNextQuestion);
   elements.retryButton.addEventListener('click', handleRetry);
   elements.retryMistakesButton.addEventListener('click', handleRetryMistakes);
+  elements.restartButton?.addEventListener('click', handleRestartClick);
+  elements.restartConfirm?.addEventListener('click', handleRestartConfirm);
+  elements.restartCancel?.addEventListener('click', handleRestartCancel);
 }
 
 /**
@@ -1009,6 +1018,66 @@ function handleRetryMistakes() {
   quizState.originalQuestions = originalQuestionsBackup;
   
   showScreenFn('quiz');
+}
+
+/**
+ * Obsługuje kliknięcie przycisku restart - pokazuje dialog potwierdzenia
+ */
+function handleRestartClick() {
+  if (elements.restartDialog) {
+    // Oznacz że restart został wywołany z quizu
+    elements.restartDialog.dataset.source = 'quiz';
+    elements.restartDialog.classList.remove('hidden');
+  }
+}
+
+/**
+ * Obsługuje potwierdzenie restartu - rozpoczyna quiz od nowa
+ */
+function handleRestartConfirm() {
+  // Sprawdź czy dialog został wywołany z quizu
+  if (elements.restartDialog && elements.restartDialog.dataset.source !== 'quiz') {
+    return; // To nie nasz restart
+  }
+  
+  // Ukryj dialog
+  if (elements.restartDialog) {
+    elements.restartDialog.classList.add('hidden');
+    delete elements.restartDialog.dataset.source;
+  }
+  
+  // Wyczyść zapisany postęp
+  localStorage.removeItem('currentSession');
+  
+  // Użyj oryginalnych pytań jeśli są dostępne, w przeciwnym razie użyj obecnych danych
+  const quizData = quizState.originalQuestions 
+    ? { ...quizState.data, questions: quizState.originalQuestions }
+    : quizState.data;
+  
+  const filename = quizState.filename;
+  
+  // Reset błędów - nowy quiz od początku
+  quizState.mistakeQuestions = [];
+  quizState.originalQuestions = null;
+  quizState.isMistakesOnlyMode = false;
+  
+  // Rozpocznij quiz od początku (pokaże opcje)
+  startQuiz(quizData, filename);
+}
+
+/**
+ * Obsługuje anulowanie restartu - ukrywa dialog
+ */
+function handleRestartCancel() {
+  // Sprawdź czy dialog został wywołany z quizu
+  if (elements.restartDialog && elements.restartDialog.dataset.source !== 'quiz') {
+    return; // To nie nasz restart
+  }
+  
+  if (elements.restartDialog) {
+    elements.restartDialog.classList.add('hidden');
+    delete elements.restartDialog.dataset.source;
+  }
 }
 
 /**

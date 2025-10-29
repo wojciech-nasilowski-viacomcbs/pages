@@ -193,7 +193,14 @@
                 <div id="quiz-header" class="hidden mb-6">
                     <div class="flex justify-between items-center mb-2">
                         <span id="quiz-progress" class="text-sm text-gray-400">Pytanie 1 / 10</span>
-                        <span id="quiz-score" class="text-sm text-gray-400">Wynik: 0 / 0</span>
+                        <div class="flex items-center gap-2">
+                            <button id="quiz-restart-btn" class="p-1.5 rounded-lg bg-gray-700 hover:bg-gray-600 transition" title="Zacznij quiz od nowa">
+                                <svg class="w-5 h-5 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                </svg>
+                            </button>
+                            <span id="quiz-score" class="text-sm text-gray-400">Wynik: 0 / 0</span>
+                        </div>
                     </div>
                     <div class="w-full bg-gray-700 rounded-full h-2">
                         <div id="quiz-progress-bar" class="bg-blue-600 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
@@ -249,8 +256,18 @@
         <!-- EKRAN TRENINGU -->
         <div id="workout-screen" class="hidden fade-in">
             <div class="bg-gray-800 p-6 sm:p-8 rounded-2xl shadow-2xl">
-                <!-- Nagłówek fazy -->
-                <div id="workout-phase" class="text-sm font-semibold uppercase text-blue-400 mb-2"></div>
+                <!-- Nagłówek z przyciskiem restart -->
+                <div class="flex justify-between items-center mb-2">
+                    <!-- Nagłówek fazy -->
+                    <div id="workout-phase" class="text-sm font-semibold uppercase text-blue-400"></div>
+                    
+                    <!-- Przycisk restart -->
+                    <button id="workout-restart-btn" class="p-1.5 rounded-lg bg-gray-700 hover:bg-gray-600 transition" title="Zacznij trening od nowa">
+                        <svg class="w-5 h-5 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                        </svg>
+                    </button>
+                </div>
                 
                 <!-- Nazwa ćwiczenia -->
                 <h2 id="workout-exercise-name" class="text-3xl font-bold text-white mb-3"></h2>
@@ -386,7 +403,7 @@
                     </div>
                     
                     <!-- Dodatkowe kontrolki -->
-                    <div class="flex justify-center items-center gap-3">
+                    <div class="flex justify-center items-center gap-3 flex-wrap">
                         
                         <!-- Zapętlanie -->
                         <button id="btn-loop" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg transition flex items-center gap-2">
@@ -402,6 +419,14 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
                             </svg>
                             <span id="lang-order-text" class="text-sm font-mono">PL → ES</span>
+                        </button>
+                        
+                        <!-- Restart -->
+                        <button id="btn-listening-restart" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg transition flex items-center gap-2" title="Zacznij od nowa">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                            </svg>
+                            <span class="text-sm">Od nowa</span>
                         </button>
                         
                     </div>
@@ -473,6 +498,22 @@
                         Tak, wyjdź
                     </button>
                     <button id="exit-cancel" class="flex-1 bg-gray-700 hover:bg-gray-600 text-white font-medium py-3 px-6 rounded-lg transition">
+                        Anuluj
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- DIALOG RESTARTU -->
+        <div id="restart-dialog" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50">
+            <div class="bg-gray-800 p-6 rounded-2xl shadow-2xl max-w-md w-full">
+                <h2 class="text-2xl font-bold text-white mb-4">⚠️ Rozpocząć od nowa?</h2>
+                <p class="text-gray-300 mb-6">Obecny postęp zostanie utracony i rozpoczniesz od początku.</p>
+                <div class="flex gap-3">
+                    <button id="restart-confirm" class="flex-1 bg-orange-600 hover:bg-orange-700 text-white font-bold py-3 px-6 rounded-lg transition">
+                        Tak, zacznij od nowa
+                    </button>
+                    <button id="restart-cancel" class="flex-1 bg-gray-700 hover:bg-gray-600 text-white font-medium py-3 px-6 rounded-lg transition">
                         Anuluj
                     </button>
                 </div>
