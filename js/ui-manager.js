@@ -59,6 +59,16 @@ const uiManager = {
         break;
     }
     
+    // Zarządzaj widocznością tab bar - pokazuj tylko na ekranie głównym
+    const tabBar = document.getElementById('tab-bar');
+    if (tabBar) {
+      if (screenName === 'main') {
+        tabBar.classList.remove('hidden');
+      } else {
+        tabBar.classList.add('hidden');
+      }
+    }
+    
     // Scroll do góry
     window.scrollTo(0, 0);
   },
