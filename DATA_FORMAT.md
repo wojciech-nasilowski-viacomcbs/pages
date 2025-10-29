@@ -2,6 +2,23 @@
 
 Ten dokument opisuje dokładny format plików JSON dla quizów i treningów. Użyj tego dokumentu jako referencji przy tworzeniu nowych treści lub instruowaniu AI do ich generowania.
 
+## ⚠️ Ważna Informacja o Formatach
+
+System automatycznie konwertuje format opisany w tej dokumentacji (nazywany **formatem zewnętrznym** lub **v1**) do formatu wewnętrznego używanego w bazie danych (**format v2**). 
+
+**Zawsze używaj formatu opisanego w tym dokumencie** - konwersja odbywa się automatycznie podczas importu.
+
+### Główne różnice między formatami:
+
+| Element | Format zewnętrzny (v1) - używaj tego! | Format wewnętrzny (v2) |
+|---------|----------------------------------------|------------------------|
+| Pole pytania | `questionText` | `question` |
+| Typ luki | `fill-in-the-blank` | `fill-in-blank` |
+| Multiple-choice opcje | `[{text: "A", isCorrect: true}, ...]` | `["A", "B", ...]` + `correctAnswer: 0` |
+| True/False | `isCorrect: true/false` | `correctAnswer: true/false` |
+
+**Nie musisz się tym przejmować** - po prostu używaj formatu z tego dokumentu, a system zajmie się resztą.
+
 ---
 
 ## Quizy
@@ -831,4 +848,44 @@ System TTS (Text-to-Speech) wykorzystuje Web Speech API dostępne w przeglądarc
 - 🔄 Wsparcie dla obrazków i GIF-ów w ćwiczeniach (`mediaUrl`)
 - 🔄 Więcej typów pytań quizowych
 - 🔄 Zaawansowane statystyki i śledzenie postępu
+
+---
+
+## Rozwiązywanie Problemów
+
+### Błąd: "Brak faz lub 'phases' nie jest tablicą" przy imporcie quizu
+
+**Przyczyna:** System próbuje zwalidować quiz jako trening.
+
+**Rozwiązanie:** 
+1. Upewnij się, że jesteś na zakładce **"Quizy"** przed otwarciem okna importu
+2. Sprawdź, czy Twój plik ma pole `questions` (nie `phases`)
+3. Odśwież stronę i spróbuj ponownie
+
+### Błąd: "Brak pytań lub 'questions' nie jest tablicą" przy imporcie treningu
+
+**Przyczyna:** System próbuje zwalidować trening jako quiz.
+
+**Rozwiązanie:**
+1. Upewnij się, że jesteś na zakładce **"Treningi"** przed otwarciem okna importu
+2. Sprawdź, czy Twój plik ma pole `phases` (nie `questions`)
+3. Odśwież stronę i spróbuj ponownie
+
+### Błąd walidacji pytania
+
+Jeśli otrzymujesz błędy typu "Pytanie X: brak pola...", sprawdź:
+- Czy używasz `questionText` (nie `question`)
+- Czy dla `multiple-choice` używasz struktury z `isCorrect` w opcjach (patrz przykłady)
+- Czy dla `fill-in-the-blank` używasz dokładnie tego typu (z myślnikami)
+- Czy dla `true-false` używasz `isCorrect` (nie `correctAnswer`)
+
+### JSON nie parsuje się
+
+**Przyczyna:** Błąd składni JSON.
+
+**Rozwiązanie:**
+1. Użyj walidatora JSON online (np. jsonlint.com)
+2. Sprawdź, czy wszystkie nawiasy są zamknięte
+3. Sprawdź, czy nie ma przecinków na końcu ostatniego elementu w tablicy/obiekcie
+4. Sprawdź, czy stringi są w podwójnych cudzysłowach (nie pojedynczych)
 

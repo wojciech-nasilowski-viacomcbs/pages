@@ -104,6 +104,9 @@ const elements = {
   addContentButtonMore: document.getElementById('add-content-button-more'), // NOWE
   importModal: document.getElementById('import-modal'),
   importTitle: document.getElementById('import-title'),
+  importTypeQuiz: document.getElementById('import-type-quiz'),
+  importTypeWorkout: document.getElementById('import-type-workout'),
+  importTypeListening: document.getElementById('import-type-listening'),
   importTabFile: document.getElementById('import-tab-file'),
   importTabPaste: document.getElementById('import-tab-paste'),
   importFilePanel: document.getElementById('import-file-panel'),
@@ -352,6 +355,15 @@ function attachEventListeners() {
   });
   elements.importCancel.addEventListener('click', () => {
     contentManager.closeImportModal(elements);
+  });
+  elements.importTypeQuiz.addEventListener('click', () => {
+    contentManager.switchImportType('quiz', elements);
+  });
+  elements.importTypeWorkout.addEventListener('click', () => {
+    contentManager.switchImportType('workout', elements);
+  });
+  elements.importTypeListening.addEventListener('click', () => {
+    contentManager.switchImportType('listening', elements);
   });
   elements.importTabFile.addEventListener('click', () => {
     contentManager.switchImportTab('file', elements);

@@ -369,7 +369,38 @@ const contentManager = {
    * Otwórz modal importu
    */
   openImportModal(state, elements) {
-    this.currentImportType = state.currentTab === 'quizzes' ? 'quiz' : 'workout';
+    // Sprawdź, które moduły są włączone
+    const quizzesEnabled = featureFlags.isQuizzesEnabled();
+    const workoutsEnabled = featureFlags.isWorkoutsEnabled();
+    const listeningEnabled = featureFlags.isListeningEnabled();
+    
+    // Pokaż/ukryj przyciski wyboru typu na podstawie feature flags
+    if (elements.importTypeQuiz) {
+      elements.importTypeQuiz.style.display = quizzesEnabled ? 'block' : 'none';
+    }
+    if (elements.importTypeWorkout) {
+      elements.importTypeWorkout.style.display = workoutsEnabled ? 'block' : 'none';
+    }
+    if (elements.importTypeListening) {
+      elements.importTypeListening.style.display = listeningEnabled ? 'block' : 'none';
+    }
+    
+    // Określ domyślny typ importu na podstawie aktualnej zakładki lub pierwszego dostępnego modułu
+    let defaultType = null;
+    if (state.currentTab === 'quizzes' && quizzesEnabled) {
+      defaultType = 'quiz';
+    } else if (state.currentTab === 'workouts' && workoutsEnabled) {
+      defaultType = 'workout';
+    } else if (state.currentTab === 'listening' && listeningEnabled) {
+      defaultType = 'listening';
+    } else {
+      // Wybierz pierwszy dostępny moduł
+      if (quizzesEnabled) defaultType = 'quiz';
+      else if (workoutsEnabled) defaultType = 'workout';
+      else if (listeningEnabled) defaultType = 'listening';
+    }
+    
+    this.currentImportType = defaultType || 'quiz';
     this.currentImportTab = 'file';
     this.selectedFile = null;
     
@@ -393,6 +424,9 @@ const contentManager = {
     elements.importTabPaste.classList.add('bg-gray-700', 'text-gray-300');
     elements.importTabPaste.classList.remove('bg-blue-600', 'text-white');
     
+    // Ustaw aktywny typ importu wizualnie
+    this.switchImportType(this.currentImportType, elements);
+    
     // Pokaż modal
     elements.importModal.classList.remove('hidden');
   },
@@ -402,6 +436,35 @@ const contentManager = {
    */
   closeImportModal(elements) {
     elements.importModal.classList.add('hidden');
+  },
+  
+  /**
+   * Przełącz typ importu (quiz/workout/listening)
+   */
+  switchImportType(type, elements) {
+    this.currentImportType = type;
+    
+    // Usuń aktywny styl ze wszystkich przycisków
+    const allButtons = elements.importModal.querySelectorAll('.import-type-btn');
+    allButtons.forEach(btn => {
+      btn.classList.remove('bg-blue-600', 'border-blue-600', 'text-white');
+      btn.classList.add('border-gray-600', 'text-gray-300');
+    });
+    
+    // Dodaj aktywny styl do wybranego przycisku
+    let activeButton;
+    if (type === 'quiz') {
+      activeButton = elements.importTypeQuiz;
+    } else if (type === 'workout') {
+      activeButton = elements.importTypeWorkout;
+    } else if (type === 'listening') {
+      activeButton = elements.importTypeListening;
+    }
+    
+    if (activeButton) {
+      activeButton.classList.add('bg-blue-600', 'border-blue-600', 'text-white');
+      activeButton.classList.remove('border-gray-600', 'text-gray-300');
+    }
   },
   
   /**
@@ -519,9 +582,16 @@ const contentManager = {
     jsonData = this.convertLegacyFormat(jsonData, this.currentImportType);
     
     // Waliduj JSON
-    const errors = this.currentImportType === 'quiz' 
-      ? this.validateQuizJSON(jsonData) 
-      : this.validateWorkoutJSON(jsonData);
+    let errors = [];
+    if (this.currentImportType === 'quiz') {
+      errors = this.validateQuizJSON(jsonData);
+    } else if (this.currentImportType === 'workout') {
+      errors = this.validateWorkoutJSON(jsonData);
+    } else if (this.currentImportType === 'listening') {
+      errors = this.validateListeningJSON(jsonData);
+    } else {
+      errors = ['Nieznany typ zawartości'];
+    }
     
     if (errors.length > 0) {
       this.showImportError('Błędy walidacji:\n• ' + errors.join('\n• '), elements);
@@ -532,8 +602,10 @@ const contentManager = {
     try {
       if (this.currentImportType === 'quiz') {
         await dataService.saveQuiz(jsonData);
-      } else {
+      } else if (this.currentImportType === 'workout') {
         await dataService.saveWorkout(jsonData);
+      } else if (this.currentImportType === 'listening') {
+        await dataService.saveListeningSet(jsonData);
       }
       
       this.showImportSuccess('✅ Zaimportowano pomyślnie!', elements);

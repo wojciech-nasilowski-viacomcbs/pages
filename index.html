@@ -645,6 +645,25 @@
                     <button id="import-close" class="text-gray-400 hover:text-white text-2xl">×</button>
                 </div>
 
+                <!-- Wybór typu treści -->
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-300 mb-2">Co chcesz zaimportować?</label>
+                    <div class="grid grid-cols-3 gap-3">
+                        <button id="import-type-quiz" class="import-type-btn px-4 py-3 rounded-lg border-2 transition bg-blue-600 border-blue-600 text-white" data-type="quiz">
+                            <div class="text-2xl mb-1">📝</div>
+                            <div class="font-semibold">Quiz</div>
+                        </button>
+                        <button id="import-type-workout" class="import-type-btn px-4 py-3 rounded-lg border-2 transition border-gray-600 text-gray-300 hover:border-gray-500" data-type="workout">
+                            <div class="text-2xl mb-1">💪</div>
+                            <div class="font-semibold">Trening</div>
+                        </button>
+                        <button id="import-type-listening" class="import-type-btn px-4 py-3 rounded-lg border-2 transition border-gray-600 text-gray-300 hover:border-gray-500" data-type="listening">
+                            <div class="text-2xl mb-1">🎧</div>
+                            <div class="font-semibold text-sm">Słuchanie</div>
+                        </button>
+                    </div>
+                </div>
+
                 <!-- Zakładki: Wgraj plik / Wklej JSON -->
                 <div class="flex gap-2 mb-4">
                     <button id="import-tab-file" class="flex-1 py-2 px-4 rounded-lg font-medium transition bg-blue-600 text-white">
