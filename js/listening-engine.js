@@ -71,8 +71,6 @@ let appState = null;
  * Inicjalizacja modułu
  */
 function init(navigateFn, state) {
-  console.log('🎧 Inicjalizacja Listening Engine...');
-  
   navigateToScreen = navigateFn;
   appState = state;
   
@@ -99,41 +97,15 @@ function loadVoices() {
   let voices = playerState.synth.getVoices();
   
   if (voices.length > 0) {
-    console.log('🗣️ Dostępne głosy TTS:', voices.length);
-    logAvailableVoices(voices);
+    // Głosy już dostępne
   } else {
     // Czasami głosy ładują się asynchronicznie
     playerState.synth.onvoiceschanged = () => {
       voices = playerState.synth.getVoices();
-      console.log('🗣️ Dostępne głosy TTS (załadowane):', voices.length);
-      logAvailableVoices(voices);
     };
   }
 }
 
-/**
- * Wyloguj dostępne głosy (dla debugowania)
- */
-function logAvailableVoices(voices) {
-  // Grupuj głosy według języka
-  const voicesByLang = {};
-  voices.forEach(voice => {
-    const lang = voice.lang.split('-')[0].toLowerCase();
-    if (!voicesByLang[lang]) {
-      voicesByLang[lang] = [];
-    }
-    voicesByLang[lang].push(voice);
-  });
-  
-  // Wyloguj wszystkie dostępne języki
-  console.log('🗣️ Dostępne języki TTS:', Object.keys(voicesByLang).sort().join(', '));
-  
-  // Szczegóły dla każdego języka (opcjonalnie)
-  Object.keys(voicesByLang).sort().forEach(lang => {
-    const langVoices = voicesByLang[lang];
-    console.log(`  ${lang.toUpperCase()}: ${langVoices.length} głos(ów) - ${langVoices.map(v => v.name).join(', ')}`);
-  });
-}
 
 /**
  * Konfiguracja event listeners
@@ -165,8 +137,6 @@ function setupEventListeners() {
  * Wyświetl listę zestawów do nauki
  */
 async function showListeningList() {
-  console.log('📋 Pokazuję listę zestawów...');
-  
   // Zatrzymaj odtwarzanie jeśli aktywne
   stopPlayback();
   
@@ -199,8 +169,6 @@ async function loadListeningSets() {
   try {
     // Pobierz zestawy przez dataService
     const sets = await window.dataService.getListeningSets();
-    
-    console.log('✅ Załadowano zestawy:', sets.length);
     renderListeningCards(sets);
   } catch (error) {
     console.error('❌ Błąd ładowania zestawów:', error);
@@ -258,8 +226,6 @@ function renderListeningCards(sets) {
  * Otwórz odtwarzacz dla zestawu
  */
 async function openPlayer(set) {
-  console.log('▶️ Otwieranie odtwarzacza dla:', set.title);
-  
   // Etap 1: Rozgrzewka Web Audio API (jednorazowo)
   if (typeof window.initAudio === 'function') {
     await window.initAudio();
@@ -296,8 +262,6 @@ async function openPlayer(set) {
   
   playerState.lang1Key = keys.find(k => k === lang1Prefix) || keys[0];
   playerState.lang2Key = keys.find(k => k === lang2Prefix) || keys[1];
-  
-  console.log(`🔑 Klucze: lang1="${playerState.lang1Key}" (${playerState.lang1Code}), lang2="${playerState.lang2Key}" (${playerState.lang2Code})`);
   
   // Ukryj listę, pokaż odtwarzacz
   if (elements.listeningList) elements.listeningList.classList.add('hidden');
@@ -392,7 +356,6 @@ function togglePlayPause() {
  * Rozpocznij odtwarzanie
  */
 function startPlayback() {
-  console.log('▶️ Start odtwarzania');
   playerState.isPlaying = true;
   updatePlayerUI();
   playCurrentPair();
@@ -402,7 +365,6 @@ function startPlayback() {
  * Zatrzymaj odtwarzanie (pauza)
  */
 function pausePlayback() {
-  console.log('⏸️ Pauza');
   playerState.isPlaying = false;
   
   // Anuluj timeouty z wait() (pauzy między parami)
@@ -421,7 +383,6 @@ function pausePlayback() {
  * Całkowicie zatrzymaj odtwarzanie
  */
 function stopPlayback() {
-  console.log('⏹️ Stop');
   playerState.isPlaying = false;
   
   // Anuluj timeouty z wait() (pauzy między parami)
@@ -483,21 +444,15 @@ async function playCurrentPair() {
     const text1 = currentPair[order[0]];
     const text2 = currentPair[order[1]];
     
-    // Pobierz nazwy języków (w ich własnym języku)
-    const langName1 = getLanguageName(codes[0]);
-    const langName2 = getLanguageName(codes[1]);
-    
-    // Odtwórz pierwszy język z prefiksem nazwy języka
-    const textWithPrefix1 = `${langName1}: ${text1}`;
-    console.log(`🗣️ Odtwarzam z prefiksem: "${textWithPrefix1}"`);
+    // Odtwórz pierwszy język z prefiksem "1."
+    const textWithPrefix1 = `1. ${text1}`;
     await speakText(textWithPrefix1, codes[0]);
     if (!playerState.isPlaying) return;
     await wait(playerState.pauseBetweenLangs);
     
-    // Odtwórz drugi język z prefiksem nazwy języka
+    // Odtwórz drugi język z prefiksem "2."
     if (!playerState.isPlaying) return;
-    const textWithPrefix2 = `${langName2}: ${text2}`;
-    console.log(`🗣️ Odtwarzam z prefiksem: "${textWithPrefix2}"`);
+    const textWithPrefix2 = `2. ${text2}`;
     await speakText(textWithPrefix2, codes[1]);
     if (!playerState.isPlaying) return;
     await wait(playerState.pauseBetweenPairs);
@@ -641,7 +596,6 @@ function normalizeTextForTTS(text) {
  */
 function findBestVoice(voices, langCode) {
   if (!voices || voices.length === 0) {
-    console.warn('⚠️ Brak dostępnych głosów!');
     return null;
   }
   
@@ -700,7 +654,6 @@ function warmUpTTS() {
   if (!playerState.synth || playerState.synth.speaking || playerState.synth.pending) {
     return;
   }
-  console.log('🔥 Rozgrzewam silnik TTS (etap 2)...');
   const warmUpUtterance = new SpeechSynthesisUtterance(' ');
   warmUpUtterance.volume = 0; // Całkowicie cicho
   warmUpUtterance.rate = 10;    // Maksymalna prędkość
@@ -730,64 +683,6 @@ function wait(ms) {
 function isSectionHeader(pair) {
   const values = Object.values(pair);
   return values.some(val => val.startsWith('---') && val.endsWith('---'));
-}
-
-/**
- * Zwróć nazwę języka w jego własnym języku (endonym)
- * Używane jako prefiks przed tekstem, żeby uniknąć ucinania początku przez TTS
- */
-function getLanguageName(langCode) {
-  // Mapowanie kodów języków na ich nazwy w danym języku
-  const languageNames = {
-    'pl-PL': 'polski',
-    'pl': 'polski',
-    'en-US': 'english',
-    'en-GB': 'english',
-    'en': 'english',
-    'es-ES': 'español',
-    'es-MX': 'español',
-    'es': 'español',
-    'de-DE': 'deutsch',
-    'de': 'deutsch',
-    'fr-FR': 'français',
-    'fr': 'français',
-    'it-IT': 'italiano',
-    'it': 'italiano',
-    'pt-BR': 'português',
-    'pt-PT': 'português',
-    'pt': 'português',
-    'ru-RU': 'русский',
-    'ru': 'русский',
-    'ja-JP': '日本語',
-    'ja': '日本語',
-    'zh-CN': '中文',
-    'zh': '中文',
-    'ko-KR': '한국어',
-    'ko': '한국어',
-    'nl-NL': 'nederlands',
-    'nl': 'nederlands',
-    'sv-SE': 'svenska',
-    'sv': 'svenska',
-    'no-NO': 'norsk',
-    'no': 'norsk',
-    'da-DK': 'dansk',
-    'da': 'dansk',
-    'fi-FI': 'suomi',
-    'fi': 'suomi',
-    'tr-TR': 'türkçe',
-    'tr': 'türkçe',
-    'ar-SA': 'العربية',
-    'ar': 'العربية',
-    'hi-IN': 'हिन्दी',
-    'hi': 'हिन्दी',
-    'th-TH': 'ไทย',
-    'th': 'ไทย',
-    'vi-VN': 'tiếng việt',
-    'vi': 'tiếng việt'
-  };
-  
-  // Zwróć nazwę języka lub fallback na kod
-  return languageNames[langCode] || languageNames[langCode.split('-')[0]] || langCode;
 }
 
 /**

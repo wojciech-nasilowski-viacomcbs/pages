@@ -47,7 +47,7 @@
   - Mechanizm `waitForSilence()` - czeka aż TTS zakończy poprzedni utterance
   - Sprawdzanie `synth.speaking` przed rozpoczęciem nowego utterance
 - ✅ Zatrzymywanie TTS przy manualnym przejściu do następnej pary (kliknięcie strzałki)
-- ✅ **Prefiksy z nazwami języków** - każda para zaczyna się od nazwy języka (np. "polski: Książka jest na stole.") - zapobiega ucinaniu początku tekstu przez TTS
+- ✅ **Prefiksy 1/2** - każda para zaczyna się od cyfry (np. "1. Książka jest na stole.", "2. El libro está en la mesa.") - krótki, jednoznaczny bufor zapobiegający ucinaniu początku przez TTS
 
 ### 6. Pauzy
 - ✅ Pauza między językami w parze: 700ms (skrócone z 1000ms dzięki prefiksom językowym)
@@ -78,7 +78,7 @@
 **Rozwiązania:** 
 1. Zmieniono priorytet wyboru głosu - **Google głosy na pierwszym miejscu** (lepsza jakość, nie ucinają początku)
 2. Dodano opóźnienie 250ms przed `speak()` dla dodatkowego bezpieczeństwa
-3. **NAJLEPSZE ROZWIĄZANIE:** Dodano prefiksy z nazwami języków (np. "polski: Książka jest na stole.") - nazwa języka działa jako "bufor bezpieczeństwa", więc nawet jeśli TTS utnie początek, straci tylko część nazwy języka, a nie treść
+3. **NAJLEPSZE ROZWIĄZANIE:** Dodano prefiksy **1./2.** przed każdą parą - krótki, jednoznaczny bufor (cyfra + kropka) działa jako "ochrona", więc nawet jeśli TTS utnie początek, straci tylko cyfrę, a nie treść. Cyfry są bardziej neutralne niż litery i rzadko mylą się z treścią!
 
 **Status:** ✅ Rozwiązane całkowicie
 
@@ -198,10 +198,9 @@
 
 ### Kluczowe Funkcje
 - `speakText(text, langCode)` - odtwarza tekst przez TTS
-- `playCurrentPair()` - odtwarza aktualną parę (język1 → pauza → język2 → długa pauza → następna para)
+- `playCurrentPair()` - odtwarza aktualną parę z prefiksami A./B. (język1 → pauza → język2 → długa pauza → następna para)
 - `findBestVoice(voices, langCode)` - inteligentny wybór głosu
 - `normalizeTextForTTS(text)` - normalizacja tekstu (lowercase z kapitalizacją)
-- `getLanguageName(langCode)` - zwraca nazwę języka w jego własnym języku (endonym) - używane jako prefiks
 - `waitForSilence()` - czeka aż TTS zakończy mówienie przed rozpoczęciem nowego utterance
 
 ## 📊 Statystyki
@@ -213,7 +212,7 @@
 ## 🎯 Kluczowe Usprawnienia
 
 1. **Google głosy** - Priorytetyzacja Google głosów dla lepszej jakości (nie ucinają początku)
-2. **Prefiksy językowe** - Każda para zaczyna się od nazwy języka (np. "polski:", "español:") - zapobiega ucinaniu początku przez TTS
+2. **Prefiksy A/B** - Każda para zaczyna się od litery (np. "A.", "B.") - krótki bufor zapobiega ucinaniu początku przez TTS, szybsze niż pełne nazwy
 3. **Inteligentne przerywanie** - Mechanizm zatrzymywania TTS przy manualnym przejściu
 4. **Normalizacja tekstu** - Zapobiega czytaniu wielkich liter jako akronimów
 5. **Nagłówki dwujęzyczne** - Nagłówki czytane w obu językach
