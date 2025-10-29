@@ -445,14 +445,14 @@ async function playCurrentPair() {
     const text2 = currentPair[order[1]];
     
     // Odtwórz pierwszy język z prefiksem "1."
-    const textWithPrefix1 = `1. ${text1}`;
+    const textWithPrefix1 = `${text1}`;
     await speakText(textWithPrefix1, codes[0]);
     if (!playerState.isPlaying) return;
     await wait(playerState.pauseBetweenLangs);
     
     // Odtwórz drugi język z prefiksem "2."
     if (!playerState.isPlaying) return;
-    const textWithPrefix2 = `2. ${text2}`;
+    const textWithPrefix2 = `${text2}`;
     await speakText(textWithPrefix2, codes[1]);
     if (!playerState.isPlaying) return;
     await wait(playerState.pauseBetweenPairs);
