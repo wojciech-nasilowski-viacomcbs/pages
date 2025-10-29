@@ -309,6 +309,33 @@ window.stopSpeaking = stopSpeaking;
 window.isTTSAvailable = isTTSAvailable;
 window.getAvailableVoices = getAvailableVoices;
 
+/**
+ * Inicjalizuje i "rozgrzewa" Web Audio API.
+ * Musi być wywołane w odpowiedzi na interakcję użytkownika (np. kliknięcie).
+ * @returns {Promise<void>}
+ */
+async function initAudio() {
+  try {
+    const ctx = getAudioContext();
+    // Chrome wymaga, aby resume() było wywołane po interakcji użytkownika
+    if (ctx.state === 'suspended') {
+      await ctx.resume();
+    }
+    
+    // Odtwórz pusty bufor, aby "obudzić" system audio
+    const buffer = ctx.createBuffer(1, 1, 22050);
+    const source = ctx.createBufferSource();
+    source.buffer = buffer;
+    source.connect(ctx.destination);
+    source.start(0);
+    console.log('🔊 AudioContext rozgrzany i gotowy.');
+  } catch (error) {
+    console.warn('Nie udało się zainicjalizować AudioContext:', error);
+  }
+}
+
+window.initAudio = initAudio;
+
 console.log('✅ Audio module initialized');
 
 })(); // End of IIFE

@@ -22,7 +22,7 @@ const playerState = {
   pauseBetweenLangs: 1000, // ms
   pauseBetweenPairs: 3000, // ms
   pauseAfterHeader: 4000, // ms
-  pendingTimeouts: [], // Tablica ID timeoutów do anulowania
+  pendingTimeouts: [], // Tablica ID timeoutów do anulowania (pauzy między parami)
 };
 
 // Elementy DOM
@@ -233,10 +233,12 @@ function renderListeningCards(sets) {
   
   // Dodaj event listeners do kart
   document.querySelectorAll('[data-set-id]').forEach(card => {
-    card.addEventListener('click', () => {
+    card.addEventListener('click', async () => { // Dodano async
       const setId = card.dataset.setId;
       const set = sets.find(s => s.id === setId);
-      if (set) openPlayer(set);
+      if (set) {
+        await openPlayer(set); // Dodano await
+      }
     });
   });
 }
@@ -244,9 +246,21 @@ function renderListeningCards(sets) {
 /**
  * Otwórz odtwarzacz dla zestawu
  */
-function openPlayer(set) {
+async function openPlayer(set) {
   console.log('▶️ Otwieranie odtwarzacza dla:', set.title);
   
+  // Etap 1: Rozgrzewka Web Audio API (jednorazowo)
+  if (typeof window.initAudio === 'function') {
+    await window.initAudio();
+    window.initAudio = null; // Wykonaj tylko raz
+  }
+
+  // Etap 2: Rozgrzewka silnika TTS (za każdym razem)
+  warmUpTTS();
+
+  // Dajmy systemowi chwilę (100ms) na przetworzenie rozgrzewki
+  await wait(100);
+
   playerState.currentSet = set;
   playerState.currentIndex = 0;
   playerState.isPlaying = false;
@@ -380,7 +394,7 @@ function pausePlayback() {
   console.log('⏸️ Pauza');
   playerState.isPlaying = false;
   
-  // Anuluj wszystkie oczekujące timeouty
+  // Anuluj timeouty z wait() (pauzy między parami)
   if (playerState.pendingTimeouts && playerState.pendingTimeouts.length > 0) {
     playerState.pendingTimeouts.forEach(timeoutId => clearTimeout(timeoutId));
     playerState.pendingTimeouts = [];
@@ -388,6 +402,7 @@ function pausePlayback() {
   
   // Zatrzymaj wszystkie aktywne utterances
   playerState.synth.cancel();
+  
   updatePlayerUI();
 }
 
@@ -398,7 +413,7 @@ function stopPlayback() {
   console.log('⏹️ Stop');
   playerState.isPlaying = false;
   
-  // Anuluj wszystkie oczekujące timeouty
+  // Anuluj timeouty z wait() (pauzy między parami)
   if (playerState.pendingTimeouts && playerState.pendingTimeouts.length > 0) {
     playerState.pendingTimeouts.forEach(timeoutId => clearTimeout(timeoutId));
     playerState.pendingTimeouts = [];
@@ -541,12 +556,9 @@ function speakText(text, langCode) {
         utterance.voice = preferredVoice;
       }
       
-      // WAŻNE: Dodaj opóźnienie przed speak() żeby uniknąć ucinania początku
-      // Web Speech API ma bug gdzie pierwsze głoski są ucięte
-      // Rozwiązanie: dodaj cichą pauzę na początku tekstu
-      // Użyj znaku spacji + przecinka dla naturalnej pauzy
-      utterance.text = ' , ' + normalizedText;
-      
+      // Czysty tekst, bez żadnego paddingu
+      utterance.text = normalizedText;
+
       // Obsługa zakończenia i błędów
       utterance.onend = () => {
         // Sprawdź czy nadal odtwarzamy przed resolve
@@ -558,29 +570,18 @@ function speakText(text, langCode) {
           resolve();
         }
       };
-      
+
       utterance.onerror = (event) => {
         console.warn('TTS error:', event.error);
         resolve();
       };
-      
-      // Dodatkowe krótkie opóźnienie dla stabilności
-      const timeoutId = setTimeout(() => {
-        // KRYTYCZNE: Sprawdź ponownie czy nadal odtwarzamy
-        if (!playerState.isPlaying) {
-          resolve();
-          return;
-        }
-        
-        // Dodaj utterance do kolejki
-        playerState.synth.speak(utterance);
-      }, 100);
-      
-      // Zapisz timeout ID żeby móc go anulować
-      if (!playerState.pendingTimeouts) {
-        playerState.pendingTimeouts = [];
+
+      // Dodaj utterance do kolejki bez opóźnienia
+      if (!playerState.isPlaying) {
+        resolve();
+        return;
       }
-      playerState.pendingTimeouts.push(timeoutId);
+      playerState.synth.speak(utterance);
     };
     
     // Rozpocznij od sprawdzenia czy TTS jest cichy
@@ -594,25 +595,25 @@ function speakText(text, langCode) {
 function normalizeTextForTTS(text) {
   // Zamień wszystkie wielkie litery na lowercase z kapitalizacją
   // To zapobiega czytaniu ESTAR jako E-S-T-A-R
-  
+
   // Najpierw zamień cały tekst na lowercase
   let normalized = text.toLowerCase();
-  
+
   // Kapitalizuj pierwszą literę
   if (normalized.length > 0) {
     normalized = normalized.charAt(0).toUpperCase() + normalized.slice(1);
   }
-  
+
   // Kapitalizuj litery po kropce, wykrzykniku, pytajniku
   normalized = normalized.replace(/([.!?]\s+)(\w)/g, (match, punctuation, letter) => {
     return punctuation + letter.toUpperCase();
   });
-  
+
   // Kapitalizuj pierwszą literę po nawiasie otwierającym
   normalized = normalized.replace(/(\(\s*)(\w)/g, (match, bracket, letter) => {
     return bracket + letter.toUpperCase();
   });
-  
+
   return normalized;
 }
 
@@ -673,10 +674,35 @@ function findBestVoice(voices, langCode) {
 }
 
 /**
+ * Rozgrzewa silnik TTS, odtwarzając krótki, cichy dźwięk.
+ * To jest DRUGI etap rozgrzewki, po inicjalizacji AudioContext.
+ */
+function warmUpTTS() {
+  if (!playerState.synth || playerState.synth.speaking || playerState.synth.pending) {
+    return;
+  }
+  console.log('🔥 Rozgrzewam silnik TTS (etap 2)...');
+  const warmUpUtterance = new SpeechSynthesisUtterance(' ');
+  warmUpUtterance.volume = 0; // Całkowicie cicho
+  warmUpUtterance.rate = 10;    // Maksymalna prędkość
+  playerState.synth.speak(warmUpUtterance);
+}
+
+
+/**
  * Poczekaj X milisekund
+ * Zwraca Promise który można przerwać przez zmianę playerState.isPlaying
  */
 function wait(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
+  return new Promise(resolve => {
+    const timeoutId = setTimeout(resolve, ms);
+    
+    // Śledź timeout żeby móc go anulować
+    if (!playerState.pendingTimeouts) {
+      playerState.pendingTimeouts = [];
+    }
+    playerState.pendingTimeouts.push(timeoutId);
+  });
 }
 
 /**
@@ -699,7 +725,7 @@ function navigatePair(direction, autoAdvance = false) {
     // KROK 1: Zatrzymaj odtwarzanie (przerywa Promise w playCurrentPair)
     playerState.isPlaying = false;
     
-    // KROK 2: Anuluj wszystkie oczekujące timeouty (z setTimeout w speakText)
+    // KROK 2: Anuluj timeouty z wait() (pauzy między parami)
     if (playerState.pendingTimeouts && playerState.pendingTimeouts.length > 0) {
       playerState.pendingTimeouts.forEach(timeoutId => clearTimeout(timeoutId));
       playerState.pendingTimeouts = [];
