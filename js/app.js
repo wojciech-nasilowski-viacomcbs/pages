@@ -525,6 +525,12 @@ async function checkAuthState() {
  */
 function setupAuthListener() {
   authService.onAuthStateChange(async (event, session) => {
+    console.log('🔐 Auth event:', event);
+    
+    // Sprawdź czy użytkownik jest w trakcie aktywności
+    // Używamy uiState store, który śledzi stan aktywności
+    const isInActivity = window.uiState ? window.uiState.getState().isActivity : false;
+    
     if (event === 'SIGNED_IN') {
       // WAŻNE: Wyczyść postęp sesji przy logowaniu (bezpieczeństwo/prywatność)
       // Zapobiega wyświetlaniu postępu poprzedniego użytkownika lub gościa
@@ -554,6 +560,21 @@ function setupAuthListener() {
       uiManager.updateAuthUI(state, elements, contentManager, sessionManager);
       // Przywróć zapisaną zakładkę po załadowaniu danych
       uiManager.switchTab(state.currentTab, state, elements, contentManager, sessionManager);
+    } else if (event === 'TOKEN_REFRESHED' || event === 'INITIAL_SESSION') {
+      // Token został odświeżony (np. po powrocie do karty przeglądarki)
+      // NIE przerywaj aktywności użytkownika - tylko zaktualizuj dane w tle
+      console.log('🔄 Token refreshed - updating session silently');
+      state.currentUser = session?.user || null;
+      
+      // Jeśli użytkownik NIE jest w trakcie aktywności, odśwież dane
+      if (!isInActivity) {
+        await contentManager.loadData(state, elements, uiManager);
+        uiManager.updateAuthUI(state, elements, contentManager, sessionManager);
+      } else {
+        // W trakcie aktywności - tylko zaktualizuj UI autentykacji (nie przeładowuj danych)
+        uiManager.updateAuthUI(state, elements, contentManager, sessionManager);
+        console.log('⚠️ User in activity - skipping data reload and navigation');
+      }
     }
   });
 }
