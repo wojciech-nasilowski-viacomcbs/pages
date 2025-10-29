@@ -1282,3 +1282,4 @@ Możesz dodać testy jednostkowe dla:
 **Status**: Gotowy do implementacji
 
 
+

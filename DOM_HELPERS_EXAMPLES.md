@@ -566,3 +566,4 @@ const card = DOM.h('div', {}, 'Content');
 **Ostatnia aktualizacja**: 2025-10-28
 
 
+

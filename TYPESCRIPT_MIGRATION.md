@@ -505,3 +505,4 @@ button.disabled = true; // Type-safe!
 **Ostatnia aktualizacja**: 2025-10-28
 
 
+

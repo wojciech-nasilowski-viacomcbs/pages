@@ -22,6 +22,7 @@ const playerState = {
   pauseBetweenLangs: 1000, // ms
   pauseBetweenPairs: 3000, // ms
   pauseAfterHeader: 4000, // ms
+  pendingTimeouts: [], // Tablica ID timeoutów do anulowania
 };
 
 // Elementy DOM
@@ -162,6 +163,14 @@ async function showListeningList() {
   if (elements.listeningList) elements.listeningList.classList.remove('hidden');
   if (elements.playerContainer) elements.playerContainer.classList.add('hidden');
   
+  // Pokaż tab bar na liście zestawów (używamy nowego state managera)
+  if (window.uiState) {
+    window.uiState.setListeningPlayerActive(false);
+  } else if (window.uiManager && window.uiManager.updateTabBarVisibility) {
+    // Fallback dla kompatybilności wstecznej
+    window.uiManager.updateTabBarVisibility('listening', false);
+  }
+  
   // Załaduj zestawy z Supabase
   await loadListeningSets();
 }
@@ -269,6 +278,14 @@ function openPlayer(set) {
   if (elements.listeningList) elements.listeningList.classList.add('hidden');
   if (elements.playerContainer) elements.playerContainer.classList.remove('hidden');
   
+  // Ukryj tab bar podczas odtwarzania (używamy nowego state managera)
+  if (window.uiState) {
+    window.uiState.setListeningPlayerActive(true);
+  } else if (window.uiManager && window.uiManager.updateTabBarVisibility) {
+    // Fallback dla kompatybilności wstecznej
+    window.uiManager.updateTabBarVisibility('listening', true);
+  }
+  
   // Wypełnij dane
   if (elements.playerTitle) elements.playerTitle.textContent = set.title;
   if (elements.playerDescription) elements.playerDescription.textContent = set.description || '';
@@ -362,7 +379,15 @@ function startPlayback() {
 function pausePlayback() {
   console.log('⏸️ Pauza');
   playerState.isPlaying = false;
-  playerState.synth.cancel(); // Zatrzymaj wszystkie aktywne utterances
+  
+  // Anuluj wszystkie oczekujące timeouty
+  if (playerState.pendingTimeouts && playerState.pendingTimeouts.length > 0) {
+    playerState.pendingTimeouts.forEach(timeoutId => clearTimeout(timeoutId));
+    playerState.pendingTimeouts = [];
+  }
+  
+  // Zatrzymaj wszystkie aktywne utterances
+  playerState.synth.cancel();
   updatePlayerUI();
 }
 
@@ -372,6 +397,14 @@ function pausePlayback() {
 function stopPlayback() {
   console.log('⏹️ Stop');
   playerState.isPlaying = false;
+  
+  // Anuluj wszystkie oczekujące timeouty
+  if (playerState.pendingTimeouts && playerState.pendingTimeouts.length > 0) {
+    playerState.pendingTimeouts.forEach(timeoutId => clearTimeout(timeoutId));
+    playerState.pendingTimeouts = [];
+  }
+  
+  // Zatrzymaj wszystkie aktywne utterances
   if (playerState.synth) {
     playerState.synth.cancel();
   }
@@ -508,23 +541,46 @@ function speakText(text, langCode) {
         utterance.voice = preferredVoice;
       }
       
-      utterance.onend = () => resolve();
-      utterance.onerror = () => resolve();
-      
       // WAŻNE: Dodaj opóźnienie przed speak() żeby uniknąć ucinania początku
       // Web Speech API ma bug gdzie pierwsze głoski są ucięte
       // Rozwiązanie: dodaj cichą pauzę na początku tekstu
       // Użyj znaku spacji + przecinka dla naturalnej pauzy
       utterance.text = ' , ' + normalizedText;
       
+      // Obsługa zakończenia i błędów
+      utterance.onend = () => {
+        // Sprawdź czy nadal odtwarzamy przed resolve
+        if (playerState.isPlaying) {
+          resolve();
+        } else {
+          // Jeśli zatrzymano, anuluj wszystko
+          playerState.synth.cancel();
+          resolve();
+        }
+      };
+      
+      utterance.onerror = (event) => {
+        console.warn('TTS error:', event.error);
+        resolve();
+      };
+      
       // Dodatkowe krótkie opóźnienie dla stabilności
-      setTimeout(() => {
+      const timeoutId = setTimeout(() => {
+        // KRYTYCZNE: Sprawdź ponownie czy nadal odtwarzamy
         if (!playerState.isPlaying) {
           resolve();
           return;
         }
+        
+        // Dodaj utterance do kolejki
         playerState.synth.speak(utterance);
       }, 100);
+      
+      // Zapisz timeout ID żeby móc go anulować
+      if (!playerState.pendingTimeouts) {
+        playerState.pendingTimeouts = [];
+      }
+      playerState.pendingTimeouts.push(timeoutId);
     };
     
     // Rozpocznij od sprawdzenia czy TTS jest cichy
@@ -640,23 +696,35 @@ function navigatePair(direction, autoAdvance = false) {
   
   // Jeśli to manualne przejście (kliknięcie strzałki), zatrzymaj TTS
   if (!autoAdvance) {
-    const wasPlaying = playerState.isPlaying;
-    
-    // Tymczasowo zatrzymaj odtwarzanie żeby przerwać wszystkie Promise
+    // KROK 1: Zatrzymaj odtwarzanie (przerywa Promise w playCurrentPair)
     playerState.isPlaying = false;
     
+    // KROK 2: Anuluj wszystkie oczekujące timeouty (z setTimeout w speakText)
+    if (playerState.pendingTimeouts && playerState.pendingTimeouts.length > 0) {
+      playerState.pendingTimeouts.forEach(timeoutId => clearTimeout(timeoutId));
+      playerState.pendingTimeouts = [];
+    }
+    
+    // KROK 3: Anuluj wszystkie aktywne utterances
     if (playerState.synth) {
       playerState.synth.cancel();
     }
     
-    // Poczekaj chwilę żeby Promise się zakończyły
+    // KROK 4: Poczekaj dłużej żeby wszystkie Promise i timeouty się zakończyły
+    // Zwiększono z 100ms do 300ms dla pewności
     setTimeout(() => {
-      // Przywróć stan odtwarzania
-      playerState.isPlaying = wasPlaying;
+      // KROK 5: Anuluj ponownie na wszelki wypadek
+      if (playerState.synth) {
+        playerState.synth.cancel();
+      }
       
-      // Kontynuuj nawigację
+      // KROK 6: Wyczyść listę timeoutów
+      playerState.pendingTimeouts = [];
+      
+      // KROK 7: Kontynuuj nawigację (ale NIE przywracaj isPlaying)
+      // Po manualnej nawigacji zatrzymujemy się na nowej parze
       continueNavigation();
-    }, 100);
+    }, 300);
     
     return; // Wyjdź z funkcji, kontynuacja w setTimeout
   }

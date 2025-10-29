@@ -59,18 +59,60 @@ const uiManager = {
         break;
     }
     
-    // Zarządzaj widocznością tab bar - pokazuj tylko na ekranie głównym
-    const tabBar = document.getElementById('tab-bar');
-    if (tabBar) {
-      if (screenName === 'main') {
-        tabBar.classList.remove('hidden');
-      } else {
-        tabBar.classList.add('hidden');
-      }
+    // Aktualizuj UI state (zarządza tab barem automatycznie)
+    if (window.uiState) {
+      window.uiState.navigateToScreen(screenName);
+    } else {
+      // Fallback jeśli uiState nie jest jeszcze załadowany
+      this.updateTabBarVisibility(screenName);
     }
     
     // Scroll do góry
     window.scrollTo(0, 0);
+  },
+  
+  /**
+   * Zarządza widocznością dolnego paska nawigacji (tab bar)
+   * Pokazuje go na ekranach nawigacyjnych/wyboru, ukrywa podczas aktywności
+   * @param {string} screenName - Nazwa ekranu ('main', 'quiz', 'workout', 'listening', etc.)
+   * @param {boolean} [isActivity=null] - Opcjonalnie: czy to aktywność (test/trening/odtwarzanie)
+   */
+  updateTabBarVisibility(screenName, isActivity = null) {
+    const tabBar = document.getElementById('tab-bar');
+    if (!tabBar) return;
+    
+    // Jeśli isActivity jest jawnie określone, użyj tego
+    if (isActivity !== null) {
+      if (isActivity) {
+        tabBar.classList.add('hidden');
+      } else {
+        tabBar.classList.remove('hidden');
+      }
+      return;
+    }
+    
+    // Automatyczna detekcja na podstawie screenName
+    const navigationScreens = ['main', 'more', 'loading'];
+    const activityScreens = ['quiz', 'workout'];
+    const summaryScreens = ['quiz-summary', 'workout-end'];
+    
+    if (navigationScreens.includes(screenName)) {
+      // Ekrany nawigacyjne - pokaż tab bar
+      tabBar.classList.remove('hidden');
+    } else if (activityScreens.includes(screenName)) {
+      // Aktywne ćwiczenia - ukryj tab bar
+      tabBar.classList.add('hidden');
+    } else if (summaryScreens.includes(screenName)) {
+      // Podsumowania - pokaż tab bar (użytkownik może chcieć przejść dalej)
+      tabBar.classList.remove('hidden');
+    } else if (screenName === 'listening') {
+      // Dla listening domyślnie pokaż (lista zestawów)
+      // Będzie ukrywany przez listening-engine gdy odtwarzacz się włączy
+      tabBar.classList.remove('hidden');
+    } else {
+      // Domyślnie ukryj dla nieznanych ekranów
+      tabBar.classList.add('hidden');
+    }
   },
   
   /**
@@ -94,6 +136,11 @@ const uiManager = {
     }
 
     state.currentTab = targetTab;
+    
+    // Aktualizuj UI state
+    if (window.uiState) {
+      window.uiState.switchTab(targetTab);
+    }
     
     // Zapisz aktualną zakładkę w localStorage
     try {

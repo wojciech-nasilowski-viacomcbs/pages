@@ -28,7 +28,7 @@ Nowoczesna aplikacja webowa do nauki i treningów - quizy, treningi fitness i na
 
 **Technologie**: HTML5, Tailwind CSS, Vanilla JavaScript (ES6+), Supabase, JSDoc
 
-**Developer Tools**: JSDoc type safety, DOM helpers, IntelliSense support
+**Developer Tools**: JSDoc type safety, DOM helpers, IntelliSense support, Reactive state management
 
 ---
 
@@ -152,6 +152,7 @@ historii Polski. Użyj różnych typów pytań. Format JSON.
 ├── PRD.md                     # Dokument wymagań produktowych
 ├── TECH_STACK.md              # Szczegóły techniczne
 ├── DATA_FORMAT.md             # Specyfikacja formatów JSON
+├── STATE_MANAGEMENT.md        # 🆕 Dokumentacja state managera
 ├── generate-manifest.js       # Skrypt do generowania manifestu
 │
 ├── /data/
@@ -163,10 +164,61 @@ historii Polski. Użyj różnych typów pytań. Format JSON.
 │
 └── /js/
     ├── app.js                 # Główna logika aplikacji
+    ├── state-manager.js       # 🆕 Reaktywny store (pub/sub)
+    ├── ui-state.js            # 🆕 Manager stanu UI
+    ├── ui-manager.js          # Zarządzanie widokami
     ├── quiz-engine.js         # Obsługa quizów
     ├── workout-engine.js      # Obsługa treningów
-    └── audio.js               # Generowanie dźwięków
+    ├── listening-engine.js    # Obsługa słuchania (TTS)
+    ├── audio.js               # Generowanie dźwięków
+    ├── dom-helpers.js         # Biblioteka pomocnicza DOM
+    └── types.js               # Definicje typów JSDoc
 ```
+
+---
+
+## State Management (v2.1)
+
+Aplikacja używa lekkiego, reaktywnego systemu zarządzania stanem w vanilla JavaScript.
+
+### 🎯 Architektura
+
+```
+state-manager.js (Generic store) 
+    ↓
+ui-state.js (UI logic)
+    ↓
+ui-manager.js, listening-engine.js (Consumers)
+```
+
+### 🚀 Podstawowe użycie
+
+```javascript
+// Nawiguj do ekranu (automatycznie zarządza tab barem)
+uiState.navigateToScreen('quiz');      // Ukryje tab bar (aktywność)
+uiState.navigateToScreen('main');      // Pokaże tab bar (nawigacja)
+
+// Zarządzaj odtwarzaczem słuchania
+uiState.setListeningPlayerActive(true);  // Ukryj tab bar
+uiState.setListeningPlayerActive(false); // Pokaż tab bar
+
+// Subskrybuj zmiany stanu (reactive)
+const unsubscribe = uiState.subscribe((state, prevState) => {
+  console.log('Screen changed:', state.currentScreen);
+});
+```
+
+### 📋 Automatyczne zarządzanie Tab Barem
+
+| Typ ekranu | Przykłady | Tab Bar |
+|------------|-----------|---------|
+| **Nawigacyjne** | `main`, `more` | ✅ Widoczny |
+| **Aktywności** | `quiz`, `workout`, odtwarzacz | ❌ Ukryty |
+| **Podsumowania** | `quiz-summary`, `workout-end` | ✅ Widoczny |
+
+### 📚 Pełna dokumentacja
+
+Zobacz **[STATE_MANAGEMENT.md](STATE_MANAGEMENT.md)** dla szczegółów, API reference i przykładów.
 
 ---
 
@@ -181,8 +233,11 @@ historii Polski. Użyj różnych typów pytań. Format JSON.
 - **[JSDOC_TYPESCRIPT_SUMMARY.md](JSDOC_TYPESCRIPT_SUMMARY.md)** - Podsumowanie ulepszeń JSDoc i TypeScript
 - **[DOM_HELPERS_EXAMPLES.md](DOM_HELPERS_EXAMPLES.md)** - Przykłady użycia DOM helpers
 - **[TYPESCRIPT_MIGRATION.md](TYPESCRIPT_MIGRATION.md)** - Przewodnik migracji do TypeScript (opcjonalnie)
+- **[STATE_MANAGEMENT.md](STATE_MANAGEMENT.md)** - 🆕 Dokumentacja systemu zarządzania stanem
 - **`js/types.js`** - Centralne definicje typów JSDoc
 - **`js/dom-helpers.js`** - Biblioteka pomocnicza do manipulacji DOM
+- **`js/state-manager.js`** - 🆕 Reaktywny store z subskrypcjami
+- **`js/ui-state.js`** - 🆕 Manager stanu UI (ekrany, tab bar)
 
 ---
 
