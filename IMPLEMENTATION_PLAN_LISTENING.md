@@ -1281,3 +1281,4 @@ Możesz dodać testy jednostkowe dla:
 **Wersja**: 1.0  
 **Status**: Gotowy do implementacji
 
+

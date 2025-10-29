@@ -1,3 +1,13 @@
+/**
+ * @fileoverview Supabase client initialization and authentication helpers
+ * This module initializes the Supabase client and provides basic auth helper functions
+ * @module supabase-client
+ */
+
+/** @typedef {import('./types.js').User} User */
+/** @typedef {import('./types.js').Session} Session */
+/** @typedef {import('./types.js').SupabaseClient} SupabaseClient */
+
 // ============================================
 // SUPABASE CLIENT CONFIGURATION
 // ============================================
@@ -15,7 +25,10 @@ if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
     throw new Error('Supabase configuration missing. Copy js/config.example.js to js/config.js and fill in your values.');
 }
 
-// Initialize Supabase client
+/**
+ * Supabase client instance
+ * @type {SupabaseClient}
+ */
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // ============================================
@@ -24,7 +37,12 @@ const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 /**
  * Get the current authenticated user
- * @returns {Promise<Object|null>} User object or null if not authenticated
+ * @returns {Promise<User|null>} User object or null if not authenticated
+ * @example
+ * const user = await getCurrentUser();
+ * if (user) {
+ *   console.log('Logged in as:', user.email);
+ * }
  */
 async function getCurrentUser() {
     try {
@@ -39,7 +57,11 @@ async function getCurrentUser() {
 
 /**
  * Check if user is currently logged in
- * @returns {Promise<boolean>}
+ * @returns {Promise<boolean>} True if user is authenticated
+ * @example
+ * if (await isLoggedIn()) {
+ *   // Show user content
+ * }
  */
 async function isLoggedIn() {
     const user = await getCurrentUser();
@@ -48,7 +70,12 @@ async function isLoggedIn() {
 
 /**
  * Get the current session
- * @returns {Promise<Object|null>}
+ * @returns {Promise<Session|null>} Session object or null if not authenticated
+ * @example
+ * const session = await getSession();
+ * if (session) {
+ *   console.log('Access token:', session.access_token);
+ * }
  */
 async function getSession() {
     try {

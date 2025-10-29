@@ -1,0 +1,82 @@
+{
+  "compilerOptions": {
+    // Enable type checking for JavaScript files
+    "checkJs": true,
+    
+    // Target modern JavaScript
+    "target": "ES2020",
+    "module": "ES2020",
+    "moduleResolution": "node",
+    
+    // Enable all strict type checking options
+    "strict": false,
+    "noImplicitAny": false,
+    "strictNullChecks": false,
+    "strictFunctionTypes": true,
+    "strictPropertyInitialization": false,
+    
+    // Additional checks
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    
+    // Module resolution
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "resolveJsonModule": true,
+    
+    // Source maps for debugging
+    "sourceMap": true,
+    
+    // Allow JavaScript files to be compiled
+    "allowJs": true,
+    
+    // Base URL for module resolution
+    "baseUrl": ".",
+    
+    // Path mappings for cleaner imports
+    "paths": {
+      "@/*": ["js/*"],
+      "@types": ["js/types.js"],
+      "@helpers": ["js/dom-helpers.js"]
+    },
+    
+    // Library definitions
+    "lib": [
+      "ES2020",
+      "DOM",
+      "DOM.Iterable",
+      "WebWorker"
+    ],
+    
+    // Skip type checking of declaration files
+    "skipLibCheck": true,
+    
+    // Force consistent casing in file names
+    "forceConsistentCasingInFileNames": true
+  },
+  
+  "include": [
+    "js/**/*.js",
+    "api/**/*.js",
+    "scripts/**/*.js"
+  ],
+  
+  "exclude": [
+    "node_modules",
+    "coverage",
+    "data",
+    "supabase"
+  ],
+  
+  "typeAcquisition": {
+    "enable": true,
+    "include": [
+      "jest",
+      "@supabase/supabase-js"
+    ]
+  }
+}
+
+

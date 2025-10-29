@@ -1,15 +1,31 @@
 /**
- * Moduł do generowania dźwięków za pomocą Web Audio API
+ * @fileoverview Audio module for sound effects and text-to-speech
+ * Provides Web Audio API sound generation and Web Speech API TTS functionality
+ * @module audio
  */
+
+/** @typedef {import('./types.js').TTSOptions} TTSOptions */
+/** @typedef {import('./types.js').AudioConfig} AudioConfig */
 
 (function() {
 'use strict';
 
+/**
+ * Audio context instance (lazy loaded)
+ * @type {AudioContext|null}
+ */
 let audioContext = null;
+
+/**
+ * Global mute state
+ * @type {boolean}
+ */
 let isMuted = false;
 
 /**
- * Inicjalizuje AudioContext (lazy loading)
+ * Initializes and returns the AudioContext (lazy loading)
+ * @returns {AudioContext} Audio context instance
+ * @private
  */
 function getAudioContext() {
   if (!audioContext) {
@@ -19,7 +35,11 @@ function getAudioContext() {
 }
 
 /**
- * Generuje ton o określonej częstotliwości i czasie trwania
+ * Generates a tone with specified frequency and duration
+ * @param {number} frequency - Frequency in Hz
+ * @param {number} duration - Duration in seconds
+ * @param {OscillatorType} [type='sine'] - Oscillator type ('sine', 'square', 'sawtooth', 'triangle')
+ * @private
  */
 function playTone(frequency, duration, type = 'sine') {
   if (isMuted) return;
@@ -48,8 +68,10 @@ function playTone(frequency, duration, type = 'sine') {
 }
 
 /**
- * Dźwięk dla poprawnej odpowiedzi
- * Przyjemny, rosnący ton
+ * Plays a sound for correct answer
+ * Pleasant, rising tone (C5 to E5)
+ * @example
+ * playCorrectSound();
  */
 function playCorrectSound() {
   if (isMuted) return;
@@ -80,8 +102,10 @@ function playCorrectSound() {
 }
 
 /**
- * Dźwięk dla błędnej odpowiedzi
- * Krótki, niski "buzz"
+ * Plays a sound for incorrect answer
+ * Short, low "buzz" sound
+ * @example
+ * playIncorrectSound();
  */
 function playIncorrectSound() {
   if (isMuted) return;
@@ -109,8 +133,10 @@ function playIncorrectSound() {
 }
 
 /**
- * Dźwięk na koniec timera
- * Dwa krótkie sygnały "bip-bip"
+ * Plays a sound when timer ends
+ * Two short "beep-beep" signals with optional vibration
+ * @example
+ * playTimerEndSound();
  */
 function playTimerEndSound() {
   if (isMuted) return;
@@ -150,7 +176,11 @@ function playTimerEndSound() {
 }
 
 /**
- * Przełącza wyciszenie dźwięków
+ * Toggles sound mute state
+ * @returns {boolean} New mute state (true = muted)
+ * @example
+ * const muted = toggleMute();
+ * console.log('Sound is', muted ? 'muted' : 'unmuted');
  */
 function toggleMute() {
   isMuted = !isMuted;
@@ -158,14 +188,22 @@ function toggleMute() {
 }
 
 /**
- * Sprawdza, czy dźwięki są wyciszone
+ * Checks if sounds are muted
+ * @returns {boolean} True if muted
+ * @example
+ * if (isSoundMuted()) {
+ *   console.log('Sounds are muted');
+ * }
  */
 function isSoundMuted() {
   return isMuted;
 }
 
 /**
- * Ustawia stan wyciszenia
+ * Sets the mute state
+ * @param {boolean} muted - True to mute, false to unmute
+ * @example
+ * setMuted(true); // Mute all sounds
  */
 function setMuted(muted) {
   isMuted = muted;
@@ -176,10 +214,13 @@ function setMuted(muted) {
 // ============================================
 
 /**
- * Odtwarza tekst za pomocą syntezatora mowy
- * @param {string} text - Tekst do wypowiedzenia
- * @param {string} lang - Kod języka (np. 'en-US', 'es-ES', 'pl-PL')
- * @param {number} rate - Prędkość mowy (0.1 - 10, domyślnie 0.85 dla nauki)
+ * Speaks text using Web Speech API text-to-speech
+ * @param {string} text - Text to speak
+ * @param {string} [lang='en-US'] - Language code (e.g., 'en-US', 'es-ES', 'pl-PL')
+ * @param {number} [rate=0.85] - Speech rate (0.1 - 10, default 0.85 for learning)
+ * @example
+ * speakText('Hello world', 'en-US');
+ * speakText('Hola mundo', 'es-ES', 0.7); // Slower for learning
  */
 function speakText(text, lang = 'en-US', rate = 0.85) {
   if (isMuted) return;
@@ -211,7 +252,9 @@ function speakText(text, lang = 'en-US', rate = 0.85) {
 }
 
 /**
- * Zatrzymuje bieżące odtwarzanie TTS
+ * Stops current TTS playback
+ * @example
+ * stopSpeaking();
  */
 function stopSpeaking() {
   if ('speechSynthesis' in window) {
@@ -220,16 +263,24 @@ function stopSpeaking() {
 }
 
 /**
- * Sprawdza, czy TTS jest dostępne w przeglądarce
+ * Checks if TTS is available in the browser
+ * @returns {boolean} True if Web Speech API is supported
+ * @example
+ * if (isTTSAvailable()) {
+ *   speakText('Hello', 'en-US');
+ * }
  */
 function isTTSAvailable() {
   return 'speechSynthesis' in window;
 }
 
 /**
- * Pobiera listę dostępnych głosów dla danego języka
- * @param {string} lang - Kod języka (np. 'en', 'es', 'pl')
- * @returns {Array} Tablica dostępnych głosów
+ * Gets available voices for a specific language
+ * @param {string|null} [lang=null] - Language code prefix (e.g., 'en', 'es', 'pl'), or null for all voices
+ * @returns {SpeechSynthesisVoice[]} Array of available voices
+ * @example
+ * const englishVoices = getAvailableVoices('en');
+ * const allVoices = getAvailableVoices();
  */
 function getAvailableVoices(lang = null) {
   if (!isTTSAvailable()) return [];

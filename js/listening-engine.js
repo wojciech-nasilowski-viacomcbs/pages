@@ -513,10 +513,18 @@ function speakText(text, langCode) {
       
       // WAŻNE: Dodaj opóźnienie przed speak() żeby uniknąć ucinania początku
       // Web Speech API ma bug gdzie pierwsze głoski są ucięte
-      // Zwiększono do 250ms - Google głosy są lepsze niż systemowe
+      // Rozwiązanie: dodaj cichą pauzę na początku tekstu
+      // Użyj znaku spacji + przecinka dla naturalnej pauzy
+      utterance.text = ' , ' + normalizedText;
+      
+      // Dodatkowe krótkie opóźnienie dla stabilności
       setTimeout(() => {
+        if (!playerState.isPlaying) {
+          resolve();
+          return;
+        }
         playerState.synth.speak(utterance);
-      }, 250);
+      }, 100);
     };
     
     // Rozpocznij od sprawdzenia czy TTS jest cichy

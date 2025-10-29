@@ -1,3 +1,13 @@
+/**
+ * @fileoverview Authentication service for user management
+ * Handles user registration, login, logout, and password reset using Supabase Auth
+ * @module auth-service
+ */
+
+/** @typedef {import('./types.js').User} User */
+/** @typedef {import('./types.js').Session} Session */
+/** @typedef {import('./types.js').AuthResponse} AuthResponse */
+
 // ============================================
 // AUTHENTICATION SERVICE
 // Handles user authentication with Supabase
@@ -6,13 +16,22 @@
 (function() {
 'use strict';
 
+/**
+ * Authentication service object
+ * @namespace authService
+ */
 const authService = {
     
     /**
      * Register a new user
-     * @param {string} email - User email
-     * @param {string} password - User password
-     * @returns {Promise<Object>} Result with user data or error
+     * @param {string} email - User email address
+     * @param {string} password - User password (min 6 characters)
+     * @returns {Promise<{success: boolean, user?: User, message?: string, error?: string}>} Result with user data or error
+     * @example
+     * const result = await authService.signUp('user@example.com', 'password123');
+     * if (result.success) {
+     *   console.log('User registered:', result.user.email);
+     * }
      */
     async signUp(email, password) {
         try {
@@ -39,9 +58,14 @@ const authService = {
     
     /**
      * Sign in an existing user
-     * @param {string} email - User email
+     * @param {string} email - User email address
      * @param {string} password - User password
-     * @returns {Promise<Object>} Result with user data or error
+     * @returns {Promise<{success: boolean, user?: User, session?: Session, message?: string, error?: string}>} Result with user data or error
+     * @example
+     * const result = await authService.signIn('user@example.com', 'password123');
+     * if (result.success) {
+     *   console.log('Logged in as:', result.user.email);
+     * }
      */
     async signIn(email, password) {
         try {
@@ -69,7 +93,12 @@ const authService = {
     
     /**
      * Sign out the current user
-     * @returns {Promise<Object>} Result
+     * @returns {Promise<{success: boolean, message?: string, error?: string}>} Result
+     * @example
+     * const result = await authService.signOut();
+     * if (result.success) {
+     *   console.log('User logged out');
+     * }
      */
     async signOut() {
         try {
@@ -92,8 +121,13 @@ const authService = {
     
     /**
      * Send password reset email
-     * @param {string} email - User email
-     * @returns {Promise<Object>} Result
+     * @param {string} email - User email address
+     * @returns {Promise<{success: boolean, message?: string, error?: string}>} Result
+     * @example
+     * const result = await authService.resetPassword('user@example.com');
+     * if (result.success) {
+     *   console.log('Reset email sent');
+     * }
      */
     async resetPassword(email) {
         try {
@@ -118,8 +152,13 @@ const authService = {
     
     /**
      * Listen to authentication state changes
-     * @param {Function} callback - Function to call when auth state changes
-     * @returns {Object} Subscription object with unsubscribe method
+     * @param {function(string, Session|null): void} callback - Function to call when auth state changes
+     * @returns {{unsubscribe: function(): void}} Subscription object with unsubscribe method
+     * @example
+     * const subscription = authService.onAuthStateChange((event, session) => {
+     *   console.log('Auth event:', event, session?.user?.email);
+     * });
+     * // Later: subscription.unsubscribe();
      */
     onAuthStateChange(callback) {
         const { data: { subscription } } = supabaseClient.auth.onAuthStateChange((event, session) => {
@@ -132,7 +171,12 @@ const authService = {
     
     /**
      * Get current user
-     * @returns {Promise<Object|null>} Current user or null
+     * @returns {Promise<User|null>} Current user or null
+     * @example
+     * const user = await authService.getCurrentUser();
+     * if (user) {
+     *   console.log('Current user:', user.email);
+     * }
      */
     async getCurrentUser() {
         return await getCurrentUser();
@@ -140,7 +184,11 @@ const authService = {
     
     /**
      * Check if user is logged in
-     * @returns {Promise<boolean>}
+     * @returns {Promise<boolean>} True if user is authenticated
+     * @example
+     * if (await authService.isLoggedIn()) {
+     *   // Show authenticated content
+     * }
      */
     async isLoggedIn() {
         return await isLoggedIn();

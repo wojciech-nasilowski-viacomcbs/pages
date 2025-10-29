@@ -26,7 +26,9 @@ Nowoczesna aplikacja webowa do nauki i treningów - quizy, treningi fitness i na
 - System autentykacji użytkowników
 - Sygnały dźwiękowe generowane dynamicznie (Web Audio API)
 
-**Technologie**: HTML5, Tailwind CSS, Vanilla JavaScript, JSON
+**Technologie**: HTML5, Tailwind CSS, Vanilla JavaScript (ES6+), Supabase, JSDoc
+
+**Developer Tools**: JSDoc type safety, DOM helpers, IntelliSense support
 
 ---
 
@@ -170,9 +172,17 @@ historii Polski. Użyj różnych typów pytań. Format JSON.
 
 ## Dokumentacja
 
+### Dla Użytkowników:
 - **[PRD.md](PRD.md)** - Pełny dokument wymagań produktowych
 - **[TECH_STACK.md](TECH_STACK.md)** - Szczegóły techniczne i architektura
 - **[DATA_FORMAT.md](DATA_FORMAT.md)** - Dokładna specyfikacja formatów JSON (WAŻNE dla tworzenia treści!)
+
+### Dla Deweloperów:
+- **[JSDOC_TYPESCRIPT_SUMMARY.md](JSDOC_TYPESCRIPT_SUMMARY.md)** - Podsumowanie ulepszeń JSDoc i TypeScript
+- **[DOM_HELPERS_EXAMPLES.md](DOM_HELPERS_EXAMPLES.md)** - Przykłady użycia DOM helpers
+- **[TYPESCRIPT_MIGRATION.md](TYPESCRIPT_MIGRATION.md)** - Przewodnik migracji do TypeScript (opcjonalnie)
+- **`js/types.js`** - Centralne definicje typów JSDoc
+- **`js/dom-helpers.js`** - Biblioteka pomocnicza do manipulacji DOM
 
 ---
 
