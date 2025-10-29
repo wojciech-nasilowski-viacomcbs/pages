@@ -59,20 +59,57 @@ SET emoji = '🏋️'
 WHERE (title ILIKE '%siłown%' OR title ILIKE '%gym%' OR title ILIKE '%ciężar%')
   AND emoji = '💪';
 
--- Krok 4: Wyświetl podsumowanie
+-- Krok 4: Dodaj numery do istniejących treningów (które nie mają numeru w tytule)
+-- Numeracja osobno dla każdego użytkownika, od najstarszego do najnowszego
+DO $$
+DECLARE
+    workout_record RECORD;
+    user_counter INTEGER;
+    current_user_id UUID;
+BEGIN
+    -- Dla każdego użytkownika
+    FOR current_user_id IN 
+        SELECT DISTINCT user_id FROM workouts WHERE user_id IS NOT NULL
+    LOOP
+        user_counter := 1;
+        
+        -- Dla każdego treningu użytkownika (sortowane od najstarszego)
+        FOR workout_record IN 
+            SELECT id, title 
+            FROM workouts 
+            WHERE user_id = current_user_id
+            AND title NOT LIKE '#%'  -- Tylko treningi bez numeru
+            ORDER BY created_at ASC
+        LOOP
+            -- Dodaj numer do tytułu
+            UPDATE workouts
+            SET title = '#' || user_counter || ' - ' || workout_record.title
+            WHERE id = workout_record.id;
+            
+            user_counter := user_counter + 1;
+        END LOOP;
+    END LOOP;
+    
+    RAISE NOTICE 'Dodano numery do treningów użytkowników';
+END $$;
+
+-- Krok 5: Wyświetl podsumowanie
 DO $$
 DECLARE
     total_workouts INTEGER;
     workouts_with_emoji INTEGER;
+    workouts_with_numbers INTEGER;
 BEGIN
     SELECT COUNT(*) INTO total_workouts FROM workouts;
     SELECT COUNT(*) INTO workouts_with_emoji FROM workouts WHERE emoji IS NOT NULL;
+    SELECT COUNT(*) INTO workouts_with_numbers FROM workouts WHERE title LIKE '#%';
     
     RAISE NOTICE '============================================';
     RAISE NOTICE 'PODSUMOWANIE MIGRACJI:';
     RAISE NOTICE '============================================';
     RAISE NOTICE 'Łączna liczba treningów: %', total_workouts;
     RAISE NOTICE 'Treningi z emotikoną: %', workouts_with_emoji;
+    RAISE NOTICE 'Treningi z numeracją: %', workouts_with_numbers;
     RAISE NOTICE '============================================';
     RAISE NOTICE 'Migracja zakończona pomyślnie! ✅';
     RAISE NOTICE '============================================';
@@ -84,7 +121,10 @@ END $$;
 -- Po uruchomieniu tej migracji:
 -- 1. Wszystkie treningi będą miały pole emoji
 -- 2. Stare treningi otrzymają domyślną emotikonę 💪
--- 3. Nowe treningi generowane przez AI będą miały emotikony dopasowane do tematu
--- 4. Możesz ręcznie edytować emotikony w bazie danych jeśli chcesz
+-- 3. Wszystkie treningi otrzymają numery w tytule (np. "#1 - Nazwa treningu")
+-- 4. Numeracja jest osobna dla każdego użytkownika
+-- 5. Numery są przypisane na stałe i nie zmienią się
+-- 6. Nowe treningi automatycznie otrzymają kolejny numer
+-- 7. Możesz ręcznie edytować emotikony i tytuły w bazie danych jeśli chcesz
 -- ============================================
 

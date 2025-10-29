@@ -159,8 +159,7 @@ ZADANIE: Wygeneruj trening w formacie JSON na podstawie opisu użytkownika.
 WYMAGANIA:
 - Tytuł i opis powinny być konkretne i motywujące
 - **WAŻNE:** Dodaj pole "emoji" z jedną emotikoną pasującą do tematu treningu
-- **NUMERACJA:** Dodaj numer treningu na początku tytułu w formacie "#N - " gdzie N to {WORKOUT_NUMBER}
-  Przykład: jeśli {WORKOUT_NUMBER} = 3, to tytuł powinien zaczynać się od "#3 - "
+- **TYTUŁ:** NIE dodawaj numeru do tytułu - numer zostanie dodany automatycznie podczas zapisu
 - Struktura: min. 2-3 fazy (np. Rozgrzewka → Trening główny → Rozciąganie)
 - Każde ćwiczenie z dokładnym opisem wykonania
 - Używaj TYLKO tych typów:
@@ -204,7 +203,7 @@ TYPY ĆWICZEŃ - SZCZEGÓŁY:
 
 FORMAT JSON (KOMPLETNY PRZYKŁAD):
 {
-  "title": "#{WORKOUT_NUMBER} - Trening FBW dla początkujących",
+  "title": "Trening FBW dla początkujących",
   "description": "30-minutowy trening całego ciała bez sprzętu",
   "emoji": "💪",
   "phases": [
@@ -259,11 +258,8 @@ FORMAT JSON (KOMPLETNY PRZYKŁAD):
 OPIS UŻYTKOWNIKA:
 {USER_PROMPT}
 
-NUMER TRENINGU:
-{WORKOUT_NUMBER}
-
 WAŻNE: 
-1. Tytuł MUSI zaczynać się od "#{WORKOUT_NUMBER} - "
+1. NIE dodawaj numeru do tytułu - zostanie dodany automatycznie
 2. Zwróć TYLKO czysty JSON, bez markdown (\`\`\`json), komentarzy czy dodatkowego tekstu.`,
 
   /**

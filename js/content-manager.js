@@ -1015,19 +1015,9 @@ const contentManager = {
     elements.aiGenerate.disabled = true;
     
     try {
-      // Dla treningów: pobierz liczbę istniejących treningów użytkownika (do numeracji)
-      let workoutNumber = null;
-      if (contentType === 'workout') {
-        try {
-          const userWorkouts = await dataService.fetchWorkouts(true); // tylko treningi użytkownika
-          workoutNumber = userWorkouts.length + 1;
-        } catch (error) {
-          console.warn('Nie udało się pobrać liczby treningów, numeracja będzie pominięta:', error);
-        }
-      }
-      
       // Wywołaj AI API (przez Vercel Function lub bezpośrednio)
-      const generatedData = await this.callAIAPI(prompt, contentType, elements, workoutNumber);
+      // Numeracja będzie dodana automatycznie podczas zapisu do bazy
+      const generatedData = await this.callAIAPI(prompt, contentType, elements);
       
       // Waliduj wygenerowane dane
       let errors = [];
@@ -1081,7 +1071,7 @@ const contentManager = {
   /**
    * Wywołaj AI API (Vercel Function lub bezpośrednio OpenRouter)
    */
-  async callAIAPI(userPrompt, contentType, elements, workoutNumber = null) {
+  async callAIAPI(userPrompt, contentType, elements) {
     // Pobierz szablon promptu z AI_PROMPTS
     let promptTemplate;
     if (contentType === 'quiz') {
@@ -1094,11 +1084,6 @@ const contentManager = {
     
     // Zastąp {USER_PROMPT} rzeczywistym promptem użytkownika
     let systemPrompt = promptTemplate.replace('{USER_PROMPT}', userPrompt);
-    
-    // Dla treningów: dodaj informację o numerze
-    if (contentType === 'workout' && workoutNumber !== null) {
-      systemPrompt = systemPrompt.replace('{WORKOUT_NUMBER}', workoutNumber);
-    }
     
     // Dla Listening: zastąp również kody języków
     if (contentType === 'listening') {

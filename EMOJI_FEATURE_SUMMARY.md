@@ -33,8 +33,14 @@
 
 #### Pliki JavaScript:
 - ✅ `js/ai-prompts.js` - dodano instrukcje dla AI o emotikonach i numeracji
-- ✅ `js/content-manager.js` - obsługa emoji w renderowaniu i walidacji
+- ✅ `js/content-manager.js` - obsługa emoji w renderowaniu, walidacji i eksporcie
 - ✅ `js/data-service.js` - zapisywanie emoji do bazy danych
+
+**Szczegóły zmian:**
+- **Walidacja:** Automatyczne dodawanie `emoji: "💪"` jeśli pole nie istnieje
+- **Export JSON:** Zawsze eksportuje pole `emoji` (domyślnie 💪)
+- **Import JSON:** Akceptuje pliki bez pola `emoji` (kompatybilność wsteczna)
+- **Renderowanie:** Wyświetla emotikonę z danych lub domyślną 💪
 
 #### Pliki JSON (przykładowe treningi):
 - ✅ `data/workouts/codzienny.json` - dodano `"emoji": "🥊"`
@@ -42,6 +48,11 @@
 
 #### Pliki SQL:
 - ✅ `supabase/migration_add_emoji.sql` - migracja bazy danych
+
+#### Pliki Dokumentacji:
+- ✅ `DATA_FORMAT.md` - zaktualizowano specyfikację formatu treningów
+- ✅ `DATA_FORMAT_EMOJI_UPDATE.md` - szczegółowy opis zmian w formacie
+- ✅ `EMOJI_FEATURE_SUMMARY.md` - ten dokument
 
 ---
 

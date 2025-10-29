@@ -234,12 +234,27 @@ const dataService = {
             const user = await getCurrentUser();
             if (!user) throw new Error('User must be authenticated to save workouts');
             
+            // Sprawdź czy tytuł ma już numer (zaczyna się od "#")
+            let finalTitle = workoutData.title;
+            if (!finalTitle.match(/^#\d+\s+-\s+/)) {
+                // Tytuł nie ma numeru - pobierz liczbę treningów użytkownika i dodaj numer
+                const { data: existingWorkouts, error: countError } = await supabaseClient
+                    .from('workouts')
+                    .select('id')
+                    .eq('user_id', user.id);
+                
+                if (countError) throw countError;
+                
+                const nextNumber = (existingWorkouts?.length || 0) + 1;
+                finalTitle = `#${nextNumber} - ${workoutData.title}`;
+            }
+            
             // Insert workout metadata
             const { data: workout, error: workoutError } = await supabaseClient
                 .from('workouts')
                 .insert({
                     user_id: user.id,
-                    title: workoutData.title,
+                    title: finalTitle,
                     description: workoutData.description || '',
                     emoji: workoutData.emoji || '💪', // Dodaj emoji
                     is_sample: false
