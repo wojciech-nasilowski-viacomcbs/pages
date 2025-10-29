@@ -525,30 +525,53 @@ async function checkAuthState() {
  */
 function setupAuthListener() {
   authService.onAuthStateChange(async (event, session) => {
-    console.log('🔐 Auth event:', event);
+    console.log('🔐 Auth event:', event, 'currentView:', state.currentView);
     
     // Sprawdź czy użytkownik jest w trakcie aktywności
     // Używamy uiState store, który śledzi stan aktywności
     const isInActivity = window.uiState ? window.uiState.getState().isActivity : false;
+    console.log('📊 isInActivity:', isInActivity, 'uiState:', window.uiState?.getState());
     
     if (event === 'SIGNED_IN') {
-      // WAŻNE: Wyczyść postęp sesji przy logowaniu (bezpieczeństwo/prywatność)
-      // Zapobiega wyświetlaniu postępu poprzedniego użytkownika lub gościa
       const newUserId = session?.user?.id;
       const previousUserId = state.currentUser?.id;
       
-      // Wyczyść sesję jeśli to inny użytkownik (lub pierwszy login)
-      if (!previousUserId || previousUserId !== newUserId) {
-        localStorage.removeItem('currentSession');
-      }
+      // Sprawdź czy to nowy użytkownik (prawdziwe logowanie) czy tylko refresh sesji
+      const isNewUser = !previousUserId || previousUserId !== newUserId;
       
-      state.currentUser = session?.user || null;
-      await contentManager.loadData(state, elements, uiManager);
-      uiManager.updateAuthUI(state, elements, contentManager, sessionManager);
-      // Przywróć zapisaną zakładkę po załadowaniu danych
-      uiManager.switchTab(state.currentTab, state, elements, contentManager, sessionManager);
+      if (isNewUser) {
+        // PRAWDZIWE LOGOWANIE - wyczyść sesję i przejdź do głównego ekranu
+        console.log('🔑 New user login - clearing session');
+        localStorage.removeItem('currentSession');
+        
+        state.currentUser = session?.user || null;
+        await contentManager.loadData(state, elements, uiManager);
+        uiManager.updateAuthUI(state, elements, contentManager, sessionManager);
+        // Przywróć zapisaną zakładkę po załadowaniu danych
+        uiManager.switchTab(state.currentTab, state, elements, contentManager, sessionManager);
+      } else if (isInActivity) {
+        // TEN SAM UŻYTKOWNIK + W TRAKCIE AKTYWNOŚCI - nie przerywaj
+        console.log('⚠️ SIGNED_IN during activity (same user) - skipping navigation');
+        state.currentUser = session?.user || null;
+        uiManager.updateAuthUI(state, elements, contentManager, sessionManager);
+      } else {
+        // TEN SAM UŻYTKOWNIK + NIE W AKTYWNOŚCI - odśwież dane
+        console.log('🔄 SIGNED_IN (same user, not in activity) - refreshing data');
+        state.currentUser = session?.user || null;
+        await contentManager.loadData(state, elements, uiManager);
+        uiManager.updateAuthUI(state, elements, contentManager, sessionManager);
+        uiManager.switchTab(state.currentTab, state, elements, contentManager, sessionManager);
+      }
     } else if (event === 'USER_UPDATED') {
       // Przy USER_UPDATED nie czyścimy sesji - to ten sam użytkownik
+      // NIE przerywaj aktywności użytkownika
+      if (isInActivity) {
+        console.log('⚠️ USER_UPDATED during activity - skipping navigation');
+        state.currentUser = session?.user || null;
+        uiManager.updateAuthUI(state, elements, contentManager, sessionManager);
+        return;
+      }
+      
       state.currentUser = session?.user || null;
       await contentManager.loadData(state, elements, uiManager);
       uiManager.updateAuthUI(state, elements, contentManager, sessionManager);
@@ -575,6 +598,9 @@ function setupAuthListener() {
         uiManager.updateAuthUI(state, elements, contentManager, sessionManager);
         console.log('⚠️ User in activity - skipping data reload and navigation');
       }
+    } else {
+      // Nieznany event - loguj i ignoruj
+      console.log('ℹ️ Unknown auth event:', event, '- ignoring');
     }
   });
 }
