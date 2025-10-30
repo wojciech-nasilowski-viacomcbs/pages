@@ -1,0 +1,196 @@
+# Project Rules for AI Assistants
+
+## Project Overview
+This is **eTrener** - an interactive educational platform for quizzes, fitness workouts, and language learning.
+
+**Tech Stack**: HTML5, Tailwind CSS, Vanilla JavaScript (ES6+), Supabase, JSDoc
+**Developer Tools**: JSDoc type safety, DOM helpers, IntelliSense support, Reactive state management
+
+## 📁 File Organization Rules
+
+### Documentation Files
+**IMPORTANT**: All documentation files (`.md` files) MUST be placed in the `/docs/` directory, with the following exceptions:
+- `README.md` - MUST stay in the project root
+- `LICENSE` - MUST stay in the project root
+
+When creating new documentation:
+- ✅ Place in `/docs/` directory
+- ✅ Use descriptive, UPPERCASE names with underscores (e.g., `FEATURE_NAME.md`)
+- ❌ DO NOT create `.md` files in the project root (except README.md)
+
+### Project Structure
+```
+/
+├── README.md                  # Main project documentation (ROOT ONLY)
+├── LICENSE                    # License file (ROOT ONLY)
+├── index.html                 # Main application page
+├── generate-manifest.js       # Manifest generator script
+│
+├── /docs/                     # 📚 ALL DOCUMENTATION FILES GO HERE
+│   ├── PRD.md
+│   ├── TECH_STACK.md
+│   ├── DATA_FORMAT.md
+│   ├── STATE_MANAGEMENT.md
+│   ├── IMPLEMENTATION_PLAN.md
+│   └── ... (all other .md files)
+│
+├── /data/
+│   ├── manifest.json          # Generated file list
+│   ├── /quizzes/              # Quiz JSON files
+│   └── /workouts/             # Workout JSON files
+│
+├── /js/
+│   ├── app.js                 # Main application logic
+│   ├── state-manager.js       # Reactive store (pub/sub)
+│   ├── ui-state.js            # UI state manager
+│   ├── ui-manager.js          # View management
+│   ├── quiz-engine.js         # Quiz logic
+│   ├── workout-engine.js      # Workout logic
+│   ├── listening-engine.js    # TTS/listening logic
+│   ├── audio.js               # Sound generation
+│   ├── dom-helpers.js         # DOM manipulation helpers
+│   └── types.js               # JSDoc type definitions
+│
+├── /api/                      # API endpoints (Vercel serverless)
+│   ├── ai-generate.js         # AI content generation
+│   └── config.js              # API configuration
+│
+├── /scripts/                  # Build/utility scripts
+│   └── generate-config.js
+│
+├── /supabase/                 # Database schema and migrations
+│   ├── schema.sql
+│   └── *.sql
+│
+└── /__tests__/                # Jest test files
+    └── *.test.js
+```
+
+## 🎯 Coding Standards
+
+### JavaScript
+- Use **ES6+ syntax** (const/let, arrow functions, async/await)
+- Use **JSDoc** for type annotations (see `js/types.js` for type definitions)
+- Follow **functional programming** principles where possible
+- Use **DOM helpers** from `js/dom-helpers.js` instead of raw DOM manipulation
+- All new modules should export typed functions with JSDoc comments
+
+### State Management
+- Use `state-manager.js` for reactive state (pub/sub pattern)
+- Use `ui-state.js` for UI state management
+- Subscribe to state changes instead of polling
+- See `/docs/STATE_MANAGEMENT.md` for full documentation
+
+### DOM Manipulation
+- **ALWAYS** use helpers from `js/dom-helpers.js`:
+  - `$(selector)` - Query single element
+  - `$$(selector)` - Query multiple elements
+  - `create(tag, props, children)` - Create elements
+  - `show(el)`, `hide(el)` - Toggle visibility
+  - `addClass()`, `removeClass()`, `toggleClass()` - Class manipulation
+- See `/docs/DOM_HELPERS_EXAMPLES.md` for examples
+
+### Data Formats
+- Quiz and workout data must follow formats in `/docs/DATA_FORMAT.md`
+- All JSON files must include emoji icons (see `/docs/DATA_FORMAT_EMOJI_UPDATE.md`)
+- Run `node generate-manifest.js` after adding new data files
+
+## 🔧 Development Workflow
+
+### Before Making Changes
+1. Read relevant documentation from `/docs/` directory
+2. Check `js/types.js` for type definitions
+3. Review existing code patterns
+
+### After Making Changes
+1. Update JSDoc comments if function signatures change
+2. Update relevant documentation in `/docs/` if behavior changes
+3. Run tests: `npm test`
+4. Regenerate manifest if data files changed: `node generate-manifest.js`
+
+### Creating New Features
+1. Create implementation plan in `/docs/IMPLEMENTATION_PLAN_[FEATURE].md`
+2. Update `js/types.js` with new type definitions
+3. Implement feature with proper JSDoc annotations
+4. Add tests in `__tests__/`
+5. Update main documentation in `/docs/`
+
+## 📚 Key Documentation Files
+
+When working on specific areas, refer to these docs:
+- **Data formats**: `/docs/DATA_FORMAT.md`
+- **State management**: `/docs/STATE_MANAGEMENT.md`
+- **DOM helpers**: `/docs/DOM_HELPERS_EXAMPLES.md`, `/docs/QUICK_START_DOM_HELPERS.md`
+- **Type system**: `/docs/JSDOC_TYPESCRIPT_SUMMARY.md`
+- **TypeScript migration**: `/docs/TYPESCRIPT_MIGRATION.md`
+- **Database schema**: `/docs/DB_SCHEMA.md`
+- **Deployment**: `/docs/DEPLOYMENT.md`, `/docs/VERCEL_SETUP.md`
+- **Feature flags**: `/docs/FEATURE_FLAGS.md`
+- **AI generation**: `/docs/AI_GENERATOR_DEBUG.md`
+- **TTS feature**: `/docs/TTS_FEATURE.md`
+
+## 🚫 Don't Do This
+- ❌ Create `.md` files in project root (except README.md)
+- ❌ Use raw DOM manipulation (use `dom-helpers.js`)
+- ❌ Mutate state directly (use state manager)
+- ❌ Skip JSDoc annotations
+- ❌ Forget to update manifest after adding data files
+- ❌ Use `var` (use `const` or `let`)
+- ❌ Create inline styles (use Tailwind classes)
+
+## ✅ Do This
+- ✅ Place all documentation in `/docs/`
+- ✅ Use DOM helpers for all DOM operations
+- ✅ Use state manager for reactive state
+- ✅ Add JSDoc comments to all functions
+- ✅ Follow existing code patterns
+- ✅ Update relevant documentation when making changes
+- ✅ Write tests for new features
+- ✅ Use Tailwind CSS for styling
+
+## 🔍 Quick Reference
+
+### Creating Documentation
+```bash
+# Create new documentation file
+touch docs/NEW_FEATURE.md
+
+# NOT like this:
+touch NEW_FEATURE.md  # ❌ Wrong location!
+```
+
+### Adding Quiz/Workout
+```bash
+# 1. Create JSON file
+touch data/quizzes/my-quiz.json
+
+# 2. Edit with proper format (see /docs/DATA_FORMAT.md)
+
+# 3. Generate manifest
+node generate-manifest.js
+```
+
+### Working with State
+```javascript
+// Subscribe to state changes
+const unsubscribe = uiState.subscribe((state, prevState) => {
+  console.log('State changed:', state);
+});
+
+// Navigate to screen
+uiState.navigateToScreen('quiz');
+
+// Update state
+uiState.setListeningPlayerActive(true);
+```
+
+## 🌐 Language
+- Code comments: English
+- Documentation: Polish (for user-facing docs) or English (for technical docs)
+- Variable/function names: English
+- UI text: Polish
+
+---
+
+**Remember**: This project values clean code, proper documentation, and maintainability. When in doubt, check existing patterns in the codebase or relevant documentation in `/docs/`.
+

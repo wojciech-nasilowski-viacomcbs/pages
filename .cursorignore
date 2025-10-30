@@ -1,0 +1,23 @@
+# Dependencies
+node_modules/
+package-lock.json
+
+# Build outputs
+coverage/
+*.log
+
+# Test outputs
+test-report.html
+
+# Temporary files
+*.tmp
+*.temp
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
+
+# Don't index large generated files
+coverage/**
+
