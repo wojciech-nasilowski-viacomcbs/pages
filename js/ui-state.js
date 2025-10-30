@@ -16,7 +16,7 @@
  * Stan UI aplikacji
  * @typedef {Object} UIState
  * @property {ScreenType} currentScreen - Aktualnie wyświetlany ekran
- * @property {string} currentTab - Aktywna zakładka ('quizzes', 'workouts', 'listening', 'more')
+ * @property {string} currentTab - Aktywna zakładka ('workouts', 'knowledge-base', 'quizzes', 'listening', 'more')
  * @property {boolean} isActivity - Czy trwa aktywność (quiz/trening/słuchanie)
  * @property {boolean} showTabBar - Czy pokazywać dolny pasek nawigacji
  * @property {boolean} isListeningPlayerActive - Czy odtwarzacz słuchania jest aktywny
@@ -25,7 +25,7 @@
 // Inicjalizacja store
 const uiStore = window.createStore({
   currentScreen: 'loading',
-  currentTab: 'quizzes',
+  currentTab: 'workouts',
   isActivity: false,
   showTabBar: true,
   isListeningPlayerActive: false
