@@ -7,6 +7,7 @@
 /** @typedef {import('./types.js').User} User */
 /** @typedef {import('./types.js').Session} Session */
 /** @typedef {import('./types.js').AuthResponse} AuthResponse */
+/** @typedef {import('./types.js').UserRole} UserRole */
 
 // ============================================
 // AUTHENTICATION SERVICE
@@ -192,6 +193,46 @@ const authService = {
      */
     async isLoggedIn() {
         return await isLoggedIn();
+    },
+    
+    /**
+     * Get user role from user metadata
+     * @param {User|null} [user] - User object (if not provided, fetches current user)
+     * @returns {Promise<UserRole>} User role ('admin' or 'user')
+     * @example
+     * const role = await authService.getUserRole();
+     * console.log('User role:', role); // 'admin' or 'user'
+     */
+    async getUserRole(user = null) {
+        try {
+            const currentUser = user || await this.getCurrentUser();
+            if (!currentUser) {
+                return 'user'; // Default role for non-authenticated users
+            }
+            
+            // Check user_metadata.role
+            const role = currentUser.user_metadata?.role;
+            
+            // Only 'admin' is special, everything else is 'user'
+            return role === 'admin' ? 'admin' : 'user';
+        } catch (error) {
+            console.error('Error getting user role:', error);
+            return 'user'; // Default to 'user' on error
+        }
+    },
+    
+    /**
+     * Check if current user is admin
+     * @param {User|null} [user] - User object (if not provided, fetches current user)
+     * @returns {Promise<boolean>} True if user is admin
+     * @example
+     * if (await authService.isAdmin()) {
+     *   // Show admin features
+     * }
+     */
+    async isAdmin(user = null) {
+        const role = await this.getUserRole(user);
+        return role === 'admin';
     }
 };
 

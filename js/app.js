@@ -514,9 +514,18 @@ async function checkAuthState() {
   try {
     state.currentUser = await getCurrentUser();
     console.log('👤 Stan autentykacji:', state.currentUser ? 'Zalogowany' : 'Gość');
+    
+    // Inicjalizuj rolę użytkownika
+    if (state.currentUser) {
+      const role = await authService.getUserRole(state.currentUser);
+      sessionManager.setUserRole(role);
+    } else {
+      sessionManager.resetUserRole();
+    }
   } catch (error) {
     console.error('Błąd sprawdzania autentykacji:', error);
     state.currentUser = null;
+    sessionManager.resetUserRole();
   }
 }
 
@@ -545,6 +554,11 @@ function setupAuthListener() {
         localStorage.removeItem('currentSession');
         
         state.currentUser = session?.user || null;
+        
+        // Ustaw rolę użytkownika
+        const role = await authService.getUserRole(state.currentUser);
+        sessionManager.setUserRole(role);
+        
         await contentManager.loadData(state, elements, uiManager);
         uiManager.updateAuthUI(state, elements, contentManager, sessionManager);
         // Przywróć zapisaną zakładkę po załadowaniu danych
@@ -553,11 +567,21 @@ function setupAuthListener() {
         // TEN SAM UŻYTKOWNIK + W TRAKCIE AKTYWNOŚCI - nie przerywaj
         console.log('⚠️ SIGNED_IN during activity (same user) - skipping navigation');
         state.currentUser = session?.user || null;
+        
+        // Ustaw rolę użytkownika
+        const role = await authService.getUserRole(state.currentUser);
+        sessionManager.setUserRole(role);
+        
         uiManager.updateAuthUI(state, elements, contentManager, sessionManager);
       } else {
         // TEN SAM UŻYTKOWNIK + NIE W AKTYWNOŚCI - odśwież dane
         console.log('🔄 SIGNED_IN (same user, not in activity) - refreshing data');
         state.currentUser = session?.user || null;
+        
+        // Ustaw rolę użytkownika
+        const role = await authService.getUserRole(state.currentUser);
+        sessionManager.setUserRole(role);
+        
         await contentManager.loadData(state, elements, uiManager);
         uiManager.updateAuthUI(state, elements, contentManager, sessionManager);
         uiManager.switchTab(state.currentTab, state, elements, contentManager, sessionManager);
@@ -568,17 +592,29 @@ function setupAuthListener() {
       if (isInActivity) {
         console.log('⚠️ USER_UPDATED during activity - skipping navigation');
         state.currentUser = session?.user || null;
+        
+        // Ustaw rolę użytkownika
+        const role = await authService.getUserRole(state.currentUser);
+        sessionManager.setUserRole(role);
+        
         uiManager.updateAuthUI(state, elements, contentManager, sessionManager);
         return;
       }
       
       state.currentUser = session?.user || null;
+      
+      // Ustaw rolę użytkownika
+      const role = await authService.getUserRole(state.currentUser);
+      sessionManager.setUserRole(role);
+      
       await contentManager.loadData(state, elements, uiManager);
       uiManager.updateAuthUI(state, elements, contentManager, sessionManager);
       // Przywróć zapisaną zakładkę po załadowaniu danych
       uiManager.switchTab(state.currentTab, state, elements, contentManager, sessionManager);
     } else if (event === 'SIGNED_OUT') {
       state.currentUser = null;
+      sessionManager.resetUserRole();
+      
       await contentManager.loadData(state, elements, uiManager);
       uiManager.updateAuthUI(state, elements, contentManager, sessionManager);
       // Przywróć zapisaną zakładkę po załadowaniu danych
@@ -588,6 +624,12 @@ function setupAuthListener() {
       // NIE przerywaj aktywności użytkownika - tylko zaktualizuj dane w tle
       console.log('🔄 Token refreshed - updating session silently');
       state.currentUser = session?.user || null;
+      
+      // Ustaw rolę użytkownika
+      if (state.currentUser) {
+        const role = await authService.getUserRole(state.currentUser);
+        sessionManager.setUserRole(role);
+      }
       
       // Jeśli użytkownik NIE jest w trakcie aktywności, odśwież dane
       if (!isInActivity) {

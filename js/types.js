@@ -9,10 +9,20 @@
 // ============================================================================
 
 /**
+ * @typedef {'admin'|'user'} UserRole
+ * User role type - 'admin' has elevated permissions, 'user' is default
+ */
+
+/**
+ * @typedef {Object} UserMetadata
+ * @property {UserRole} [role] - User role (undefined = 'user', 'admin' = admin)
+ */
+
+/**
  * @typedef {Object} User
  * @property {string} id - Unique user ID from Supabase Auth
  * @property {string} email - User's email address
- * @property {Object} [user_metadata] - Additional user metadata
+ * @property {UserMetadata} [user_metadata] - Additional user metadata (includes role)
  * @property {string} [created_at] - Account creation timestamp
  */
 

@@ -1,5 +1,5 @@
 // ============================================
-// SESSION MANAGER - Session handling, Continue dialog
+// SESSION MANAGER - Session handling, Continue dialog, User role management
 // ============================================
 
 (function() {
@@ -7,6 +7,7 @@
 
 const sessionManager = {
   savedSession: null,
+  currentUserRole: 'user', // Default role
   
   /**
    * Sprawdza czy jest zapisana sesja (wywoływane przy starcie aplikacji)
@@ -127,6 +128,39 @@ const sessionManager = {
    */
   handleExitCancel(elements) {
     elements.exitDialog.classList.add('hidden');
+  },
+  
+  /**
+   * Ustawia rolę użytkownika (wywoływane po zalogowaniu)
+   * @param {'admin'|'user'} role - Rola użytkownika
+   */
+  setUserRole(role) {
+    this.currentUserRole = role || 'user';
+    console.log('User role set:', this.currentUserRole);
+  },
+  
+  /**
+   * Pobiera aktualną rolę użytkownika
+   * @returns {'admin'|'user'} Rola użytkownika
+   */
+  getUserRole() {
+    return this.currentUserRole;
+  },
+  
+  /**
+   * Sprawdza czy użytkownik jest adminem
+   * @returns {boolean} True jeśli admin
+   */
+  isAdmin() {
+    return this.currentUserRole === 'admin';
+  },
+  
+  /**
+   * Resetuje rolę do domyślnej (przy wylogowaniu)
+   */
+  resetUserRole() {
+    this.currentUserRole = 'user';
+    console.log('User role reset to default');
   }
 };
 
