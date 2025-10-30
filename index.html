@@ -103,6 +103,8 @@
         }
         
         /* Padding dla modali na mobile - zapewnia widoczność przycisków nad dolnym menu */
+        /* Bottom padding for modals on mobile - ensures buttons are visible above bottom nav */
+        /* 100px = 80px (bottom nav height) + 20px buffer for comfortable scrolling */
         @media (max-width: 768px) {
             .modal-content-mobile-safe {
                 padding-bottom: calc(100px + env(safe-area-inset-bottom));
