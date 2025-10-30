@@ -125,14 +125,14 @@ const contentManager = {
       const icon = state.currentTab === 'quizzes' ? '📝' : (item.emoji || '💪');
       const badge = item.isSample ? '<span class="text-xs bg-blue-600 px-2 py-1 rounded">Przykład</span>' : '';
       const actionButtons = !item.isSample ? `
-        <div class="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-all duration-200 flex gap-2 z-10">
-          <button class="export-btn text-gray-400 hover:text-green-500 hover:scale-110 text-xl"
+        <div class="absolute top-2 right-2 md:top-3 md:right-3 md:opacity-0 md:group-hover:opacity-100 transition-all duration-200 flex gap-2 z-10">
+          <button class="export-btn bg-gray-700/90 md:bg-transparent text-gray-300 hover:text-green-500 active:scale-95 md:hover:scale-110 text-2xl md:text-xl p-2 md:p-0 rounded-lg md:rounded-none min-w-[44px] min-h-[44px] md:min-w-0 md:min-h-0 flex items-center justify-center"fix
                   data-id="${item.id}"
                   data-title="${item.title.replace(/"/g, '&quot;')}"
                   title="Eksportuj JSON">
             ⬇
           </button>
-          <button class="delete-btn text-gray-400 hover:text-red-500 hover:scale-110 text-xl"
+          <button class="delete-btn bg-gray-700/90 md:bg-transparent text-gray-300 hover:text-red-500 active:scale-95 md:hover:scale-110 text-2xl md:text-xl p-2 md:p-0 rounded-lg md:rounded-none min-w-[44px] min-h-[44px] md:min-w-0 md:min-h-0 flex items-center justify-center"
                   data-id="${item.id}"
                   data-title="${item.title.replace(/"/g, '&quot;')}"
                   title="Usuń">
