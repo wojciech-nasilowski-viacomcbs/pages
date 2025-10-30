@@ -127,13 +127,14 @@ CREATE TRIGGER update_kb_articles_updated_at
     EXECUTE FUNCTION update_updated_at_column();
 
 -- Funkcja do automatycznej aktualizacji search_vector (full-text search)
+-- Używamy 'simple' zamiast 'polish' bo Supabase nie ma polskiej konfiguracji
 CREATE OR REPLACE FUNCTION kb_articles_search_update()
 RETURNS TRIGGER AS $$
 BEGIN
     NEW.search_vector :=
-        setweight(to_tsvector('polish', coalesce(NEW.title, '')), 'A') ||
-        setweight(to_tsvector('polish', coalesce(NEW.description, '')), 'B') ||
-        setweight(to_tsvector('polish', coalesce(NEW.content, '')), 'C');
+        setweight(to_tsvector('simple', coalesce(NEW.title, '')), 'A') ||
+        setweight(to_tsvector('simple', coalesce(NEW.description, '')), 'B') ||
+        setweight(to_tsvector('simple', coalesce(NEW.content, '')), 'C');
     RETURN NEW;
 END;
 $$ language 'plpgsql';
@@ -145,11 +146,42 @@ CREATE TRIGGER kb_articles_search_vector_update
     EXECUTE FUNCTION kb_articles_search_update();
 
 -- ============================================
+-- RPC FUNCTION: Increment Article Views
+-- ============================================
+
+-- Funkcja do bezpiecznego inkrementowania licznika wyświetleń
+CREATE OR REPLACE FUNCTION increment_kb_article_views(article_id UUID)
+RETURNS void
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+BEGIN
+  UPDATE knowledge_base_articles
+  SET view_count = COALESCE(view_count, 0) + 1
+  WHERE id = article_id;
+END;
+$$;
+
+-- Nadaj uprawnienia
+GRANT EXECUTE ON FUNCTION increment_kb_article_views(UUID) TO public;
+GRANT EXECUTE ON FUNCTION increment_kb_article_views(UUID) TO authenticated;
+GRANT EXECUTE ON FUNCTION increment_kb_article_views(UUID) TO anon;
+
+-- ============================================
 -- SUPABASE STORAGE - POLICIES DLA OBRAZKÓW
 -- ============================================
 
--- UWAGA: Bucket 'knowledge-base-images' musi być utworzony ręcznie w panelu Supabase:
--- Storage → Create bucket → Nazwa: knowledge-base-images, Public: TRUE
+-- Tworzenie bucketa dla obrazków
+-- Uwaga: Jeśli bucket już istnieje, ta komenda zwróci błąd (można zignorować)
+INSERT INTO storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+VALUES (
+    'knowledge-base-images',
+    'knowledge-base-images',
+    true,  -- Publiczny bucket
+    5242880,  -- 5MB limit
+    ARRAY['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp']
+)
+ON CONFLICT (id) DO NOTHING;
 
 -- Policy 1: Wszyscy mogą pobierać obrazki (publiczny dostęp)
 CREATE POLICY "Public read access for KB images"

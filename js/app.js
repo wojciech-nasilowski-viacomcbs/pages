@@ -9,7 +9,7 @@
 // Stan aplikacji
 const state = {
   currentView: 'main',
-  currentTab: 'quizzes', // możliwe: 'quizzes', 'workouts', 'listening', 'more' - będzie nadpisane z localStorage
+  currentTab: 'workouts', // możliwe: 'workouts', 'knowledge-base', 'quizzes', 'listening', 'more' - będzie nadpisane z localStorage
   quizzes: [],
   workouts: [],
   listeningSets: [], // NOWE
@@ -24,7 +24,8 @@ const elements = {
   quizSummaryScreen: document.getElementById('quiz-summary-screen'),
   workoutScreen: document.getElementById('workout-screen'),
   workoutEndScreen: document.getElementById('workout-end-screen'),
-  listeningScreen: document.getElementById('listening-screen'), // NOWE
+  listeningScreen: document.getElementById('listening-screen'),
+  knowledgeBaseScreen: document.getElementById('knowledge-base-screen'),
   continueDialog: document.getElementById('continue-dialog'),
   exitDialog: document.getElementById('exit-dialog'),
   
@@ -32,8 +33,9 @@ const elements = {
   tabQuizzes: document.getElementById('tab-quizzes'),
   tabWorkouts: document.getElementById('tab-workouts'),
   tabListening: document.getElementById('tab-listening'),
-  tabImport: document.getElementById('tab-import'), // NOWE - bezpośrednia zakładka Import
-  tabAIGenerator: document.getElementById('tab-ai-generator'), // NOWE - bezpośrednia zakładka AI
+  tabKnowledgeBase: document.getElementById('tab-knowledge-base'),
+  tabImport: document.getElementById('tab-import'),
+  tabAIGenerator: document.getElementById('tab-ai-generator'),
   tabMore: document.getElementById('tab-more'),
   moreScreen: document.getElementById('more-screen'),
   contentCards: document.getElementById('content-cards'),
@@ -163,7 +165,7 @@ async function init() {
   // Przywróć ostatnią aktywną zakładkę z localStorage
   try {
     const lastTab = localStorage.getItem('lastActiveTab');
-    if (lastTab && ['quizzes', 'workouts', 'listening', 'more'].includes(lastTab)) {
+    if (lastTab && ['workouts', 'knowledge-base', 'quizzes', 'listening', 'more'].includes(lastTab)) {
       state.currentTab = lastTab;
       console.log(`📌 Przywrócono zakładkę: ${lastTab}`);
     }
@@ -193,6 +195,23 @@ async function init() {
   
   // Podłącz event listenery
   attachEventListeners();
+  
+  // Inicjalizuj listenery dla Bazy Wiedzy (jeśli włączona)
+  if (featureFlags.isKnowledgeBaseEnabled() && contentManager.initKnowledgeBaseListeners) {
+    contentManager.initKnowledgeBaseListeners(sessionManager);
+    
+    // Inicjalizuj Quill.js editor
+    if (typeof Quill !== 'undefined' && typeof knowledgeBaseEngine !== 'undefined') {
+      const editorContainer = document.getElementById('kb-editor-quill');
+      if (editorContainer) {
+        const quill = knowledgeBaseEngine.initEditor(editorContainer);
+        if (quill) {
+          window.knowledgeBaseQuillEditor = quill;
+          console.log('✅ Quill editor initialized');
+        }
+      }
+    }
+  }
   
   // Sprawdź stan autentykacji
   await checkAuthState();
@@ -258,6 +277,11 @@ function attachEventListeners() {
   if (featureFlags.isListeningEnabled()) {
     elements.tabListening.addEventListener('click', () => {
       uiManager.switchTab('listening', state, elements, contentManager, sessionManager);
+    });
+  }
+  if (featureFlags.isKnowledgeBaseEnabled()) {
+    elements.tabKnowledgeBase.addEventListener('click', () => {
+      uiManager.switchTab('knowledge-base', state, elements, contentManager, sessionManager);
     });
   }
   
@@ -460,6 +484,12 @@ function applyFeatureFlags(elements) {
         elements.tabListening.classList.add('hidden');
     } else {
         elements.tabListening.classList.remove('hidden');
+    }
+    
+    if (!featureFlags.isKnowledgeBaseEnabled()) {
+        elements.tabKnowledgeBase.classList.add('hidden');
+    } else {
+        elements.tabKnowledgeBase.classList.remove('hidden');
     }
     
     // Funkcje dodatkowe - mogą być w tab barze lub w "Więcej"

@@ -61,11 +61,11 @@ window.featureFlags = {
         const MAX_TABS = 4;
         const tabs = [];
         
-        // Główne moduły - zawsze priorytet
-        if (getFlag('ENABLE_QUIZZES')) tabs.push('quizzes');
+        // Główne moduły - priorytet: Treningi, Wiedza, Quizy, Słuchanie
         if (getFlag('ENABLE_WORKOUTS')) tabs.push('workouts');
-        if (getFlag('ENABLE_LISTENING')) tabs.push('listening');
         if (getFlag('ENABLE_KNOWLEDGE_BASE')) tabs.push('knowledge-base');
+        if (getFlag('ENABLE_QUIZZES')) tabs.push('quizzes');
+        if (getFlag('ENABLE_LISTENING')) tabs.push('listening');
         
         // Funkcje dodatkowe
         const hasImport = getFlag('ENABLE_FILE_IMPORT');
