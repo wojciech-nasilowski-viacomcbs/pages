@@ -18,6 +18,9 @@ Witaj w dokumentacji projektu eTrener! Wszystkie dokumenty znajdują się w tym 
 - **[EMOJI_FEATURE_SUMMARY.md](EMOJI_FEATURE_SUMMARY.md)** - Podsumowanie funkcji emoji
 - **[TTS_FEATURE.md](TTS_FEATURE.md)** - Text-to-Speech i funkcje audio
 - **[LISTENING_STATUS.md](LISTENING_STATUS.md)** - Status implementacji funkcji słuchania
+- **[KNOWLEDGE_BASE_FEATURE.md](KNOWLEDGE_BASE_FEATURE.md)** - Baza Wiedzy - dokumentacja funkcji
+- **[KNOWLEDGE_BASE_EDITOR.md](KNOWLEDGE_BASE_EDITOR.md)** - Edytor Bazy Wiedzy
+- **[KNOWLEDGE_BASE_FIX.md](KNOWLEDGE_BASE_FIX.md)** - 🔧 Fix: Feature flag nie działa na Vercel
 - **[EMAIL_TEMPLATES.md](EMAIL_TEMPLATES.md)** - Szablony emaili
 
 ## 💻 Dla Deweloperów
@@ -55,6 +58,7 @@ Witaj w dokumentacji projektu eTrener! Wszystkie dokumenty znajdują się w tym 
 
 ### Feature Flags
 - **[FEATURE_FLAGS.md](FEATURE_FLAGS.md)** - System flag funkcjonalności
+- **[TAILWIND_CDN_WARNING.md](TAILWIND_CDN_WARNING.md)** - ⚠️ Ostrzeżenie o Tailwind CDN w produkcji
 
 ## 🔍 Szybkie odnośniki
 

@@ -8,6 +8,7 @@ System flag funkcyjnych pozwala na dynamiczne włączanie i wyłączanie funkcji
 - `ENABLE_QUIZZES` - Moduł quizów
 - `ENABLE_WORKOUTS` - Moduł treningów
 - `ENABLE_LISTENING` - Moduł nauki przez słuchanie
+- `ENABLE_KNOWLEDGE_BASE` - Baza Wiedzy (artykuły edukacyjne)
 
 ### Funkcje Dodatkowe
 - `ENABLE_FILE_IMPORT` - Import treści z plików JSON
@@ -29,9 +30,10 @@ window.APP_CONFIG = {
     
     FEATURE_FLAGS: {
         // Główne moduły
-        ENABLE_QUIZZES: true,      // ✅ Włączone
-        ENABLE_WORKOUTS: false,    // ❌ Wyłączone
-        ENABLE_LISTENING: true,    // ✅ Włączone
+        ENABLE_QUIZZES: true,         // ✅ Włączone
+        ENABLE_WORKOUTS: false,       // ❌ Wyłączone
+        ENABLE_LISTENING: true,       // ✅ Włączone
+        ENABLE_KNOWLEDGE_BASE: true,  // ✅ Włączone
 
         // Funkcje dodatkowe
         ENABLE_FILE_IMPORT: true,     // ✅ Włączone
@@ -66,6 +68,7 @@ Dodaj następujące zmienne z prefiksem `FF_`:
 FF_ENABLE_QUIZZES=true
 FF_ENABLE_WORKOUTS=true
 FF_ENABLE_LISTENING=true
+FF_ENABLE_KNOWLEDGE_BASE=true
 FF_ENABLE_FILE_IMPORT=true
 FF_ENABLE_AI_GENERATOR=true
 ```

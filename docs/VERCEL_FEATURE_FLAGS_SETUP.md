@@ -17,6 +17,7 @@ https://vercel.com/dashboard
 FF_ENABLE_QUIZZES=true
 FF_ENABLE_WORKOUTS=true
 FF_ENABLE_LISTENING=true
+FF_ENABLE_KNOWLEDGE_BASE=true
 
 # Funkcje dodatkowe
 FF_ENABLE_FILE_IMPORT=true
