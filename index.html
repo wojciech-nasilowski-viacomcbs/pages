@@ -101,6 +101,13 @@
                 margin: 0 1px;
             }
         }
+        
+        /* Padding dla modali na mobile - zapewnia widoczność przycisków nad dolnym menu */
+        @media (max-width: 768px) {
+            .modal-content-mobile-safe {
+                padding-bottom: calc(100px + env(safe-area-inset-bottom));
+            }
+        }
     </style>
 </head>
 <body class="bg-gray-900 text-gray-100 min-h-screen">
@@ -522,7 +529,7 @@
 
         <!-- MODAL LOGOWANIA -->
         <div id="login-modal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50">
-            <div class="bg-gray-800 p-6 rounded-2xl shadow-2xl max-w-md w-full">
+            <div class="bg-gray-800 p-6 rounded-2xl shadow-2xl max-w-md w-full modal-content-mobile-safe">
                 <h2 class="text-2xl font-bold text-white mb-4">Zaloguj się</h2>
                 <form id="login-form" class="space-y-4">
                     <div>
@@ -554,7 +561,7 @@
 
         <!-- MODAL REJESTRACJI -->
         <div id="register-modal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50">
-            <div class="bg-gray-800 p-6 rounded-2xl shadow-2xl max-w-md w-full">
+            <div class="bg-gray-800 p-6 rounded-2xl shadow-2xl max-w-md w-full modal-content-mobile-safe">
                 <h2 class="text-2xl font-bold text-white mb-4">Zarejestruj się</h2>
                 <form id="register-form" class="space-y-4">
                     <div>
@@ -588,7 +595,7 @@
 
         <!-- MODAL RESETOWANIA HASŁA -->
         <div id="reset-password-modal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50">
-            <div class="bg-gray-800 p-6 rounded-2xl shadow-2xl max-w-md w-full">
+            <div class="bg-gray-800 p-6 rounded-2xl shadow-2xl max-w-md w-full modal-content-mobile-safe">
                 <h2 class="text-2xl font-bold text-white mb-4">Resetuj hasło</h2>
                 <p class="text-gray-300 text-sm mb-4">Wyślemy Ci link do resetowania hasła na podany email.</p>
                 <form id="reset-password-form" class="space-y-4">
@@ -613,7 +620,7 @@
 
         <!-- MODAL NOWEGO HASŁA (po kliknięciu w link z maila) -->
         <div id="new-password-modal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50">
-            <div class="bg-gray-800 p-6 rounded-2xl shadow-2xl max-w-md w-full">
+            <div class="bg-gray-800 p-6 rounded-2xl shadow-2xl max-w-md w-full modal-content-mobile-safe">
                 <h2 class="text-2xl font-bold text-white mb-4">Ustaw nowe hasło</h2>
                 <form id="new-password-form" class="space-y-4">
                     <div>
@@ -637,7 +644,7 @@
 
         <!-- MODAL IMPORTU JSON -->
         <div id="import-modal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50">
-            <div class="bg-gray-800 p-6 rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div class="bg-gray-800 p-6 rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto modal-content-mobile-safe">
                 <div class="flex justify-between items-center mb-4">
                     <h2 class="text-2xl font-bold text-white">
                         <span id="import-title">Dodaj Zawartość</span>
@@ -715,7 +722,7 @@
 
         <!-- MODAL GENERATORA AI -->
         <div id="ai-generator-modal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50">
-            <div class="bg-gray-800 p-6 rounded-2xl shadow-2xl max-w-2xl w-full">
+            <div class="bg-gray-800 p-6 rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto modal-content-mobile-safe">
                 <div class="flex justify-between items-center mb-6">
                     <h2 class="text-2xl font-bold text-white">🤖 Generator AI</h2>
                     <button id="ai-close" class="text-gray-400 hover:text-white text-2xl">&times;</button>
