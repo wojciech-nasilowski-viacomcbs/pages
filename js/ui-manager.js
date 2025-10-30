@@ -318,7 +318,7 @@ const uiManager = {
             ✏️ Edytuj
           </button>
           <button 
-            class="kb-delete-btn bg-red-600 hover:bg-red-700 text-white text-sm font-bold py-2 px-3 rounded transition"
+            class="kb-delete-btn bg-gray-700 hover:bg-red-600 text-gray-300 hover:text-white text-sm font-bold py-2 px-3 rounded transition"
             data-article-id="${article.id}"
             data-article-title="${article.title}"
           >

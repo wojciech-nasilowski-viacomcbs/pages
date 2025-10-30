@@ -9,7 +9,7 @@
 // Stan aplikacji
 const state = {
   currentView: 'main',
-  currentTab: 'workouts', // możliwe: 'workouts', 'knowledge-base', 'quizzes', 'listening', 'more' - będzie nadpisane z localStorage
+  currentTab: 'knowledge-base', // możliwe: 'workouts', 'knowledge-base', 'quizzes', 'listening', 'more' - będzie nadpisane z localStorage
   quizzes: [],
   workouts: [],
   listeningSets: [], // NOWE
@@ -228,10 +228,13 @@ async function init() {
   // Sprawdź zapisaną sesję
   sessionManager.checkSavedSession();
   
-  // Pokaż domyślną zakładkę (pierwszą z włączonych)
+  // Pokaż zakładkę (zapisaną lub domyślną)
   const enabledTabs = featureFlags.getActiveCoreTabs();
-  const defaultTab = enabledTabs.length > 0 ? enabledTabs[0] : 'more';
-  uiManager.switchTab(defaultTab, state, elements, contentManager, sessionManager);
+  // Użyj zapisanej zakładki jeśli jest włączona, w przeciwnym razie użyj pierwszej włączonej
+  const tabToShow = (state.currentTab && enabledTabs.includes(state.currentTab)) 
+    ? state.currentTab 
+    : (enabledTabs.length > 0 ? enabledTabs[0] : 'more');
+  uiManager.switchTab(tabToShow, state, elements, contentManager, sessionManager);
   
   // Aktualizuj UI autentykacji
   uiManager.updateAuthUI(state, elements, contentManager, sessionManager);

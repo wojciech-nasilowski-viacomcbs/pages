@@ -176,6 +176,92 @@
             padding-bottom: env(safe-area-inset-bottom);
         }
         
+        /* Quill Editor - Dark Theme Fixes */
+        .ql-toolbar {
+            background: #374151 !important; /* gray-700 */
+            border: 1px solid #4b5563 !important; /* gray-600 */
+            border-radius: 0.5rem 0.5rem 0 0 !important;
+        }
+        
+        /* Ikony w toolbarze - rozjaśnione */
+        .ql-toolbar button,
+        .ql-toolbar .ql-picker-label {
+            color: #e5e7eb !important; /* gray-200 */
+        }
+        
+        .ql-toolbar button:hover,
+        .ql-toolbar .ql-picker-label:hover {
+            color: #ffffff !important;
+            background: #4b5563 !important; /* gray-600 */
+        }
+        
+        .ql-toolbar button.ql-active,
+        .ql-toolbar .ql-picker-label.ql-active {
+            color: #60a5fa !important; /* blue-400 */
+        }
+        
+        /* SVG ikony w toolbarze */
+        .ql-toolbar .ql-stroke {
+            stroke: #e5e7eb !important; /* gray-200 */
+        }
+        
+        .ql-toolbar .ql-fill {
+            fill: #e5e7eb !important; /* gray-200 */
+        }
+        
+        .ql-toolbar button:hover .ql-stroke,
+        .ql-toolbar .ql-picker-label:hover .ql-stroke {
+            stroke: #ffffff !important;
+        }
+        
+        .ql-toolbar button:hover .ql-fill,
+        .ql-toolbar .ql-picker-label:hover .ql-fill {
+            fill: #ffffff !important;
+        }
+        
+        .ql-toolbar button.ql-active .ql-stroke,
+        .ql-toolbar .ql-picker-label.ql-active .ql-stroke {
+            stroke: #60a5fa !important; /* blue-400 */
+        }
+        
+        .ql-toolbar button.ql-active .ql-fill,
+        .ql-toolbar .ql-picker-label.ql-active .ql-fill {
+            fill: #60a5fa !important; /* blue-400 */
+        }
+        
+        /* Dropdown menu */
+        .ql-picker-options {
+            background: #374151 !important; /* gray-700 */
+            border: 1px solid #4b5563 !important; /* gray-600 */
+        }
+        
+        .ql-picker-item {
+            color: #e5e7eb !important; /* gray-200 */
+        }
+        
+        .ql-picker-item:hover {
+            background: #4b5563 !important; /* gray-600 */
+            color: #ffffff !important;
+        }
+        
+        /* Edytor - ciemne tło */
+        .ql-container {
+            background: #1f2937 !important; /* gray-800 */
+            border: 1px solid #4b5563 !important; /* gray-600 */
+            border-top: none !important;
+            border-radius: 0 0 0.5rem 0.5rem !important;
+            color: #e5e7eb !important; /* gray-200 */
+        }
+        
+        .ql-editor {
+            min-height: 300px;
+            color: #e5e7eb !important; /* gray-200 */
+        }
+        
+        .ql-editor.ql-blank::before {
+            color: #6b7280 !important; /* gray-500 - placeholder */
+        }
+        
         /* Lepsze touch targets na mobile */
         @media (max-width: 640px) {
             .tab-button {
@@ -600,7 +686,7 @@
                         <button id="kb-edit-article" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition">
                             ✏️ Edytuj
                         </button>
-                        <button id="kb-delete-article" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg transition">
+                        <button id="kb-delete-article" class="bg-gray-700 hover:bg-red-600 text-gray-300 hover:text-white font-bold py-2 px-4 rounded-lg transition">
                             🗑️ Usuń
                         </button>
                     </div>
@@ -673,7 +759,7 @@
                                 type="text" 
                                 id="kb-editor-input-slug" 
                                 required
-                                pattern="[a-z0-9-]+"
+                                pattern="[a-z0-9\-]+"
                                 class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 text-white font-mono text-sm focus:outline-none focus:border-blue-500"
                                 placeholder="jak-zaczac-trening-silowy"
                             />

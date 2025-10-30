@@ -22,10 +22,21 @@
  * @property {boolean} isListeningPlayerActive - Czy odtwarzacz słuchania jest aktywny
  */
 
+// Przywróć ostatnią aktywną zakładkę z localStorage lub użyj domyślnej
+let initialTab = 'knowledge-base'; // Domyślna zakładka
+try {
+  const lastTab = localStorage.getItem('lastActiveTab');
+  if (lastTab && ['workouts', 'knowledge-base', 'quizzes', 'listening', 'more'].includes(lastTab)) {
+    initialTab = lastTab;
+  }
+} catch (e) {
+  console.warn('Nie można odczytać zakładki z localStorage:', e);
+}
+
 // Inicjalizacja store
 const uiStore = window.createStore({
   currentScreen: 'loading',
-  currentTab: 'workouts',
+  currentTab: initialTab,
   isActivity: false,
   showTabBar: true,
   isListeningPlayerActive: false

@@ -210,10 +210,51 @@ const authService = {
                 return 'user'; // Default role for non-authenticated users
             }
             
-            // Check is_super_admin field (native Supabase field)
-            const isSuperAdmin = currentUser.is_super_admin;
+            // IMPORTANT: is_super_admin is NOT automatically included in JWT by default
+            // We need to query it directly from auth.users table using Supabase Admin API
+            // or use a custom RPC function
             
-            return isSuperAdmin === true ? 'admin' : 'user';
+            // Try to get from session first (in case it's in JWT)
+            const { data: { session }, error: sessionError } = await supabaseClient.auth.getSession();
+            
+            if (sessionError) {
+                console.warn('Could not get session for role check:', sessionError);
+            }
+            
+            // Check if is_super_admin is in JWT (some Supabase configs include it)
+            let isSuperAdmin = session?.user?.is_super_admin;
+            
+            // If not in JWT, query directly from database using RPC
+            if (isSuperAdmin === undefined) {
+                try {
+                    // Call RPC function to check admin status
+                    const { data, error } = await supabaseClient.rpc('is_user_admin', {
+                        user_id: currentUser.id
+                    });
+                    
+                    if (error) {
+                        console.warn('RPC is_user_admin not available, checking raw_user_meta_data:', error);
+                        // Fallback: check raw_user_meta_data (if available)
+                        isSuperAdmin = currentUser.raw_user_meta_data?.is_super_admin || false;
+                    } else {
+                        isSuperAdmin = data === true;
+                    }
+                } catch (rpcError) {
+                    console.warn('Error calling is_user_admin RPC:', rpcError);
+                    isSuperAdmin = false;
+                }
+            }
+            
+            const role = isSuperAdmin === true ? 'admin' : 'user';
+            
+            console.log('🔐 Role check:', {
+                userId: currentUser.id,
+                email: currentUser.email,
+                is_super_admin: isSuperAdmin,
+                role: role
+            });
+            
+            return role;
         } catch (error) {
             console.error('Error getting user role:', error);
             return 'user'; // Default to 'user' on error

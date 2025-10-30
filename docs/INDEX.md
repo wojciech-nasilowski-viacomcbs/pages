@@ -18,8 +18,9 @@ Witaj w dokumentacji projektu eTrener! Wszystkie dokumenty znajdują się w tym 
 - **[EMOJI_FEATURE_SUMMARY.md](EMOJI_FEATURE_SUMMARY.md)** - Podsumowanie funkcji emoji
 - **[TTS_FEATURE.md](TTS_FEATURE.md)** - Text-to-Speech i funkcje audio
 - **[LISTENING_STATUS.md](LISTENING_STATUS.md)** - Status implementacji funkcji słuchania
+- **[KNOWLEDGE_BASE_QUICK_START.md](KNOWLEDGE_BASE_QUICK_START.md)** - 🚀 **SZYBKI START** - Jak edytować Bazę Wiedzy
 - **[KNOWLEDGE_BASE_FEATURE.md](KNOWLEDGE_BASE_FEATURE.md)** - Baza Wiedzy - dokumentacja funkcji
-- **[KNOWLEDGE_BASE_EDITOR.md](KNOWLEDGE_BASE_EDITOR.md)** - Edytor Bazy Wiedzy
+- **[KNOWLEDGE_BASE_EDITOR.md](KNOWLEDGE_BASE_EDITOR.md)** - Edytor Bazy Wiedzy (Quill.js)
 - **[KNOWLEDGE_BASE_FIX.md](KNOWLEDGE_BASE_FIX.md)** - 🔧 Fix: Feature flag nie działa na Vercel
 - **[EMAIL_TEMPLATES.md](EMAIL_TEMPLATES.md)** - Szablony emaili
 
@@ -53,6 +54,9 @@ Witaj w dokumentacji projektu eTrener! Wszystkie dokumenty znajdują się w tym 
 
 ### Baza danych i backend
 - **[DB_SCHEMA.md](DB_SCHEMA.md)** - Schemat bazy danych Supabase
+- **[USER_ROLES.md](USER_ROLES.md)** - System ról użytkowników (admin/user)
+- **[ADMIN_ROLE_SETUP.md](ADMIN_ROLE_SETUP.md)** - 🔧 **SETUP** - Konfiguracja roli admina (WYMAGANE)
+- **[ADMIN_ROLE_DEBUG.md](ADMIN_ROLE_DEBUG.md)** - 🔍 Debug: Sprawdzanie roli admina
 - **[AI_GENERATOR_DEBUG.md](AI_GENERATOR_DEBUG.md)** - Debugowanie generatora AI
 - **[OPENROUTER_MODELS.md](OPENROUTER_MODELS.md)** - Dokumentacja modeli OpenRouter
 
@@ -79,6 +83,9 @@ Witaj w dokumentacji projektu eTrener! Wszystkie dokumenty znajdują się w tym 
 
 ### Chcę debugować AI generator
 → Zobacz **[AI_GENERATOR_DEBUG.md](AI_GENERATOR_DEBUG.md)**
+
+### Chcę edytować artykuły w Bazie Wiedzy
+→ Zobacz **[KNOWLEDGE_BASE_QUICK_START.md](KNOWLEDGE_BASE_QUICK_START.md)**
 
 ---
 
