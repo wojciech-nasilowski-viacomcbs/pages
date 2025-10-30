@@ -1,25 +1,18 @@
 -- ============================================
 -- Dodawanie roli ADMIN do użytkowników
+-- Używa natywnego pola is_super_admin
 -- ============================================
 
 -- SPOSÓB 1: Nadaj rolę admin dla konkretnego użytkownika (po emailu)
 -- Zamień 'admin@example.com' na email użytkownika, któremu chcesz nadać rolę admin
 UPDATE auth.users
-SET raw_user_meta_data = 
-  CASE 
-    WHEN raw_user_meta_data IS NULL THEN '{"role": "admin"}'::jsonb
-    ELSE raw_user_meta_data || '{"role": "admin"}'::jsonb
-  END
+SET is_super_admin = TRUE
 WHERE email = 'admin@example.com';
 
 -- SPOSÓB 2: Nadaj rolę admin dla konkretnego użytkownika (po ID)
 -- Zamień 'user-uuid-here' na ID użytkownika
 UPDATE auth.users
-SET raw_user_meta_data = 
-  CASE 
-    WHEN raw_user_meta_data IS NULL THEN '{"role": "admin"}'::jsonb
-    ELSE raw_user_meta_data || '{"role": "admin"}'::jsonb
-  END
+SET is_super_admin = TRUE
 WHERE id = 'user-uuid-here';
 
 -- ============================================
@@ -28,7 +21,7 @@ WHERE id = 'user-uuid-here';
 
 -- Usuń rolę admin (użytkownik stanie się zwykłym userem)
 UPDATE auth.users
-SET raw_user_meta_data = raw_user_meta_data - 'role'
+SET is_super_admin = FALSE
 WHERE email = 'user@example.com';
 
 -- ============================================
@@ -39,17 +32,21 @@ WHERE email = 'user@example.com';
 SELECT 
   id,
   email,
-  raw_user_meta_data->>'role' as role,
+  is_super_admin,
   created_at,
   last_sign_in_at
 FROM auth.users
-WHERE raw_user_meta_data->>'role' = 'admin';
+WHERE is_super_admin = TRUE;
 
 -- Wyświetl wszystkich użytkowników z ich rolami
 SELECT 
   id,
   email,
-  COALESCE(raw_user_meta_data->>'role', 'user') as role,
+  CASE 
+    WHEN is_super_admin = TRUE THEN 'admin'
+    ELSE 'user'
+  END as role,
+  is_super_admin,
   created_at,
   last_sign_in_at
 FROM auth.users
@@ -61,11 +58,7 @@ ORDER BY created_at DESC;
 
 -- Przykład 1: Nadaj rolę admin pierwszemu zarejestrowanemu użytkownikowi
 UPDATE auth.users
-SET raw_user_meta_data = 
-  CASE 
-    WHEN raw_user_meta_data IS NULL THEN '{"role": "admin"}'::jsonb
-    ELSE raw_user_meta_data || '{"role": "admin"}'::jsonb
-  END
+SET is_super_admin = TRUE
 WHERE id = (
   SELECT id 
   FROM auth.users 
@@ -75,11 +68,7 @@ WHERE id = (
 
 -- Przykład 2: Nadaj rolę admin wielu użytkownikom naraz
 UPDATE auth.users
-SET raw_user_meta_data = 
-  CASE 
-    WHEN raw_user_meta_data IS NULL THEN '{"role": "admin"}'::jsonb
-    ELSE raw_user_meta_data || '{"role": "admin"}'::jsonb
-  END
+SET is_super_admin = TRUE
 WHERE email IN (
   'admin1@example.com',
   'admin2@example.com',
@@ -88,48 +77,49 @@ WHERE email IN (
 
 -- Przykład 3: Usuń rolę admin wszystkim użytkownikom (reset)
 UPDATE auth.users
-SET raw_user_meta_data = raw_user_meta_data - 'role'
-WHERE raw_user_meta_data->>'role' = 'admin';
+SET is_super_admin = FALSE
+WHERE is_super_admin = TRUE;
 
 -- ============================================
--- FUNKCJA POMOCNICZA (Opcjonalnie)
+-- FUNKCJE POMOCNICZE (Opcjonalnie)
 -- ============================================
 
 -- Utwórz funkcję do łatwego nadawania roli admin
-CREATE OR REPLACE FUNCTION set_user_role(user_email TEXT, user_role TEXT)
+CREATE OR REPLACE FUNCTION set_user_admin(user_email TEXT, is_admin BOOLEAN)
 RETURNS void
 LANGUAGE plpgsql
 SECURITY DEFINER
 AS $$
 BEGIN
   UPDATE auth.users
-  SET raw_user_meta_data = 
-    CASE 
-      WHEN raw_user_meta_data IS NULL THEN jsonb_build_object('role', user_role)
-      ELSE raw_user_meta_data || jsonb_build_object('role', user_role)
-    END
+  SET is_super_admin = is_admin
   WHERE email = user_email;
 END;
 $$;
 
 -- Użycie funkcji:
--- SELECT set_user_role('admin@example.com', 'admin');
+-- SELECT set_user_admin('admin@example.com', TRUE);  -- Nadaj admina
+-- SELECT set_user_admin('user@example.com', FALSE);  -- Odbierz admina
 
--- Utwórz funkcję do usuwania roli
-CREATE OR REPLACE FUNCTION remove_user_role(user_email TEXT)
-RETURNS void
+-- Utwórz funkcję do sprawdzania czy użytkownik jest adminem
+CREATE OR REPLACE FUNCTION is_user_admin(user_email TEXT)
+RETURNS BOOLEAN
 LANGUAGE plpgsql
 SECURITY DEFINER
 AS $$
+DECLARE
+  admin_status BOOLEAN;
 BEGIN
-  UPDATE auth.users
-  SET raw_user_meta_data = raw_user_meta_data - 'role'
+  SELECT is_super_admin INTO admin_status
+  FROM auth.users
   WHERE email = user_email;
+  
+  RETURN COALESCE(admin_status, FALSE);
 END;
 $$;
 
 -- Użycie funkcji:
--- SELECT remove_user_role('user@example.com');
+-- SELECT is_user_admin('admin@example.com');
 
 -- ============================================
 -- UWAGI
@@ -138,16 +128,17 @@ $$;
 -- 1. Te zapytania muszą być wykonane jako admin w panelu Supabase
 --    (SQL Editor) lub przez narzędzie psql z odpowiednimi uprawnieniami
 --
--- 2. raw_user_meta_data to pole JSONB, które przechowuje user_metadata
+-- 2. is_super_admin to natywne pole BOOLEAN w tabeli auth.users
 --
--- 3. Operator || łączy dwa obiekty JSONB (merge)
+-- 3. Wartości: TRUE = admin, FALSE/NULL = zwykły użytkownik
 --
--- 4. Operator - usuwa klucz z obiektu JSONB
---
--- 5. Po zmianie roli użytkownik musi się wylogować i zalogować ponownie,
+-- 4. Po zmianie roli użytkownik musi się wylogować i zalogować ponownie,
 --    aby zmiany zostały załadowane do aplikacji
 --
--- 6. Możesz też zmienić rolę ręcznie w panelu Supabase:
---    Authentication → Users → [wybierz użytkownika] → User Metadata
---    Dodaj: { "role": "admin" }
+-- 5. Możesz też zmienić rolę ręcznie w panelu Supabase:
+--    Authentication → Users → [wybierz użytkownika]
+--    Zaznacz checkbox "Is Super Admin"
+--
+-- 6. WAŻNE: is_super_admin jest natywnym polem Supabase i jest
+--    automatycznie dostępne w JWT tokenie (auth.uid())
 

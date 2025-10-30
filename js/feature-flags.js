@@ -5,6 +5,7 @@ const DEFAULTS = {
     ENABLE_QUIZZES: true,
     ENABLE_WORKOUTS: true,
     ENABLE_LISTENING: true,
+    ENABLE_KNOWLEDGE_BASE: true,  // Baza Wiedzy
     ENABLE_FILE_IMPORT: true,
     ENABLE_AI_GENERATOR: true,
 };
@@ -47,6 +48,7 @@ window.featureFlags = {
     isQuizzesEnabled: () => getFlag('ENABLE_QUIZZES'),
     isWorkoutsEnabled: () => getFlag('ENABLE_WORKOUTS'),
     isListeningEnabled: () => getFlag('ENABLE_LISTENING'),
+    isKnowledgeBaseEnabled: () => getFlag('ENABLE_KNOWLEDGE_BASE'),
     isFileImportEnabled: () => getFlag('ENABLE_FILE_IMPORT'),
     isAIGeneratorEnabled: () => getFlag('ENABLE_AI_GENERATOR'),
     
@@ -63,6 +65,7 @@ window.featureFlags = {
         if (getFlag('ENABLE_QUIZZES')) tabs.push('quizzes');
         if (getFlag('ENABLE_WORKOUTS')) tabs.push('workouts');
         if (getFlag('ENABLE_LISTENING')) tabs.push('listening');
+        if (getFlag('ENABLE_KNOWLEDGE_BASE')) tabs.push('knowledge-base');
         
         // Funkcje dodatkowe
         const hasImport = getFlag('ENABLE_FILE_IMPORT');

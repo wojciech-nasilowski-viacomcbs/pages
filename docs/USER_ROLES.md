@@ -10,19 +10,17 @@ Aplikacja **eTrener** implementuje prosty system ról użytkowników oparty na S
 
 ### Przechowywanie Ról
 
-Role są przechowywane w polu `user_metadata.role` w systemie autentykacji Supabase. Każdy użytkownik ma dostęp do swojego obiektu `user_metadata`, który jest częścią profilu użytkownika.
+Role są przechowywane w natywnym polu `is_super_admin` w tabeli `auth.users` w Supabase. To wbudowane pole typu BOOLEAN.
 
 ```javascript
-// Struktura user_metadata
-{
-  role: 'admin' | undefined
-}
+// Pole is_super_admin w auth.users
+is_super_admin: true | false | null
 ```
 
 **Ważne:**
-- Brak pola `role` (lub wartość `undefined`) = zwykły użytkownik (`user`)
-- Wartość `role: 'admin'` = administrator
-- Tylko wartość `'admin'` jest traktowana jako specjalna rola
+- `is_super_admin = TRUE` = administrator
+- `is_super_admin = FALSE` lub `NULL` = zwykły użytkownik (`user`)
+- To natywne pole Supabase, automatycznie dostępne w JWT tokenie
 
 ### Komponenty Systemu
 
@@ -62,8 +60,9 @@ const isAdmin = await authService.isAdmin();
 
 **API:**
 
-- `getUserRole(user?)` - Pobiera rolę użytkownika z `user_metadata`
+- `getUserRole(user?)` - Pobiera rolę użytkownika z pola `is_super_admin`
   - Parametr `user` jest opcjonalny (domyślnie pobiera aktualnego użytkownika)
+  - Sprawdza natywne pole `is_super_admin` w obiekcie użytkownika
   - Zwraca `Promise<UserRole>` ('admin' lub 'user')
   
 - `isAdmin(user?)` - Sprawdza czy użytkownik jest adminem
@@ -116,12 +115,7 @@ Rola użytkownika jest automatycznie inicjalizowana i aktualizowana w następuj�
 1. Zaloguj się do panelu Supabase
 2. Przejdź do `Authentication` → `Users`
 3. Wybierz użytkownika
-4. W sekcji `User Metadata` dodaj pole:
-   ```json
-   {
-     "role": "admin"
-   }
-   ```
+4. Zaznacz checkbox **"Is Super Admin"**
 5. Zapisz zmiany
 
 **Metoda 2: SQL (dla wielu użytkowników)**
@@ -131,11 +125,7 @@ Przejdź do panelu Supabase → SQL Editor i wykonaj zapytanie:
 ```sql
 -- Nadaj rolę admin dla konkretnego użytkownika
 UPDATE auth.users
-SET raw_user_meta_data = 
-  CASE 
-    WHEN raw_user_meta_data IS NULL THEN '{"role": "admin"}'::jsonb
-    ELSE raw_user_meta_data || '{"role": "admin"}'::jsonb
-  END
+SET is_super_admin = TRUE
 WHERE email = 'admin@example.com';
 ```
 
@@ -143,12 +133,12 @@ WHERE email = 'admin@example.com';
 
 ### Odbieranie Roli Admin
 
-W panelu Supabase usuń pole `role` z `User Metadata` lub ustaw na `null`.
+W panelu Supabase odznacz checkbox "Is Super Admin" lub wykonaj SQL:
 
 ```sql
 -- Usuń rolę admin (SQL)
 UPDATE auth.users
-SET raw_user_meta_data = raw_user_meta_data - 'role'
+SET is_super_admin = FALSE
 WHERE email = 'user@example.com';
 ```
 
@@ -226,12 +216,14 @@ async function navigateToAdminPanel() {
 Gdy aplikacja będzie przechowywać wrażliwe dane lub admin będzie miał dostęp do danych innych użytkowników, należy dodać **Row Level Security (RLS)** w Supabase:
 
 ```sql
--- Przykład: Tylko admin może edytować wiki
-CREATE POLICY "Admin can edit wiki"
-ON wiki_content
+-- Przykład: Tylko admin może edytować bazę wiedzy
+CREATE POLICY "Admin can edit knowledge base"
+ON knowledge_base_articles
 FOR UPDATE
 USING (
-  auth.jwt() ->> 'user_metadata' ->> 'role' = 'admin'
+  auth.uid() IN (
+    SELECT id FROM auth.users WHERE is_super_admin = TRUE
+  )
 );
 
 -- Przykład: Admin może widzieć dane wszystkich użytkowników
@@ -240,7 +232,9 @@ ON user_sessions
 FOR SELECT
 USING (
   auth.uid() = user_id OR
-  auth.jwt() ->> 'user_metadata' ->> 'role' = 'admin'
+  auth.uid() IN (
+    SELECT id FROM auth.users WHERE is_super_admin = TRUE
+  )
 );
 ```
 
@@ -252,11 +246,10 @@ Gdy będą dostępne endpointy tylko dla adminów (np. edycja wiki), należy dod
 // api/admin-action.js
 export default async function handler(req, res) {
   // Pobierz użytkownika z tokena
-  const user = await supabase.auth.getUser(req.headers.authorization);
+  const { data: { user }, error } = await supabase.auth.getUser(req.headers.authorization);
   
   // Sprawdź rolę
-  const role = user?.user_metadata?.role;
-  if (role !== 'admin') {
+  if (!user?.is_super_admin) {
     return res.status(403).json({ error: 'Forbidden: Admin role required' });
   }
   
@@ -267,9 +260,10 @@ export default async function handler(req, res) {
 
 ## Planowane Funkcje dla Adminów
 
-### 1. **Wiki (Priorytet)**
-- **Użytkownicy:** Mogą czytać artykuły wiki
+### 1. **Baza Wiedzy (Priorytet)**
+- **Użytkownicy:** Mogą czytać artykuły z bazy wiedzy
 - **Admin:** Może tworzyć, edytować i usuwać artykuły
+- **Feature Flag:** `ENABLE_KNOWLEDGE_BASE`
 
 ### 2. **Panel Admina (Przyszłość)**
 - Zarządzanie treściami publicznymi
@@ -301,27 +295,27 @@ export default async function handler(req, res) {
 ```javascript
 // __tests__/user-roles.test.js
 describe('User Roles', () => {
-  test('getUserRole returns "user" for undefined role', async () => {
-    const user = { id: '123', email: 'test@test.com', user_metadata: {} };
+  test('getUserRole returns "user" for non-admin', async () => {
+    const user = { id: '123', email: 'test@test.com', is_super_admin: false };
     const role = await authService.getUserRole(user);
     expect(role).toBe('user');
   });
   
-  test('getUserRole returns "admin" for admin role', async () => {
+  test('getUserRole returns "admin" for super admin', async () => {
     const user = { 
       id: '123', 
       email: 'admin@test.com', 
-      user_metadata: { role: 'admin' } 
+      is_super_admin: true
     };
     const role = await authService.getUserRole(user);
     expect(role).toBe('admin');
   });
   
-  test('isAdmin returns true for admin', async () => {
+  test('isAdmin returns true for super admin', async () => {
     const user = { 
       id: '123', 
       email: 'admin@test.com', 
-      user_metadata: { role: 'admin' } 
+      is_super_admin: true
     };
     const isAdmin = await authService.isAdmin(user);
     expect(isAdmin).toBe(true);
@@ -355,16 +349,22 @@ async getUserRole(user = null) {
 }
 ```
 
-### Co się stanie, jeśli użytkownik zmieni `user_metadata` w DevTools?
+### Co się stanie, jeśli użytkownik zmieni `is_super_admin` w DevTools?
 
-W obecnej implementacji (frontend-only) użytkownik może teoretycznie zmienić rolę w pamięci przeglądarki, ale:
-- Nie wpłynie to na dane w Supabase
-- Po odświeżeniu strony rola zostanie przywrócona z serwera
-- Gdy dodamy RLS, backend będzie weryfikował rolę niezależnie od frontendu
+Użytkownik **nie może** zmienić `is_super_admin` w DevTools, ponieważ:
+- To pole jest przechowywane w bazie danych, nie w przeglądarce
+- Jest częścią JWT tokena, który jest podpisany przez serwer
+- Każda próba manipulacji zostanie wykryta przez backend
+- RLS policies sprawdzają rolę bezpośrednio w bazie danych
 
 ### Czy rola jest zapisywana w localStorage?
 
-Nie. Rola jest przechowywana tylko w pamięci (`sessionManager.currentUserRole`). Jest pobierana z Supabase przy każdym logowaniu/odświeżeniu sesji.
+Nie. Rola jest przechowywana:
+1. W bazie danych (`auth.users.is_super_admin`)
+2. W JWT tokenie (automatycznie przez Supabase)
+3. W pamięci aplikacji (`sessionManager.currentUserRole`) - cache
+
+Jest pobierana z Supabase przy każdym logowaniu/odświeżeniu sesji.
 
 ### Jak debugować problemy z rolami?
 
@@ -380,19 +380,25 @@ sessionManager.isAdmin()
 // Sprawdź dane użytkownika
 await authService.getCurrentUser()
 
-// Sprawdź user_metadata
+// Sprawdź is_super_admin
 const user = await authService.getCurrentUser();
-console.log(user?.user_metadata);
+console.log('Is super admin:', user?.is_super_admin);
 ```
 
 ## Historia Zmian
 
 ### v1.0 (2025-10-30)
-- ✅ Dodano typy `UserRole` i `UserMetadata`
+- ✅ Dodano typy `UserRole`
 - ✅ Zaimplementowano `getUserRole()` i `isAdmin()` w `auth-service.js`
 - ✅ Dodano zarządzanie rolą w `session-manager.js`
 - ✅ Zintegrowano z `app.js` (automatyczna inicjalizacja przy logowaniu)
 - ✅ Dokumentacja systemu ról
+
+### v1.1 (2025-10-30)
+- ✅ Zmiana z `user_metadata.role` na natywne pole `is_super_admin`
+- ✅ Aktualizacja RLS policies (prostsze i szybsze)
+- ✅ Aktualizacja SQL scripts
+- ✅ Aktualizacja dokumentacji
 
 ## Powiązane Pliki
 

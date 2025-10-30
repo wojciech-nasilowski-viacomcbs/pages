@@ -196,7 +196,7 @@ const authService = {
     },
     
     /**
-     * Get user role from user metadata
+     * Get user role from is_super_admin field
      * @param {User|null} [user] - User object (if not provided, fetches current user)
      * @returns {Promise<UserRole>} User role ('admin' or 'user')
      * @example
@@ -210,11 +210,10 @@ const authService = {
                 return 'user'; // Default role for non-authenticated users
             }
             
-            // Check user_metadata.role
-            const role = currentUser.user_metadata?.role;
+            // Check is_super_admin field (native Supabase field)
+            const isSuperAdmin = currentUser.is_super_admin;
             
-            // Only 'admin' is special, everything else is 'user'
-            return role === 'admin' ? 'admin' : 'user';
+            return isSuperAdmin === true ? 'admin' : 'user';
         } catch (error) {
             console.error('Error getting user role:', error);
             return 'user'; // Default to 'user' on error
