@@ -365,6 +365,52 @@
  */
 
 // ============================================================================
+// KNOWLEDGE BASE TYPES
+// ============================================================================
+
+/**
+ * @typedef {Object} KnowledgeBaseArticle
+ * @property {string} id - Unique article ID (UUID)
+ * @property {string} title - Article title
+ * @property {string} slug - URL-friendly identifier (e.g., "jak-zaczac-trening")
+ * @property {string} [description] - Short description (meta description)
+ * @property {string} content - Article content (HTML from WYSIWYG editor)
+ * @property {string} [category] - Category (e.g., "Fitness", "Języki", "Quizy")
+ * @property {string[]} [tags] - Tags array for better search
+ * @property {string} [icon] - Emoji or icon
+ * @property {boolean} is_published - Whether article is published
+ * @property {boolean} featured - Whether article is featured (shown at top)
+ * @property {string} [author_id] - Author's user ID
+ * @property {string} created_at - Creation timestamp
+ * @property {string} updated_at - Last update timestamp
+ * @property {number} view_count - View count
+ */
+
+/**
+ * @typedef {Object} KnowledgeBaseFilters
+ * @property {string} [category] - Filter by category
+ * @property {string[]} [tags] - Filter by tags
+ * @property {boolean} [featured] - Filter featured articles
+ * @property {string} [search] - Search query (title, description, content)
+ * @property {'newest'|'oldest'|'popular'|'title'} [sortBy] - Sort order
+ * @property {number} [limit] - Limit results
+ * @property {number} [offset] - Offset for pagination
+ */
+
+/**
+ * @typedef {Object} KnowledgeBaseArticleInput
+ * @property {string} title - Article title
+ * @property {string} slug - URL-friendly identifier
+ * @property {string} [description] - Short description
+ * @property {string} content - Article content (HTML)
+ * @property {string} [category] - Category
+ * @property {string[]} [tags] - Tags array
+ * @property {string} [icon] - Emoji or icon
+ * @property {boolean} [is_published] - Whether article is published (default: true)
+ * @property {boolean} [featured] - Whether article is featured (default: false)
+ */
+
+// ============================================================================
 // FEATURE FLAGS
 // ============================================================================
 
@@ -372,6 +418,7 @@
  * @typedef {Object} FeatureFlags
  * @property {boolean} enableAIGenerator - Enable AI content generator
  * @property {boolean} enableListening - Enable listening feature
+ * @property {boolean} enableKnowledgeBase - Enable knowledge base feature
  * @property {boolean} enableOfflineMode - Enable offline mode
  * @property {boolean} enableAnalytics - Enable analytics tracking
  */
