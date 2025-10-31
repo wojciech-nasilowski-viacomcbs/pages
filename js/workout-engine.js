@@ -186,7 +186,7 @@ function displayExercise() {
       detailsText = `Seria ${workoutState.currentSet}/${workoutState.totalSets} - ${exercise.details || ''}`;
     }
     elements.exerciseDetails.textContent = detailsText;
-    elements.buttonText.textContent = 'ZROBIONE! (Dalej)';
+    elements.buttonText.textContent = 'KONTYNUUJ';
     elements.buttonIcon.innerHTML = icons.next;
   }
   
