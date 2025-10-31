@@ -15,6 +15,8 @@ const workoutState = {
   filename: null,
   currentPhaseIndex: 0,
   currentExerciseIndex: 0,
+  currentSet: 1,
+  totalSets: 1,
   timerInterval: null,
   timeLeft: 0,
   wakeLock: null
@@ -31,6 +33,7 @@ const elements = {
   buttonIcon: document.getElementById('workout-button-icon'),
   skipButton: document.getElementById('workout-skip-button'),
   restartBtn: document.getElementById('workout-restart-btn'),
+  restIndicator: document.getElementById('workout-rest-indicator'),
   
   // Ekran końcowy
   restartButton: document.getElementById('workout-restart'),
@@ -82,12 +85,16 @@ function startWorkout(workoutData, filename) {
   workoutState.filename = filename;
   workoutState.currentPhaseIndex = 0;
   workoutState.currentExerciseIndex = 0;
+  workoutState.currentSet = 0;
+  workoutState.totalSets = 1;
   
   // Sprawdź zapisany postęp
   const savedProgress = loadProgress();
   if (savedProgress && savedProgress.filename === filename) {
     workoutState.currentPhaseIndex = savedProgress.currentPhaseIndex;
     workoutState.currentExerciseIndex = savedProgress.currentExerciseIndex;
+    workoutState.currentSet = savedProgress.currentSet || 0;
+    workoutState.totalSets = savedProgress.totalSets || 1;
   }
   
   // Aktywuj Wake Lock
@@ -109,30 +116,96 @@ function displayExercise() {
     return;
   }
   
+  // Rozróżnienie wizualne dla odpoczynku
+  const isRest = exercise.name.toLowerCase().includes('odpoczynek');
+  
+  // Sprawdź czy to nowe ćwiczenie (nie odpoczynek)
+  if (!isRest) {
+    // Dla nie-odpoczynku: ustaw totalSets na podstawie details
+    const setsFromDetails = parseSetsFromDetails(exercise.details);
+    workoutState.totalSets = setsFromDetails;
+    
+    // Jeśli currentSet === 0, to nowe ćwiczenie, ustaw na 1
+    if (workoutState.currentSet === 0) {
+      workoutState.currentSet = 1;
+    }
+  } else {
+    // Dla odpoczynku: totalSets zawsze 1
+    workoutState.totalSets = 1;
+    // currentSet nie ma znaczenia dla odpoczynku, ale ustaw na 1 dla spójności
+    if (workoutState.currentSet === 0) {
+      workoutState.currentSet = 1;
+    }
+  }
+  
   // Aktualizuj UI
   elements.phase.textContent = phase.name;
   elements.exerciseName.textContent = exercise.name;
   elements.exerciseDescription.textContent = exercise.description || '';
   
+  // Pokaż/ukryj wskaźnik odpoczynku
+  if (elements.restIndicator) {
+    if (isRest) {
+      elements.restIndicator.classList.remove('hidden');
+    } else {
+      elements.restIndicator.classList.add('hidden');
+    }
+  }
+  
   // Reset przycisku
-  resetMainButton();
+  resetMainButton(isRest);
   
   if (exercise.type === 'time') {
     // Ćwiczenie na czas
     workoutState.timeLeft = exercise.duration;
-    const detailsText = exercise.details ? `${exercise.duration}s. ${exercise.details}` : `${exercise.duration} sekund`;
-    elements.exerciseDetails.textContent = detailsText;
-    elements.buttonText.textContent = 'URUCHOM STOPER';
-    elements.buttonIcon.innerHTML = icons.timer;
+    let detailsText = '';
+    
+    if (isRest) {
+      // Odpoczynek
+      detailsText = `${exercise.duration} sekund przerwy`;
+      elements.exerciseDetails.textContent = detailsText;
+      elements.buttonText.textContent = 'ROZPOCZNIJ ODPOCZYNEK';
+      elements.buttonIcon.innerHTML = icons.timer;
+    } else {
+      // Normalne ćwiczenie na czas
+      if (workoutState.totalSets > 1) {
+        detailsText = `Seria ${workoutState.currentSet}/${workoutState.totalSets} - ${exercise.duration}s`;
+      } else {
+        detailsText = exercise.details ? `${exercise.duration}s. ${exercise.details}` : `${exercise.duration} sekund`;
+      }
+      elements.exerciseDetails.textContent = detailsText;
+      elements.buttonText.textContent = 'URUCHOM STOPER';
+      elements.buttonIcon.innerHTML = icons.timer;
+    }
   } else if (exercise.type === 'reps') {
     // Ćwiczenie na powtórzenia
-    elements.exerciseDetails.textContent = exercise.details || 'Wykonaj ćwiczenie';
+    let detailsText = exercise.details || 'Wykonaj ćwiczenie';
+    if (workoutState.totalSets > 1) {
+      detailsText = `Seria ${workoutState.currentSet}/${workoutState.totalSets} - ${exercise.details || ''}`;
+    }
+    elements.exerciseDetails.textContent = detailsText;
     elements.buttonText.textContent = 'ZROBIONE! (Dalej)';
     elements.buttonIcon.innerHTML = icons.next;
   }
   
   // Zapisz postęp
   saveProgress();
+}
+
+/**
+ * Parsuje liczbę serii z tekstu szczegółów ćwiczenia
+ * Przykłady: "4 serie × 15 powtórzeń" -> 4, "3 serie" -> 3
+ */
+function parseSetsFromDetails(details) {
+  if (!details) return 1;
+  
+  // Szukaj wzorca "X serie" lub "X serii"
+  const match = details.match(/(\d+)\s*seri[eai]/i);
+  if (match) {
+    return parseInt(match[1], 10);
+  }
+  
+  return 1;
 }
 
 /**
@@ -154,9 +227,16 @@ function getCurrentExercise() {
 /**
  * Resetuje główny przycisk do stanu początkowego
  */
-function resetMainButton() {
+function resetMainButton(isRest = false) {
   elements.mainButton.disabled = false;
-  elements.mainButton.className = 'w-full bg-green-600 hover:bg-green-700 text-white font-bold py-6 px-6 rounded-lg text-2xl transition shadow-lg flex items-center justify-center';
+  
+  if (isRest) {
+    // Kolor pomarańczowy dla odpoczynku
+    elements.mainButton.className = 'w-full bg-orange-600 hover:bg-orange-700 text-white font-bold py-6 px-6 rounded-lg text-2xl transition shadow-lg flex items-center justify-center';
+  } else {
+    // Kolor zielony dla normalnych ćwiczeń
+    elements.mainButton.className = 'w-full bg-green-600 hover:bg-green-700 text-white font-bold py-6 px-6 rounded-lg text-2xl transition shadow-lg flex items-center justify-center';
+  }
 }
 
 /**
@@ -220,18 +300,57 @@ function timerFinished() {
 }
 
 /**
- * Przechodzi do następnego ćwiczenia
+ * Przechodzi do następnego ćwiczenia lub następnej serii
  */
 function nextExercise() {
   const phase = getCurrentPhase();
+  const exercise = getCurrentExercise();
+  const isRest = exercise.name.toLowerCase().includes('odpoczynek');
   
+  if (isRest) {
+    // Po odpoczynku, sprawdź czy poprzednie ćwiczenie ma jeszcze serie do wykonania
+    const prevExerciseIndex = workoutState.currentExerciseIndex - 1;
+    if (prevExerciseIndex >= 0) {
+      const prevExercise = phase.exercises[prevExerciseIndex];
+      const prevExerciseSets = parseSetsFromDetails(prevExercise.details);
+      
+      // Jeśli poprzednie ćwiczenie ma jeszcze serie, wróć do niego
+      if (workoutState.currentSet < prevExerciseSets) {
+        workoutState.currentExerciseIndex = prevExerciseIndex;
+        workoutState.currentSet++;
+        displayExercise();
+        return;
+      }
+    }
+  }
+  
+  // Sprawdź czy aktualne ćwiczenie ma wiele serii i czy nie skończyliśmy wszystkich
+  if (!isRest && workoutState.currentSet < workoutState.totalSets) {
+    // Przejdź do następnej pozycji (prawdopodobnie odpoczynek)
+    workoutState.currentExerciseIndex++;
+    
+    // Sprawdź, czy koniec fazy
+    if (workoutState.currentExerciseIndex >= phase.exercises.length) {
+      // Przejdź do następnej fazy
+      workoutState.currentPhaseIndex++;
+      workoutState.currentExerciseIndex = 0;
+      workoutState.currentSet = 0;
+    }
+    
+    displayExercise();
+    return;
+  }
+  
+  // Wszystkie serie zakończone, przejdź do następnego ćwiczenia
   workoutState.currentExerciseIndex++;
+  workoutState.currentSet = 0; // Reset licznika serii dla nowego ćwiczenia
   
   // Sprawdź, czy koniec fazy
   if (workoutState.currentExerciseIndex >= phase.exercises.length) {
     // Przejdź do następnej fazy
     workoutState.currentPhaseIndex++;
     workoutState.currentExerciseIndex = 0;
+    workoutState.currentSet = 0;
   }
   
   displayExercise();
@@ -283,6 +402,8 @@ function saveProgress() {
     filename: workoutState.filename,
     currentPhaseIndex: workoutState.currentPhaseIndex,
     currentExerciseIndex: workoutState.currentExerciseIndex,
+    currentSet: workoutState.currentSet,
+    totalSets: workoutState.totalSets,
     timestamp: Date.now()
   };
   
@@ -396,6 +517,8 @@ function handleRestartConfirm() {
   // Rozpocznij trening od początku
   workoutState.currentPhaseIndex = 0;
   workoutState.currentExerciseIndex = 0;
+  workoutState.currentSet = 0;
+  workoutState.totalSets = 1;
   
   displayExercise();
 }
