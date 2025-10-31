@@ -190,7 +190,7 @@ function displayExercise() {
     elements.buttonIcon.innerHTML = icons.next;
   }
   
-  // Aktualizuj przyciski pomijania
+  // Zaktualizuj przyciski pomijania
   updateSkipButtons(isRest);
   
   // Zapisz postęp
@@ -245,7 +245,7 @@ function resetMainButton(isRest = false) {
 }
 
 /**
- * Aktualizuje przyciski pomijania w zależności od kontekstu
+ * Zaktualizowuje przyciski pomijania w zależności od kontekstu
  */
 function updateSkipButtons(isRest) {
   if (!elements.skipButton) return;
@@ -478,7 +478,6 @@ function skipAllSets() {
     }
   } else {
     // Pomiń wszystkie serie - przejdź do następnego ćwiczenia
-    workoutState.currentSet = workoutState.totalSets;
     workoutState.currentExerciseIndex++;
     workoutState.currentSet = 0;
     
