@@ -417,6 +417,237 @@ const dataService = {
             console.error('Error deleting listening set:', error);
             throw error;
         }
+    },
+    
+    // ============================================
+    // KNOWLEDGE BASE (BAZA WIEDZY)
+    // ============================================
+    
+    /**
+     * Fetch all published knowledge base articles (with optional filters)
+     * Admin can see unpublished articles too
+     * @param {import('./types.js').KnowledgeBaseFilters} [filters] - Filter options
+     * @returns {Promise<import('./types.js').KnowledgeBaseArticle[]>} Array of articles
+     */
+    async getKnowledgeBaseArticles(filters = {}) {
+        try {
+            let query = supabaseClient
+                .from('knowledge_base_articles')
+                .select('*');
+            
+            // Apply filters
+            if (filters.category) {
+                query = query.eq('category', filters.category);
+            }
+            
+            if (filters.tags && filters.tags.length > 0) {
+                query = query.contains('tags', filters.tags);
+            }
+            
+            if (filters.featured !== undefined) {
+                query = query.eq('featured', filters.featured);
+            }
+            
+            if (filters.search) {
+                // Search in title, description, or use full-text search
+                query = query.or(`title.ilike.%${filters.search}%,description.ilike.%${filters.search}%`);
+            }
+            
+            // Sorting
+            switch (filters.sortBy) {
+                case 'oldest':
+                    query = query.order('created_at', { ascending: true });
+                    break;
+                case 'popular':
+                    query = query.order('view_count', { ascending: false });
+                    break;
+                case 'title':
+                    query = query.order('title', { ascending: true });
+                    break;
+                case 'newest':
+                default:
+                    query = query.order('created_at', { ascending: false });
+                    break;
+            }
+            
+            // Pagination
+            if (filters.limit) {
+                query = query.limit(filters.limit);
+            }
+            
+            if (filters.offset) {
+                query = query.range(filters.offset, filters.offset + (filters.limit || 10) - 1);
+            }
+            
+            const { data, error } = await query;
+            
+            if (error) throw error;
+            return data || [];
+        } catch (error) {
+            console.error('Error fetching knowledge base articles:', error);
+            throw error;
+        }
+    },
+    
+    /**
+     * Fetch a single knowledge base article by slug
+     * @param {string} slug - Article slug (URL-friendly identifier)
+     * @returns {Promise<import('./types.js').KnowledgeBaseArticle|null>} Article object or null
+     */
+    async getKnowledgeBaseArticle(slug) {
+        try {
+            const { data, error } = await supabaseClient
+                .from('knowledge_base_articles')
+                .select('*')
+                .eq('slug', slug)
+                .single();
+            
+            if (error) {
+                if (error.code === 'PGRST116') {
+                    // Not found
+                    return null;
+                }
+                throw error;
+            }
+            
+            return data;
+        } catch (error) {
+            console.error('Error fetching knowledge base article:', error);
+            throw error;
+        }
+    },
+    
+    /**
+     * Create a new knowledge base article (ADMIN ONLY)
+     * @param {import('./types.js').KnowledgeBaseArticleInput} article - Article data
+     * @returns {Promise<import('./types.js').KnowledgeBaseArticle>} Created article
+     */
+    async createKnowledgeBaseArticle(article) {
+        try {
+            const user = await getCurrentUser();
+            if (!user) throw new Error('User not authenticated');
+            
+            const { data, error } = await supabaseClient
+                .from('knowledge_base_articles')
+                .insert([{
+                    ...article,
+                    author_id: user.id
+                }])
+                .select()
+                .single();
+            
+            if (error) throw error;
+            return data;
+        } catch (error) {
+            console.error('Error creating knowledge base article:', error);
+            throw error;
+        }
+    },
+    
+    /**
+     * Update a knowledge base article (ADMIN ONLY)
+     * @param {string} id - Article ID (UUID)
+     * @param {Partial<import('./types.js').KnowledgeBaseArticleInput>} updates - Fields to update
+     * @returns {Promise<import('./types.js').KnowledgeBaseArticle>} Updated article
+     */
+    async updateKnowledgeBaseArticle(id, updates) {
+        try {
+            const { data, error } = await supabaseClient
+                .from('knowledge_base_articles')
+                .update(updates)
+                .eq('id', id)
+                .select()
+                .single();
+            
+            if (error) throw error;
+            return data;
+        } catch (error) {
+            console.error('Error updating knowledge base article:', error);
+            throw error;
+        }
+    },
+    
+    /**
+     * Delete a knowledge base article (ADMIN ONLY)
+     * @param {string} id - Article ID (UUID)
+     */
+    async deleteKnowledgeBaseArticle(id) {
+        try {
+            const { error } = await supabaseClient
+                .from('knowledge_base_articles')
+                .delete()
+                .eq('id', id);
+            
+            if (error) throw error;
+        } catch (error) {
+            console.error('Error deleting knowledge base article:', error);
+            throw error;
+        }
+    },
+    
+    /**
+     * Increment view count for a knowledge base article
+     * @param {string} id - Article ID (UUID)
+     */
+    async incrementKnowledgeBaseArticleViews(id) {
+        try {
+            const { error } = await supabaseClient
+                .rpc('increment_kb_article_views', { article_id: id });
+            
+            // If RPC doesn't exist, fallback to manual increment
+            if (error && error.code === '42883') {
+                // Function doesn't exist, use manual increment
+                const { data: article } = await supabaseClient
+                    .from('knowledge_base_articles')
+                    .select('view_count')
+                    .eq('id', id)
+                    .single();
+                
+                if (article) {
+                    await supabaseClient
+                        .from('knowledge_base_articles')
+                        .update({ view_count: (article.view_count || 0) + 1 })
+                        .eq('id', id);
+                }
+            } else if (error) {
+                throw error;
+            }
+        } catch (error) {
+            console.error('Error incrementing article views:', error);
+            // Don't throw - view count is not critical
+        }
+    },
+    
+    /**
+     * Search knowledge base articles using full-text search
+     * @param {string} query - Search query
+     * @param {number} [limit=10] - Maximum results
+     * @returns {Promise<import('./types.js').KnowledgeBaseArticle[]>} Array of articles
+     */
+    async searchKnowledgeBaseArticles(query, limit = 10) {
+        try {
+            // Use PostgreSQL full-text search if available
+            const { data, error } = await supabaseClient
+                .from('knowledge_base_articles')
+                .select('*')
+                .textSearch('search_vector', query, {
+                    type: 'websearch',
+                    config: 'polish'
+                })
+                .eq('is_published', true)
+                .limit(limit);
+            
+            if (error) {
+                // Fallback to simple search if full-text search fails
+                return await this.getKnowledgeBaseArticles({ search: query, limit });
+            }
+            
+            return data || [];
+        } catch (error) {
+            console.error('Error searching knowledge base articles:', error);
+            // Fallback to simple search
+            return await this.getKnowledgeBaseArticles({ search: query, limit });
+        }
     }
 };
 

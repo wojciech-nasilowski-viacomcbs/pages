@@ -16,16 +16,27 @@
  * Stan UI aplikacji
  * @typedef {Object} UIState
  * @property {ScreenType} currentScreen - Aktualnie wyświetlany ekran
- * @property {string} currentTab - Aktywna zakładka ('quizzes', 'workouts', 'listening', 'more')
+ * @property {string} currentTab - Aktywna zakładka ('workouts', 'knowledge-base', 'quizzes', 'listening', 'more')
  * @property {boolean} isActivity - Czy trwa aktywność (quiz/trening/słuchanie)
  * @property {boolean} showTabBar - Czy pokazywać dolny pasek nawigacji
  * @property {boolean} isListeningPlayerActive - Czy odtwarzacz słuchania jest aktywny
  */
 
+// Przywróć ostatnią aktywną zakładkę z localStorage lub użyj domyślnej
+let initialTab = 'workouts'; // Domyślna zakładka
+try {
+  const lastTab = localStorage.getItem('lastActiveTab');
+  if (lastTab && ['workouts', 'knowledge-base', 'quizzes', 'listening', 'more'].includes(lastTab)) {
+    initialTab = lastTab;
+  }
+} catch (e) {
+  console.warn('Nie można odczytać zakładki z localStorage:', e);
+}
+
 // Inicjalizacja store
 const uiStore = window.createStore({
   currentScreen: 'loading',
-  currentTab: 'quizzes',
+  currentTab: initialTab,
   isActivity: false,
   showTabBar: true,
   isListeningPlayerActive: false

@@ -125,14 +125,14 @@ const contentManager = {
       const icon = state.currentTab === 'quizzes' ? '📝' : (item.emoji || '💪');
       const badge = item.isSample ? '<span class="text-xs bg-blue-600 px-2 py-1 rounded">Przykład</span>' : '';
       const actionButtons = !item.isSample ? `
-        <div class="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-all duration-200 flex gap-2 z-10">
-          <button class="export-btn text-gray-400 hover:text-green-500 hover:scale-110 text-xl"
+        <div class="absolute top-2 right-2 md:top-3 md:right-3 md:opacity-0 md:group-hover:opacity-100 transition-all duration-200 flex gap-2 z-10">
+          <button class="export-btn bg-gray-700/90 md:bg-transparent text-gray-300 hover:text-green-500 active:scale-95 md:hover:scale-110 text-2xl md:text-xl p-2 md:p-0 rounded-lg md:rounded-none min-w-[44px] min-h-[44px] md:min-w-0 md:min-h-0 flex items-center justify-center"fix
                   data-id="${item.id}"
                   data-title="${item.title.replace(/"/g, '&quot;')}"
                   title="Eksportuj JSON">
             ⬇
           </button>
-          <button class="delete-btn text-gray-400 hover:text-red-500 hover:scale-110 text-xl"
+          <button class="delete-btn bg-gray-700/90 md:bg-transparent text-gray-300 hover:text-red-500 active:scale-95 md:hover:scale-110 text-2xl md:text-xl p-2 md:p-0 rounded-lg md:rounded-none min-w-[44px] min-h-[44px] md:min-w-0 md:min-h-0 flex items-center justify-center"
                   data-id="${item.id}"
                   data-title="${item.title.replace(/"/g, '&quot;')}"
                   title="Usuń">
@@ -1317,6 +1317,352 @@ const contentManager = {
     elements.aiSuccess.textContent = message;
     elements.aiSuccess.classList.remove('hidden');
     elements.aiError.classList.add('hidden');
+  },
+
+  // ============================================
+  // BAZA WIEDZY
+  // ============================================
+
+  /**
+   * Ładuje artykuły Bazy Wiedzy
+   * @param {Object} sessionManager - Manager sesji (sprawdzenie roli admina)
+   */
+  async loadKnowledgeBaseArticles(sessionManager) {
+    const loader = document.getElementById('kb-list-loader');
+    const error = document.getElementById('kb-list-error');
+    const container = document.getElementById('kb-articles-container');
+    const emptyState = document.getElementById('kb-empty-state');
+
+    // Pokaż loader
+    if (loader) loader.classList.remove('hidden');
+    if (error) error.classList.add('hidden');
+    if (container) container.classList.add('hidden');
+    if (emptyState) emptyState.classList.add('hidden');
+
+    try {
+      const dataService = window.dataService;
+      if (!dataService) throw new Error('dataService nie jest dostępny');
+
+      // Pobierz filtry z UI
+      const searchQuery = document.getElementById('kb-search')?.value || '';
+      const category = document.getElementById('kb-category-filter')?.value || '';
+      const sortBy = document.getElementById('kb-sort-filter')?.value || 'newest';
+      const featuredOnly = document.getElementById('kb-featured-filter')?.checked || false;
+
+      // Przygotuj filtry
+      const filters = {
+        is_published: true, // Zawsze pokazuj tylko opublikowane (chyba że admin)
+        limit: 50
+      };
+
+      // Jeśli admin, pokaż wszystkie artykuły (w tym nieopublikowane)
+      if (sessionManager && sessionManager.isAdmin()) {
+        delete filters.is_published;
+      }
+
+      // Dodaj filtry z UI
+      if (category) filters.category = category;
+      if (featuredOnly) filters.featured = true;
+
+      // Sortowanie
+      switch (sortBy) {
+        case 'newest':
+          filters.order_by = 'created_at';
+          filters.order_direction = 'desc';
+          break;
+        case 'oldest':
+          filters.order_by = 'created_at';
+          filters.order_direction = 'asc';
+          break;
+        case 'popular':
+          filters.order_by = 'view_count';
+          filters.order_direction = 'desc';
+          break;
+        case 'title':
+          filters.order_by = 'title';
+          filters.order_direction = 'asc';
+          break;
+      }
+
+      // Pobierz artykuły
+      let articles;
+      if (searchQuery.trim()) {
+        // Wyszukiwanie full-text
+        articles = await dataService.searchKnowledgeBaseArticles(searchQuery, filters.limit);
+        // Zastosuj dodatkowe filtry po stronie klienta
+        if (category) {
+          articles = articles.filter(a => a.category === category);
+        }
+        if (featuredOnly) {
+          articles = articles.filter(a => a.featured === true);
+        }
+        if (!filters.is_published && sessionManager && !sessionManager.isAdmin()) {
+          articles = articles.filter(a => a.is_published === true);
+        }
+      } else {
+        // Zwykłe pobieranie z filtrami
+        articles = await dataService.getKnowledgeBaseArticles(filters);
+      }
+
+      // Ukryj loader
+      if (loader) loader.classList.add('hidden');
+
+      // Wyświetl artykuły
+      const uiManager = window.uiManager;
+      if (uiManager && uiManager.showKnowledgeBaseList) {
+        uiManager.showKnowledgeBaseList(articles, sessionManager);
+      }
+
+    } catch (err) {
+      console.error('Błąd ładowania artykułów:', err);
+      if (loader) loader.classList.add('hidden');
+      if (error) {
+        error.textContent = err.message || 'Nie udało się załadować artykułów';
+        error.classList.remove('hidden');
+      }
+    }
+  },
+
+  /**
+   * Inicjalizuje event listenery dla Bazy Wiedzy
+   * @param {Object} sessionManager - Manager sesji
+   */
+  initKnowledgeBaseListeners(sessionManager) {
+    // Wyszukiwarka
+    const searchInput = document.getElementById('kb-search');
+    if (searchInput) {
+      let searchTimeout;
+      searchInput.addEventListener('input', () => {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+          this.loadKnowledgeBaseArticles(sessionManager);
+        }, 500); // Debounce 500ms
+      });
+    }
+
+    // Filtry
+    const categoryFilter = document.getElementById('kb-category-filter');
+    const sortFilter = document.getElementById('kb-sort-filter');
+    const featuredFilter = document.getElementById('kb-featured-filter');
+
+    if (categoryFilter) {
+      categoryFilter.addEventListener('change', () => {
+        this.loadKnowledgeBaseArticles(sessionManager);
+      });
+    }
+
+    if (sortFilter) {
+      sortFilter.addEventListener('change', () => {
+        this.loadKnowledgeBaseArticles(sessionManager);
+      });
+    }
+
+    if (featuredFilter) {
+      featuredFilter.addEventListener('change', () => {
+        this.loadKnowledgeBaseArticles(sessionManager);
+      });
+    }
+
+    // Przycisk "Nowy artykuł" (tylko dla admina)
+    const addButton = document.getElementById('kb-add-article');
+    if (addButton) {
+      addButton.addEventListener('click', () => {
+        const uiManager = window.uiManager;
+        if (uiManager && uiManager.showKnowledgeBaseEditor) {
+          uiManager.showKnowledgeBaseEditor(null); // null = nowy artykuł
+        }
+      });
+    }
+
+    // Przycisk "Powrót do listy" (z widoku artykułu)
+    const backButton = document.getElementById('kb-back-to-list');
+    if (backButton) {
+      backButton.addEventListener('click', () => {
+        const uiManager = window.uiManager;
+        if (uiManager && uiManager.showKnowledgeBaseListView) {
+          uiManager.showKnowledgeBaseListView();
+        }
+      });
+    }
+
+    // Przyciski admina w widoku artykułu
+    const editButton = document.getElementById('kb-edit-article');
+    const deleteButton = document.getElementById('kb-delete-article');
+
+    if (editButton) {
+      editButton.addEventListener('click', () => {
+        const slug = editButton.dataset.articleSlug;
+        if (slug) {
+          const uiManager = window.uiManager;
+          if (uiManager && uiManager.showKnowledgeBaseEditor) {
+            uiManager.showKnowledgeBaseEditor(slug);
+          }
+        }
+      });
+    }
+
+    if (deleteButton) {
+      deleteButton.addEventListener('click', () => {
+        const id = deleteButton.dataset.articleId;
+        const title = deleteButton.dataset.articleTitle;
+        if (id && confirm(`Czy na pewno usunąć artykuł "${title}"?`)) {
+          const uiManager = window.uiManager;
+          if (uiManager && uiManager.deleteKnowledgeBaseArticle) {
+            uiManager.deleteKnowledgeBaseArticle(id);
+          }
+        }
+      });
+    }
+
+    // Przyciski edytora
+    const editorBackButton = document.getElementById('kb-editor-back');
+    const editorCancelButton = document.getElementById('kb-editor-cancel');
+
+    if (editorBackButton) {
+      editorBackButton.addEventListener('click', () => {
+        const uiManager = window.uiManager;
+        if (uiManager && uiManager.showKnowledgeBaseListView) {
+          uiManager.showKnowledgeBaseListView();
+        }
+      });
+    }
+
+    if (editorCancelButton) {
+      editorCancelButton.addEventListener('click', () => {
+        const uiManager = window.uiManager;
+        if (uiManager && uiManager.showKnowledgeBaseListView) {
+          uiManager.showKnowledgeBaseListView();
+        }
+      });
+    }
+
+    // Formularz edytora
+    const editorForm = document.getElementById('kb-editor-form');
+    if (editorForm) {
+      editorForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        await this.saveKnowledgeBaseArticle(editorForm, sessionManager);
+      });
+    }
+
+    // Auto-generowanie slug z tytułu
+    const titleInput = document.getElementById('kb-editor-input-title');
+    const slugInput = document.getElementById('kb-editor-input-slug');
+    if (titleInput && slugInput) {
+      titleInput.addEventListener('input', () => {
+        // Generuj slug tylko jeśli pole slug jest puste
+        if (!slugInput.value) {
+          const knowledgeBaseEngine = window.knowledgeBaseEngine;
+          if (knowledgeBaseEngine && knowledgeBaseEngine.generateSlug) {
+            slugInput.value = knowledgeBaseEngine.generateSlug(titleInput.value);
+          }
+        }
+      });
+    }
+
+    console.log('✅ Knowledge Base listeners initialized');
+  },
+
+  /**
+   * Zapisuje artykuł (nowy lub edycja)
+   * @param {HTMLFormElement} form - Formularz edytora
+   * @param {Object} sessionManager - Manager sesji
+   */
+  async saveKnowledgeBaseArticle(form, sessionManager) {
+    const errorEl = document.getElementById('kb-editor-error');
+    const saveButton = document.getElementById('kb-editor-save');
+
+    // Ukryj błędy
+    if (errorEl) errorEl.classList.add('hidden');
+
+    // Disable przycisk
+    if (saveButton) {
+      saveButton.disabled = true;
+      saveButton.textContent = '💾 Zapisywanie...';
+    }
+
+    try {
+      const dataService = window.dataService;
+      if (!dataService) throw new Error('dataService nie jest dostępny');
+
+      // Sprawdź czy admin
+      if (!sessionManager || !sessionManager.isAdmin()) {
+        throw new Error('Brak uprawnień do zapisu artykułu');
+      }
+
+      // Pobierz dane z formularza
+      const title = document.getElementById('kb-editor-input-title').value.trim();
+      const slug = document.getElementById('kb-editor-input-slug').value.trim();
+      const description = document.getElementById('kb-editor-input-description').value.trim();
+      const category = document.getElementById('kb-editor-input-category').value.trim();
+      const icon = document.getElementById('kb-editor-input-icon').value.trim();
+      const tagsString = document.getElementById('kb-editor-input-tags').value.trim();
+      const isPublished = document.getElementById('kb-editor-input-published').checked;
+      const featured = document.getElementById('kb-editor-input-featured').checked;
+
+      // Pobierz treść z Quill
+      const quillEditor = window.knowledgeBaseQuillEditor;
+      let content = '';
+      if (quillEditor) {
+        content = quillEditor.root.innerHTML;
+      }
+
+      // Walidacja
+      if (!title) throw new Error('Tytuł jest wymagany');
+      if (!slug) throw new Error('Slug jest wymagany');
+      if (!content || content === '<p><br></p>') throw new Error('Treść jest wymagana');
+
+      // Parsuj tagi
+      const knowledgeBaseEngine = window.knowledgeBaseEngine;
+      const tags = knowledgeBaseEngine && knowledgeBaseEngine.parseTags 
+        ? knowledgeBaseEngine.parseTags(tagsString)
+        : tagsString.split(',').map(t => t.trim()).filter(t => t);
+
+      // Przygotuj dane artykułu
+      const articleData = {
+        title,
+        slug,
+        content,
+        description: description || null,
+        category: category || null,
+        icon: icon || null,
+        tags: tags.length > 0 ? tags : null,
+        is_published: isPublished,
+        featured: featured
+      };
+
+      // Sprawdź czy edycja czy nowy artykuł
+      const articleId = form.dataset.articleId;
+
+      if (articleId) {
+        // Edycja
+        await dataService.updateKnowledgeBaseArticle(articleId, articleData);
+        alert('Artykuł został zaktualizowany');
+      } else {
+        // Nowy artykuł
+        await dataService.createKnowledgeBaseArticle(articleData);
+        alert('Artykuł został utworzony');
+      }
+
+      // Wróć do listy
+      const uiManager = window.uiManager;
+      if (uiManager && uiManager.showKnowledgeBaseListView) {
+        uiManager.showKnowledgeBaseListView();
+      }
+
+    } catch (err) {
+      console.error('Błąd zapisywania artykułu:', err);
+      if (errorEl) {
+        errorEl.textContent = err.message || 'Nie udało się zapisać artykułu';
+        errorEl.classList.remove('hidden');
+      }
+    } finally {
+      // Enable przycisk
+      if (saveButton) {
+        saveButton.disabled = false;
+        saveButton.textContent = '💾 Zapisz artykuł';
+      }
+    }
   }
 };
 

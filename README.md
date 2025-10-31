@@ -103,7 +103,7 @@ Następnie otwórz: `http://localhost:8000`
    - Nazwa: `nazwa-quizu.json` (małe litery, myślniki)
    - Przykład: `matematyka-podstawy.json`
 
-2. **Wypełnij zgodnie z formatem** opisanym w [`DATA_FORMAT.md`](DATA_FORMAT.md)
+2. **Wypełnij zgodnie z formatem** opisanym w [`docs/DATA_FORMAT.md`](docs/DATA_FORMAT.md)
 
 3. **Wygeneruj manifest**:
    ```bash
@@ -118,7 +118,7 @@ Następnie otwórz: `http://localhost:8000`
    - Nazwa: `nazwa-treningu.json` (małe litery, myślniki)
    - Przykład: `cardio-hiit.json`
 
-2. **Wypełnij zgodnie z formatem** opisanym w [`DATA_FORMAT.md`](DATA_FORMAT.md)
+2. **Wypełnij zgodnie z formatem** opisanym w [`docs/DATA_FORMAT.md`](docs/DATA_FORMAT.md)
 
 3. **Wygeneruj manifest**:
    ```bash
@@ -131,7 +131,7 @@ Następnie otwórz: `http://localhost:8000`
 
 Możesz użyć AI (np. ChatGPT, Claude) do wygenerowania nowych treści. Wystarczy, że:
 
-1. Przekażesz AI plik [`DATA_FORMAT.md`](DATA_FORMAT.md)
+1. Przekażesz AI plik [`docs/DATA_FORMAT.md`](docs/DATA_FORMAT.md)
 2. Opiszesz, jaki quiz/trening chcesz stworzyć
 3. AI wygeneruje poprawny JSON
 
@@ -149,11 +149,14 @@ historii Polski. Użyj różnych typów pytań. Format JSON.
 /
 ├── index.html                 # Główna strona aplikacji
 ├── README.md                  # Ten plik
-├── PRD.md                     # Dokument wymagań produktowych
-├── TECH_STACK.md              # Szczegóły techniczne
-├── DATA_FORMAT.md             # Specyfikacja formatów JSON
-├── STATE_MANAGEMENT.md        # 🆕 Dokumentacja state managera
 ├── generate-manifest.js       # Skrypt do generowania manifestu
+│
+├── /docs/                     # 📚 Dokumentacja projektu
+│   ├── PRD.md                 # Dokument wymagań produktowych
+│   ├── TECH_STACK.md          # Szczegóły techniczne
+│   ├── DATA_FORMAT.md         # Specyfikacja formatów JSON
+│   ├── STATE_MANAGEMENT.md    # Dokumentacja state managera
+│   └── ... (wszystkie pliki .md)
 │
 ├── /data/
 │   ├── manifest.json          # Lista dostępnych plików (generowany)
@@ -218,26 +221,31 @@ const unsubscribe = uiState.subscribe((state, prevState) => {
 
 ### 📚 Pełna dokumentacja
 
-Zobacz **[STATE_MANAGEMENT.md](STATE_MANAGEMENT.md)** dla szczegółów, API reference i przykładów.
+Zobacz **[docs/STATE_MANAGEMENT.md](docs/STATE_MANAGEMENT.md)** dla szczegółów, API reference i przykładów.
 
 ---
 
 ## Dokumentacja
 
+Cała dokumentacja projektu znajduje się w katalogu **[`/docs/`](docs/)**.
+
 ### Dla Użytkowników:
-- **[PRD.md](PRD.md)** - Pełny dokument wymagań produktowych
-- **[TECH_STACK.md](TECH_STACK.md)** - Szczegóły techniczne i architektura
-- **[DATA_FORMAT.md](DATA_FORMAT.md)** - Dokładna specyfikacja formatów JSON (WAŻNE dla tworzenia treści!)
+- **[docs/PRD.md](docs/PRD.md)** - Pełny dokument wymagań produktowych
+- **[docs/TECH_STACK.md](docs/TECH_STACK.md)** - Szczegóły techniczne i architektura
+- **[docs/DATA_FORMAT.md](docs/DATA_FORMAT.md)** - Dokładna specyfikacja formatów JSON (WAŻNE dla tworzenia treści!)
 
 ### Dla Deweloperów:
-- **[JSDOC_TYPESCRIPT_SUMMARY.md](JSDOC_TYPESCRIPT_SUMMARY.md)** - Podsumowanie ulepszeń JSDoc i TypeScript
-- **[DOM_HELPERS_EXAMPLES.md](DOM_HELPERS_EXAMPLES.md)** - Przykłady użycia DOM helpers
-- **[TYPESCRIPT_MIGRATION.md](TYPESCRIPT_MIGRATION.md)** - Przewodnik migracji do TypeScript (opcjonalnie)
-- **[STATE_MANAGEMENT.md](STATE_MANAGEMENT.md)** - 🆕 Dokumentacja systemu zarządzania stanem
+- **[docs/JSDOC_TYPESCRIPT_SUMMARY.md](docs/JSDOC_TYPESCRIPT_SUMMARY.md)** - Podsumowanie ulepszeń JSDoc i TypeScript
+- **[docs/DOM_HELPERS_EXAMPLES.md](docs/DOM_HELPERS_EXAMPLES.md)** - Przykłady użycia DOM helpers
+- **[docs/TYPESCRIPT_MIGRATION.md](docs/TYPESCRIPT_MIGRATION.md)** - Przewodnik migracji do TypeScript (opcjonalnie)
+- **[docs/STATE_MANAGEMENT.md](docs/STATE_MANAGEMENT.md)** - 🆕 Dokumentacja systemu zarządzania stanem
 - **`js/types.js`** - Centralne definicje typów JSDoc
 - **`js/dom-helpers.js`** - Biblioteka pomocnicza do manipulacji DOM
 - **`js/state-manager.js`** - 🆕 Reaktywny store z subskrypcjami
 - **`js/ui-state.js`** - 🆕 Manager stanu UI (ekrany, tab bar)
+
+### Wszystkie dokumenty:
+Zobacz pełną listę w katalogu **[`/docs/`](docs/)** - wszystkie pliki dokumentacji znajdują się tam.
 
 ---
 

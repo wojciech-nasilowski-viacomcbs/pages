@@ -9,7 +9,7 @@
 // Stan aplikacji
 const state = {
   currentView: 'main',
-  currentTab: 'workouts', // możliwe: 'quizzes', 'workouts', 'listening', 'more' - będzie nadpisane z localStorage
+  currentTab: 'workouts', // możliwe: 'workouts', 'knowledge-base', 'quizzes', 'listening', 'more' - będzie nadpisane z localStorage
   quizzes: [],
   workouts: [],
   listeningSets: [], // NOWE
@@ -24,7 +24,8 @@ const elements = {
   quizSummaryScreen: document.getElementById('quiz-summary-screen'),
   workoutScreen: document.getElementById('workout-screen'),
   workoutEndScreen: document.getElementById('workout-end-screen'),
-  listeningScreen: document.getElementById('listening-screen'), // NOWE
+  listeningScreen: document.getElementById('listening-screen'),
+  knowledgeBaseScreen: document.getElementById('knowledge-base-screen'),
   continueDialog: document.getElementById('continue-dialog'),
   exitDialog: document.getElementById('exit-dialog'),
   
@@ -32,8 +33,9 @@ const elements = {
   tabQuizzes: document.getElementById('tab-quizzes'),
   tabWorkouts: document.getElementById('tab-workouts'),
   tabListening: document.getElementById('tab-listening'),
-  tabImport: document.getElementById('tab-import'), // NOWE - bezpośrednia zakładka Import
-  tabAIGenerator: document.getElementById('tab-ai-generator'), // NOWE - bezpośrednia zakładka AI
+  tabKnowledgeBase: document.getElementById('tab-knowledge-base'),
+  tabImport: document.getElementById('tab-import'),
+  tabAIGenerator: document.getElementById('tab-ai-generator'),
   tabMore: document.getElementById('tab-more'),
   moreScreen: document.getElementById('more-screen'),
   contentCards: document.getElementById('content-cards'),
@@ -58,9 +60,11 @@ const elements = {
   quizHome: document.getElementById('quiz-home'),
   workoutHome: document.getElementById('workout-home'),
   
-  // Autentykacja - przyciski
-  guestButtons: document.getElementById('guest-buttons'),
-  userInfo: document.getElementById('user-info'),
+  // Autentykacja - dropdown menu
+  userMenuButton: document.getElementById('user-menu-button'),
+  userMenuDropdown: document.getElementById('user-menu-dropdown'),
+  guestMenu: document.getElementById('guest-menu'),
+  userMenuLogged: document.getElementById('user-menu-logged'),
   userEmail: document.getElementById('user-email'),
   loginButton: document.getElementById('login-button'),
   registerButton: document.getElementById('register-button'),
@@ -163,7 +167,7 @@ async function init() {
   // Przywróć ostatnią aktywną zakładkę z localStorage
   try {
     const lastTab = localStorage.getItem('lastActiveTab');
-    if (lastTab && ['quizzes', 'workouts', 'listening', 'more'].includes(lastTab)) {
+    if (lastTab && ['workouts', 'knowledge-base', 'quizzes', 'listening', 'more'].includes(lastTab)) {
       state.currentTab = lastTab;
       console.log(`📌 Przywrócono zakładkę: ${lastTab}`);
     }
@@ -194,6 +198,23 @@ async function init() {
   // Podłącz event listenery
   attachEventListeners();
   
+  // Inicjalizuj listenery dla Bazy Wiedzy (jeśli włączona)
+  if (featureFlags.isKnowledgeBaseEnabled() && contentManager.initKnowledgeBaseListeners) {
+    contentManager.initKnowledgeBaseListeners(sessionManager);
+    
+    // Inicjalizuj Quill.js editor
+    if (typeof Quill !== 'undefined' && typeof knowledgeBaseEngine !== 'undefined') {
+      const editorContainer = document.getElementById('kb-editor-quill');
+      if (editorContainer) {
+        const quill = knowledgeBaseEngine.initEditor(editorContainer);
+        if (quill) {
+          window.knowledgeBaseQuillEditor = quill;
+          console.log('✅ Quill editor initialized');
+        }
+      }
+    }
+  }
+  
   // Sprawdź stan autentykacji
   await checkAuthState();
   
@@ -209,13 +230,13 @@ async function init() {
   // Sprawdź zapisaną sesję
   sessionManager.checkSavedSession();
   
-  // Pokaż domyślną zakładkę (użyj przywróconej z localStorage lub pierwszą z włączonych)
+  // Pokaż zakładkę (zapisaną lub domyślną)
   const enabledTabs = featureFlags.getActiveCoreTabs();
-  // Sprawdź czy przywrócona zakładka jest włączona, jeśli nie - użyj pierwszej włączonej
-  const defaultTab = enabledTabs.includes(state.currentTab) 
+  // Użyj zapisanej zakładki jeśli jest włączona, w przeciwnym razie użyj pierwszej włączonej
+  const tabToShow = (state.currentTab && enabledTabs.includes(state.currentTab)) 
     ? state.currentTab 
     : (enabledTabs.length > 0 ? enabledTabs[0] : 'more');
-  uiManager.switchTab(defaultTab, state, elements, contentManager, sessionManager);
+  uiManager.switchTab(tabToShow, state, elements, contentManager, sessionManager);
   
   // Aktualizuj UI autentykacji
   uiManager.updateAuthUI(state, elements, contentManager, sessionManager);
@@ -263,6 +284,11 @@ function attachEventListeners() {
       uiManager.switchTab('listening', state, elements, contentManager, sessionManager);
     });
   }
+  if (featureFlags.isKnowledgeBaseEnabled()) {
+    elements.tabKnowledgeBase.addEventListener('click', () => {
+      uiManager.switchTab('knowledge-base', state, elements, contentManager, sessionManager);
+    });
+  }
   
   // Zakładki dla funkcji dodatkowych (jeśli są w tab barze)
   if (featureFlags.getEnabledTabs().includes('import')) {
@@ -290,6 +316,21 @@ function attachEventListeners() {
   // Przycisk dźwięku
   elements.soundToggle.addEventListener('click', () => {
     uiManager.handleSoundToggle(elements);
+  });
+  
+  // User menu dropdown
+  elements.userMenuButton.addEventListener('click', (e) => {
+    e.stopPropagation();
+    elements.userMenuDropdown.classList.toggle('hidden');
+  });
+  
+  // Zamknij dropdown po kliknięciu poza nim
+  document.addEventListener('click', (e) => {
+    if (!elements.userMenuDropdown.classList.contains('hidden') && 
+        !elements.userMenuButton.contains(e.target) &&
+        !elements.userMenuDropdown.contains(e.target)) {
+      elements.userMenuDropdown.classList.add('hidden');
+    }
   });
   
   // Dialog kontynuacji
@@ -320,9 +361,18 @@ function attachEventListeners() {
   });
   
   // Autentykacja - przyciski
-  elements.loginButton.addEventListener('click', () => showModal('login'));
-  elements.registerButton.addEventListener('click', () => showModal('register'));
-  elements.logoutButton.addEventListener('click', handleLogout);
+  elements.loginButton.addEventListener('click', () => {
+    elements.userMenuDropdown.classList.add('hidden');
+    showModal('login');
+  });
+  elements.registerButton.addEventListener('click', () => {
+    elements.userMenuDropdown.classList.add('hidden');
+    showModal('register');
+  });
+  elements.logoutButton.addEventListener('click', () => {
+    elements.userMenuDropdown.classList.add('hidden');
+    handleLogout();
+  });
   
   // Autentykacja - formularze
   elements.loginForm.addEventListener('submit', handleLogin);
@@ -465,6 +515,12 @@ function applyFeatureFlags(elements) {
         elements.tabListening.classList.remove('hidden');
     }
     
+    if (!featureFlags.isKnowledgeBaseEnabled()) {
+        elements.tabKnowledgeBase.classList.add('hidden');
+    } else {
+        elements.tabKnowledgeBase.classList.remove('hidden');
+    }
+    
     // Funkcje dodatkowe - mogą być w tab barze lub w "Więcej"
     if (enabledTabs.includes('import')) {
         // Import ma swoją zakładkę w tab barze
@@ -517,9 +573,18 @@ async function checkAuthState() {
   try {
     state.currentUser = await getCurrentUser();
     console.log('👤 Stan autentykacji:', state.currentUser ? 'Zalogowany' : 'Gość');
+    
+    // Inicjalizuj rolę użytkownika
+    if (state.currentUser) {
+      const role = await authService.getUserRole(state.currentUser);
+      sessionManager.setUserRole(role);
+    } else {
+      sessionManager.resetUserRole();
+    }
   } catch (error) {
     console.error('Błąd sprawdzania autentykacji:', error);
     state.currentUser = null;
+    sessionManager.resetUserRole();
   }
 }
 
@@ -527,9 +592,8 @@ async function checkAuthState() {
  * Nasłuchuje zmian stanu autentykacji
  */
 function setupAuthListener() {
-  try {
-    authService.onAuthStateChange(async (event, session) => {
-      console.log('🔐 Auth event:', event, 'currentView:', state.currentView);
+  authService.onAuthStateChange(async (event, session) => {
+    console.log('🔐 Auth event:', event, 'currentView:', state.currentView);
     
     // Sprawdź czy użytkownik jest w trakcie aktywności
     // Używamy uiState store, który śledzi stan aktywności
@@ -549,6 +613,11 @@ function setupAuthListener() {
         localStorage.removeItem('currentSession');
         
         state.currentUser = session?.user || null;
+        
+        // Ustaw rolę użytkownika
+        const role = await authService.getUserRole(state.currentUser);
+        sessionManager.setUserRole(role);
+        
         await contentManager.loadData(state, elements, uiManager);
         uiManager.updateAuthUI(state, elements, contentManager, sessionManager);
         // Przywróć zapisaną zakładkę po załadowaniu danych
@@ -557,11 +626,21 @@ function setupAuthListener() {
         // TEN SAM UŻYTKOWNIK + W TRAKCIE AKTYWNOŚCI - nie przerywaj
         console.log('⚠️ SIGNED_IN during activity (same user) - skipping navigation');
         state.currentUser = session?.user || null;
+        
+        // Ustaw rolę użytkownika
+        const role = await authService.getUserRole(state.currentUser);
+        sessionManager.setUserRole(role);
+        
         uiManager.updateAuthUI(state, elements, contentManager, sessionManager);
       } else {
         // TEN SAM UŻYTKOWNIK + NIE W AKTYWNOŚCI - odśwież dane
         console.log('🔄 SIGNED_IN (same user, not in activity) - refreshing data');
         state.currentUser = session?.user || null;
+        
+        // Ustaw rolę użytkownika
+        const role = await authService.getUserRole(state.currentUser);
+        sessionManager.setUserRole(role);
+        
         await contentManager.loadData(state, elements, uiManager);
         uiManager.updateAuthUI(state, elements, contentManager, sessionManager);
         uiManager.switchTab(state.currentTab, state, elements, contentManager, sessionManager);
@@ -572,17 +651,29 @@ function setupAuthListener() {
       if (isInActivity) {
         console.log('⚠️ USER_UPDATED during activity - skipping navigation');
         state.currentUser = session?.user || null;
+        
+        // Ustaw rolę użytkownika
+        const role = await authService.getUserRole(state.currentUser);
+        sessionManager.setUserRole(role);
+        
         uiManager.updateAuthUI(state, elements, contentManager, sessionManager);
         return;
       }
       
       state.currentUser = session?.user || null;
+      
+      // Ustaw rolę użytkownika
+      const role = await authService.getUserRole(state.currentUser);
+      sessionManager.setUserRole(role);
+      
       await contentManager.loadData(state, elements, uiManager);
       uiManager.updateAuthUI(state, elements, contentManager, sessionManager);
       // Przywróć zapisaną zakładkę po załadowaniu danych
       uiManager.switchTab(state.currentTab, state, elements, contentManager, sessionManager);
     } else if (event === 'SIGNED_OUT') {
       state.currentUser = null;
+      sessionManager.resetUserRole();
+      
       await contentManager.loadData(state, elements, uiManager);
       uiManager.updateAuthUI(state, elements, contentManager, sessionManager);
       // Przywróć zapisaną zakładkę po załadowaniu danych
@@ -592,6 +683,12 @@ function setupAuthListener() {
       // NIE przerywaj aktywności użytkownika - tylko zaktualizuj dane w tle
       console.log('🔄 Token refreshed - updating session silently');
       state.currentUser = session?.user || null;
+      
+      // Ustaw rolę użytkownika
+      if (state.currentUser) {
+        const role = await authService.getUserRole(state.currentUser);
+        sessionManager.setUserRole(role);
+      }
       
       // Jeśli użytkownik NIE jest w trakcie aktywności, odśwież dane
       if (!isInActivity) {
@@ -607,10 +704,6 @@ function setupAuthListener() {
       console.log('ℹ️ Unknown auth event:', event, '- ignoring');
     }
   });
-  } catch (error) {
-    console.error('Błąd podczas konfiguracji nasłuchiwania autentykacji:', error);
-    // App kontynuuje działanie bez autentykacji
-  }
 }
 
 /**

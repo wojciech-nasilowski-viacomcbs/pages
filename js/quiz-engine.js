@@ -670,8 +670,10 @@ function handleTrueFalseAnswer(questionData, userAnswer) {
  * Renderuje pytanie dopasowywania
  */
 function renderMatching(questionData) {
-  // Losowa kolejność dla prawej kolumny
-  const rightItems = [...questionData.pairs.map(p => p.match)].sort(() => Math.random() - 0.5);
+  // Stwórz tablicę z unikalnymi indeksami dla prawej kolumny (aby obsłużyć duplikaty)
+  const rightItemsWithIndex = questionData.pairs.map((p, idx) => ({ text: p.match, originalIndex: idx }));
+  // Losowa kolejność
+  rightItemsWithIndex.sort(() => Math.random() - 0.5);
   
   elements.answersContainer.innerHTML = `
     <div class="text-sm text-gray-400 mb-4">
@@ -688,10 +690,11 @@ function renderMatching(questionData) {
         `).join('')}
       </div>
       <div class="space-y-2">
-        ${rightItems.map((item, index) => `
+        ${rightItemsWithIndex.map((item, displayIndex) => `
           <button class="matching-right w-full p-3 rounded-lg bg-gray-700 hover:bg-gray-600 transition border-2 border-transparent text-left"
-                  data-match="${item}">
-            ${item}
+                  data-right-index="${displayIndex}"
+                  data-original-index="${item.originalIndex}">
+            ${item.text}
           </button>
         `).join('')}
       </div>
@@ -732,8 +735,7 @@ function renderMatching(questionData) {
         btn.classList.remove('opacity-50', 'bg-purple-700', 'border-purple-500');
         btn.classList.add('bg-gray-700', 'hover:bg-gray-600');
         
-        const rightBtns = elements.answersContainer.querySelectorAll('.matching-right');
-        const rightBtn = Array.from(rightBtns).find(b => b.dataset.match === existingMatch.rightMatch);
+        const rightBtn = elements.answersContainer.querySelector(`.matching-right[data-right-index="${existingMatch.rightIndex}"]`);
         rightBtn.classList.remove('opacity-50', 'bg-purple-700', 'border-purple-500');
         rightBtn.classList.add('bg-gray-700', 'hover:bg-gray-600');
         
@@ -764,10 +766,10 @@ function renderMatching(questionData) {
   // Event listenery dla prawej kolumny
   elements.answersContainer.querySelectorAll('.matching-right').forEach(btn => {
     btn.addEventListener('click', () => {
-      const rightMatch = btn.dataset.match;
+      const rightIndex = parseInt(btn.dataset.rightIndex);
       
       // Sprawdź czy ten element jest już dopasowany
-      const existingMatch = userMatches.find(m => m.rightMatch === rightMatch);
+      const existingMatch = userMatches.find(m => m.rightIndex === rightIndex);
       
       if (existingMatch) {
         // Cofnij dopasowanie
@@ -790,9 +792,10 @@ function renderMatching(questionData) {
       if (selectedLeft === null) return;
       
       const leftIndex = selectedLeft;
+      const originalRightIndex = parseInt(btn.dataset.originalIndex);
       
-      // Zapisz dopasowanie
-      userMatches.push({ leftIndex, rightMatch });
+      // Zapisz dopasowanie z indeksami
+      userMatches.push({ leftIndex, rightIndex, originalRightIndex });
       
       // Oznacz dopasowane przyciski (fioletowy = dopasowane, ale można cofnąć)
       const leftBtn = elements.answersContainer.querySelector(`.matching-left[data-index="${leftIndex}"]`);
@@ -821,11 +824,13 @@ function handleMatchingAnswer(questionData, userMatches) {
   if (quizState.isAnswered) return;
   quizState.isAnswered = true;
   
-  // Sprawdź poprawność
+  // Sprawdź poprawność - porównujemy indeksy zamiast treści
   let correctCount = 0;
   userMatches.forEach(match => {
-    const correctMatch = questionData.pairs[match.leftIndex].match;
-    if (match.rightMatch === correctMatch) {
+    // match.leftIndex to indeks z lewej kolumny
+    // match.originalRightIndex to oryginalny indeks z prawej kolumny
+    // Poprawne dopasowanie to gdy leftIndex === originalRightIndex
+    if (match.leftIndex === match.originalRightIndex) {
       correctCount++;
     }
   });
@@ -844,11 +849,9 @@ function handleMatchingAnswer(questionData, userMatches) {
   // Pokoloruj odpowiedzi
   userMatches.forEach(match => {
     const leftBtn = elements.answersContainer.querySelector(`.matching-left[data-index="${match.leftIndex}"]`);
-    const rightBtns = elements.answersContainer.querySelectorAll('.matching-right');
-    const rightBtn = Array.from(rightBtns).find(b => b.dataset.match === match.rightMatch);
+    const rightBtn = elements.answersContainer.querySelector(`.matching-right[data-right-index="${match.rightIndex}"]`);
     
-    const correctMatch = questionData.pairs[match.leftIndex].match;
-    const isMatchCorrect = match.rightMatch === correctMatch;
+    const isMatchCorrect = match.leftIndex === match.originalRightIndex;
     
     if (isMatchCorrect) {
       leftBtn.classList.add('bg-green-600', 'border-green-400');

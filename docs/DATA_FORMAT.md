@@ -331,7 +331,7 @@ Każdy trening składa się z faz (np. "Rozgrzewka", "Obwód 1/3", "Rozciąganie
 
 Każde ćwiczenie ma jeden z dwóch typów: **na czas** lub **na powtórzenia**.
 
-### Ćwiczenie na czas
+### Ćwiczenie na czas (pojedyncze)
 
 ```json
 {
@@ -352,13 +352,43 @@ Każde ćwiczenie ma jeden z dwóch typów: **na czas** lub **na powtórzenia**.
 - `details`: opcjonalne dodatkowe informacje (string, może być puste)
 - `mediaUrl`: opcjonalny link do obrazka/GIF-a (string, na razie pusty `""`)
 
-### Ćwiczenie na powtórzenia
+### Ćwiczenie na czas (z wieloma seriami)
+
+```json
+{
+  "name": "Deska (plank)",
+  "type": "time",
+  "duration": 45,
+  "sets": 3,
+  "restBetweenSets": 30,
+  "description": "Oprzyj się na przedramionach. Utrzymuj proste plecy przez cały czas.",
+  "mediaUrl": ""
+}
+```
+
+**Pola:**
+- `name`: nazwa ćwiczenia (string)
+- `type`: zawsze `"time"` dla ćwiczeń na czas
+- `duration`: czas trwania JEDNEJ serii w sekundach (number)
+- `sets`: liczba serii do wykonania (number, >= 2)
+- `restBetweenSets`: czas odpoczynku między seriami w sekundach (number, opcjonalne, domyślnie 30)
+- `description`: szczegółowy opis techniki wykonania (string)
+- `mediaUrl`: opcjonalny link do obrazka/GIF-a (string, na razie pusty `""`)
+
+**Rozwijanie:** System automatycznie rozwinie to ćwiczenie na:
+- Deska (plank) seria 1/3 (45s)
+- Odpoczynek (30s)
+- Deska (plank) seria 2/3 (45s)
+- Odpoczynek (30s)
+- Deska (plank) seria 3/3 (45s)
+
+### Ćwiczenie na powtórzenia (pojedyncze)
 
 ```json
 {
   "name": "Podciąganie australijskie",
   "type": "reps",
-  "details": "MAX powtórzeń",
+  "reps": "MAX",
   "description": "Na niskim drążku. Ściągnij łopatki, klatka piersiowa idzie do drążka.",
   "mediaUrl": ""
 }
@@ -367,11 +397,60 @@ Każde ćwiczenie ma jeden z dwóch typów: **na czas** lub **na powtórzenia**.
 **Pola:**
 - `name`: nazwa ćwiczenia (string)
 - `type`: zawsze `"reps"` dla ćwiczeń na powtórzenia
-- `details`: liczba powtórzeń lub zakres (string, np. "10-12 powtórzeń", "MAX")
+- `reps`: liczba powtórzeń (string, np. "15", "10-12", "MAX")
 - `description`: szczegółowy opis techniki wykonania (string)
 - `mediaUrl`: opcjonalny link do obrazka/GIF-a (string, na razie pusty `""`)
 
-**Uwaga:** Pole `duration` NIE występuje w ćwiczeniach typu `"reps"`.
+### Ćwiczenie na powtórzenia (z wieloma seriami)
+
+```json
+{
+  "name": "Push Up",
+  "type": "reps",
+  "reps": "15",
+  "sets": 4,
+  "restBetweenSets": 30,
+  "description": "Pompki klasyczne. Dłonie na szerokość barków, ciało w linii prostej.",
+  "mediaUrl": ""
+}
+```
+
+**Pola:**
+- `name`: nazwa ćwiczenia (string)
+- `type`: zawsze `"reps"` dla ćwiczeń na powtórzenia
+- `reps`: liczba powtórzeń W JEDNEJ SERII (string, np. "15", "10-12", "MAX")
+- `sets`: liczba serii do wykonania (number, >= 2)
+- `restBetweenSets`: czas odpoczynku między seriami w sekundach (number, opcjonalne, domyślnie 30)
+- `description`: szczegółowy opis techniki wykonania (string)
+- `mediaUrl`: opcjonalny link do obrazka/GIF-a (string, na razie pusty `""`)
+
+**Rozwijanie:** System automatycznie rozwinie to ćwiczenie na:
+- Push Up seria 1/4 (15 powtórzeń)
+- Odpoczynek (30s)
+- Push Up seria 2/4 (15 powtórzeń)
+- Odpoczynek (30s)
+- Push Up seria 3/4 (15 powtórzeń)
+- Odpoczynek (30s)
+- Push Up seria 4/4 (15 powtórzeń)
+
+### Kompatybilność wsteczna
+
+Stary format z polem `details` (zamiast `reps`) nadal działa:
+
+```json
+{
+  "name": "Podciąganie",
+  "type": "reps",
+  "details": "MAX powtórzeń",
+  "description": "...",
+  "mediaUrl": ""
+}
+```
+
+**Uwaga:** 
+- Jeśli ćwiczenie ma pole `sets` >= 2, zostanie automatycznie rozwinięte na wiele kroków z odpoczynkami
+- Pole `duration` NIE występuje w ćwiczeniach typu `"reps"`
+- Pole `reps` NIE występuje w ćwiczeniach typu `"time"`
 
 ---
 

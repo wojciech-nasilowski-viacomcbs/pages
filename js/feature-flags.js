@@ -5,6 +5,7 @@ const DEFAULTS = {
     ENABLE_QUIZZES: true,
     ENABLE_WORKOUTS: true,
     ENABLE_LISTENING: true,
+    ENABLE_KNOWLEDGE_BASE: true,  // Baza Wiedzy
     ENABLE_FILE_IMPORT: true,
     ENABLE_AI_GENERATOR: true,
 };
@@ -47,6 +48,7 @@ window.featureFlags = {
     isQuizzesEnabled: () => getFlag('ENABLE_QUIZZES'),
     isWorkoutsEnabled: () => getFlag('ENABLE_WORKOUTS'),
     isListeningEnabled: () => getFlag('ENABLE_LISTENING'),
+    isKnowledgeBaseEnabled: () => getFlag('ENABLE_KNOWLEDGE_BASE'),
     isFileImportEnabled: () => getFlag('ENABLE_FILE_IMPORT'),
     isAIGeneratorEnabled: () => getFlag('ENABLE_AI_GENERATOR'),
     
@@ -59,9 +61,10 @@ window.featureFlags = {
         const MAX_TABS = 4;
         const tabs = [];
         
-        // Główne moduły - zawsze priorytet
-        if (getFlag('ENABLE_QUIZZES')) tabs.push('quizzes');
+        // Główne moduły - priorytet: Treningi, Wiedza, Quizy, Słuchanie
         if (getFlag('ENABLE_WORKOUTS')) tabs.push('workouts');
+        if (getFlag('ENABLE_KNOWLEDGE_BASE')) tabs.push('knowledge-base');
+        if (getFlag('ENABLE_QUIZZES')) tabs.push('quizzes');
         if (getFlag('ENABLE_LISTENING')) tabs.push('listening');
         
         // Funkcje dodatkowe
@@ -89,8 +92,10 @@ window.featureFlags = {
 
     getActiveCoreTabs: () => {
         const coreTabs = [];
-        if (getFlag('ENABLE_QUIZZES')) coreTabs.push('quizzes');
+        // Kolejność priorytetów: Treningi, Wiedza, Quizy, Słuchanie (spójna z getEnabledTabs)
         if (getFlag('ENABLE_WORKOUTS')) coreTabs.push('workouts');
+        if (getFlag('ENABLE_KNOWLEDGE_BASE')) coreTabs.push('knowledge-base');
+        if (getFlag('ENABLE_QUIZZES')) coreTabs.push('quizzes');
         if (getFlag('ENABLE_LISTENING')) coreTabs.push('listening');
         return coreTabs;
     },
