@@ -9,7 +9,7 @@
 // Stan aplikacji
 const state = {
   currentView: 'main',
-  currentTab: 'quizzes', // możliwe: 'quizzes', 'workouts', 'listening', 'more' - będzie nadpisane z localStorage
+  currentTab: 'workouts', // możliwe: 'quizzes', 'workouts', 'listening', 'more' - będzie nadpisane z localStorage
   quizzes: [],
   workouts: [],
   listeningSets: [], // NOWE
@@ -209,9 +209,12 @@ async function init() {
   // Sprawdź zapisaną sesję
   sessionManager.checkSavedSession();
   
-  // Pokaż domyślną zakładkę (pierwszą z włączonych)
+  // Pokaż domyślną zakładkę (użyj przywróconej z localStorage lub pierwszą z włączonych)
   const enabledTabs = featureFlags.getActiveCoreTabs();
-  const defaultTab = enabledTabs.length > 0 ? enabledTabs[0] : 'more';
+  // Sprawdź czy przywrócona zakładka jest włączona, jeśli nie - użyj pierwszej włączonej
+  const defaultTab = enabledTabs.includes(state.currentTab) 
+    ? state.currentTab 
+    : (enabledTabs.length > 0 ? enabledTabs[0] : 'more');
   uiManager.switchTab(defaultTab, state, elements, contentManager, sessionManager);
   
   // Aktualizuj UI autentykacji
@@ -524,8 +527,9 @@ async function checkAuthState() {
  * Nasłuchuje zmian stanu autentykacji
  */
 function setupAuthListener() {
-  authService.onAuthStateChange(async (event, session) => {
-    console.log('🔐 Auth event:', event, 'currentView:', state.currentView);
+  try {
+    authService.onAuthStateChange(async (event, session) => {
+      console.log('🔐 Auth event:', event, 'currentView:', state.currentView);
     
     // Sprawdź czy użytkownik jest w trakcie aktywności
     // Używamy uiState store, który śledzi stan aktywności
@@ -603,6 +607,10 @@ function setupAuthListener() {
       console.log('ℹ️ Unknown auth event:', event, '- ignoring');
     }
   });
+  } catch (error) {
+    console.error('Błąd podczas konfiguracji nasłuchiwania autentykacji:', error);
+    // App kontynuuje działanie bez autentykacji
+  }
 }
 
 /**
