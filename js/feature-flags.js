@@ -92,9 +92,10 @@ window.featureFlags = {
 
     getActiveCoreTabs: () => {
         const coreTabs = [];
+        // Kolejność priorytetów: Treningi, Wiedza, Quizy, Słuchanie (spójna z getEnabledTabs)
+        if (getFlag('ENABLE_WORKOUTS')) coreTabs.push('workouts');
         if (getFlag('ENABLE_KNOWLEDGE_BASE')) coreTabs.push('knowledge-base');
         if (getFlag('ENABLE_QUIZZES')) coreTabs.push('quizzes');
-        if (getFlag('ENABLE_WORKOUTS')) coreTabs.push('workouts');
         if (getFlag('ENABLE_LISTENING')) coreTabs.push('listening');
         return coreTabs;
     },

@@ -185,21 +185,47 @@ EMOTIKONY - DOBIERZ PASUJĄCĄ DO TEMATU:
 
 TYPY ĆWICZEŃ - SZCZEGÓŁY:
 
-1. TIME (na czas):
+1. TIME (na czas) - pojedyncze:
 {
   "name": "Deska (plank)",
   "type": "time",
   "duration": 30,
-  "details": "Oprzyj się na przedramionach i palcach stóp. Utrzymuj proste plecy przez cały czas."
+  "description": "Oprzyj się na przedramionach i palcach stóp. Utrzymuj proste plecy przez cały czas.",
+  "mediaUrl": ""
 }
 
-2. REPS (liczba powtórzeń):
+2. TIME (na czas) - z wieloma seriami:
+{
+  "name": "Deska (plank)",
+  "type": "time",
+  "duration": 45,
+  "sets": 3,
+  "restBetweenSets": 30,
+  "description": "Oprzyj się na przedramionach. Utrzymuj proste plecy.",
+  "mediaUrl": ""
+}
+UWAGA: System automatycznie rozwinie to na 3 serie po 45s z 30s odpoczynku między nimi.
+
+3. REPS (liczba powtórzeń) - pojedyncze:
 {
   "name": "Pompki",
   "type": "reps",
-  "reps": 10,
-  "details": "Ręce na szerokość barków. Opuść klatkę do ziemi i wyprostuj ramiona."
+  "reps": "10",
+  "description": "Ręce na szerokość barków. Opuść klatkę do ziemi i wyprostuj ramiona.",
+  "mediaUrl": ""
 }
+
+4. REPS (liczba powtórzeń) - z wieloma seriami:
+{
+  "name": "Push Up",
+  "type": "reps",
+  "reps": "15",
+  "sets": 4,
+  "restBetweenSets": 30,
+  "description": "Pompki klasyczne. Dłonie na szerokość barków, ciało w linii prostej.",
+  "mediaUrl": ""
+}
+UWAGA: System automatycznie rozwinie to na 4 serie po 15 powtórzeń z 30s odpoczynku między nimi.
 
 FORMAT JSON (KOMPLETNY PRZYKŁAD):
 {
@@ -214,13 +240,15 @@ FORMAT JSON (KOMPLETNY PRZYKŁAD):
           "name": "Pajacyki (jumping jacks)",
           "type": "time",
           "duration": 30,
-          "details": "Skacz rozstawiając nogi i podnosząc ręce nad głowę"
+          "description": "Skacz rozstawiając nogi i podnosząc ręce nad głowę",
+          "mediaUrl": ""
         },
         {
           "name": "Krążenia ramion",
           "type": "reps",
-          "reps": 10,
-          "details": "Wykonaj 10 okrążeń ramion do przodu, potem 10 do tyłu"
+          "reps": "10",
+          "description": "Wykonaj 10 okrążeń ramion do przodu, potem 10 do tyłu",
+          "mediaUrl": ""
         }
       ]
     },
@@ -230,14 +258,29 @@ FORMAT JSON (KOMPLETNY PRZYKŁAD):
         {
           "name": "Przysiady",
           "type": "reps",
-          "reps": 15,
-          "details": "Stopy na szerokość bioder, zegnij kolana do kąta 90 stopni"
+          "reps": "15",
+          "sets": 3,
+          "restBetweenSets": 30,
+          "description": "Stopy na szerokość bioder, zegnij kolana do kąta 90 stopni",
+          "mediaUrl": ""
+        },
+        {
+          "name": "Push Up",
+          "type": "reps",
+          "reps": "10",
+          "sets": 3,
+          "restBetweenSets": 30,
+          "description": "Pompki klasyczne, ciało w linii prostej",
+          "mediaUrl": ""
         },
         {
           "name": "Deska",
           "type": "time",
           "duration": 45,
-          "details": "Utrzymuj proste plecy, napnij brzuch"
+          "sets": 2,
+          "restBetweenSets": 30,
+          "description": "Utrzymuj proste plecy, napnij brzuch",
+          "mediaUrl": ""
         }
       ]
     },
@@ -248,12 +291,21 @@ FORMAT JSON (KOMPLETNY PRZYKŁAD):
           "name": "Rozciąganie ud",
           "type": "time",
           "duration": 30,
-          "details": "Przytrzymaj stopę przy pośladku, poczuj rozciąganie w przedniej części uda"
+          "description": "Przytrzymaj stopę przy pośladku, poczuj rozciąganie w przedniej części uda",
+          "mediaUrl": ""
         }
       ]
     }
   ]
 }
+
+PRZYKŁAD Z OPISEM SERII:
+- "Przysiady" z sets: 3 zostanie automatycznie rozwinięte na:
+  1. Przysiady seria 1/3 (15 powtórzeń)
+  2. Odpoczynek (30s)
+  3. Przysiady seria 2/3 (15 powtórzeń)
+  4. Odpoczynek (30s)
+  5. Przysiady seria 3/3 (15 powtórzeń)
 
 OPIS UŻYTKOWNIKA:
 {USER_PROMPT}

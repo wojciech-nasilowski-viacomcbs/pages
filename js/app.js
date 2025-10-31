@@ -9,7 +9,7 @@
 // Stan aplikacji
 const state = {
   currentView: 'main',
-  currentTab: 'knowledge-base', // możliwe: 'workouts', 'knowledge-base', 'quizzes', 'listening', 'more' - będzie nadpisane z localStorage
+  currentTab: 'workouts', // możliwe: 'workouts', 'knowledge-base', 'quizzes', 'listening', 'more' - będzie nadpisane z localStorage
   quizzes: [],
   workouts: [],
   listeningSets: [], // NOWE

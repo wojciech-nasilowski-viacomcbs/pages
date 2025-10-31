@@ -23,7 +23,7 @@
  */
 
 // Przywróć ostatnią aktywną zakładkę z localStorage lub użyj domyślnej
-let initialTab = 'knowledge-base'; // Domyślna zakładka
+let initialTab = 'workouts'; // Domyślna zakładka
 try {
   const lastTab = localStorage.getItem('lastActiveTab');
   if (lastTab && ['workouts', 'knowledge-base', 'quizzes', 'listening', 'more'].includes(lastTab)) {

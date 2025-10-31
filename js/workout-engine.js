@@ -56,6 +56,69 @@ const icons = {
 };
 
 /**
+ * Rozwija ćwiczenia z wieloma seriami na oddzielne kroki z odpoczynkami
+ * @param {Array} phases - Tablica faz treningu
+ * @returns {Array} Tablica faz z rozwiniętymi ćwiczeniami
+ */
+function expandExerciseSets(phases) {
+  return phases.map(phase => {
+    const expandedExercises = [];
+    
+    phase.exercises.forEach(exercise => {
+      // Sprawdź czy ćwiczenie ma wiele serii (sets >= 2)
+      if (exercise.sets && exercise.sets >= 2) {
+        // Rozwij na serie
+        for (let i = 1; i <= exercise.sets; i++) {
+          // Dodaj ćwiczenie dla danej serii
+          const seriesExercise = {
+            ...exercise,
+            name: `${exercise.name} seria ${i}/${exercise.sets}`,
+            // Usuń pole sets z pojedynczego ćwiczenia (już rozwinięte)
+            sets: undefined
+          };
+          
+          // Dla ćwiczeń na powtórzenia - użyj reps jako details dla wyświetlenia
+          if (exercise.type === 'reps' && exercise.reps) {
+            seriesExercise.details = `${exercise.reps} powtórzeń`;
+          }
+          
+          expandedExercises.push(seriesExercise);
+          
+          // Dodaj odpoczynek między seriami (nie po ostatniej)
+          if (i < exercise.sets) {
+            const restDuration = exercise.restBetweenSets || 30; // domyślnie 30s
+            expandedExercises.push({
+              name: "Odpoczynek",
+              type: "time",
+              duration: restDuration,
+              description: "Przerwa między seriami.",
+              details: "",
+              mediaUrl: ""
+            });
+          }
+        }
+      } else {
+        // Zachowaj ćwiczenie bez zmian (pojedyncze lub sets < 2)
+        // Zapewnij kompatybilność wsteczną dla starych ćwiczeń z details zamiast reps
+        const singleExercise = { ...exercise };
+        
+        // Jeśli ma reps ale nie ma details, stwórz details
+        if (exercise.type === 'reps' && exercise.reps && !exercise.details) {
+          singleExercise.details = `${exercise.reps} powtórzeń`;
+        }
+        
+        expandedExercises.push(singleExercise);
+      }
+    });
+    
+    return {
+      ...phase,
+      exercises: expandedExercises
+    };
+  });
+}
+
+/**
  * Inicjalizacja silnika treningów
  */
 function initWorkoutEngine(showScreen, state) {
@@ -78,7 +141,13 @@ function initWorkoutEngine(showScreen, state) {
  * Rozpoczyna trening
  */
 function startWorkout(workoutData, filename) {
-  workoutState.data = workoutData;
+  // Rozwij ćwiczenia z wieloma seriami przed rozpoczęciem treningu
+  const expandedWorkoutData = {
+    ...workoutData,
+    phases: expandExerciseSets(workoutData.phases)
+  };
+  
+  workoutState.data = expandedWorkoutData;
   workoutState.filename = filename;
   workoutState.currentPhaseIndex = 0;
   workoutState.currentExerciseIndex = 0;
@@ -109,6 +178,12 @@ function displayExercise() {
     return;
   }
   
+  // WAŻNE: Zatrzymaj poprzedni timer jeśli jeszcze działa
+  if (workoutState.timerInterval) {
+    clearInterval(workoutState.timerInterval);
+    workoutState.timerInterval = null;
+  }
+  
   // Aktualizuj UI
   elements.phase.textContent = phase.name;
   elements.exerciseName.textContent = exercise.name;
@@ -117,6 +192,8 @@ function displayExercise() {
   // Reset przycisku
   resetMainButton();
   
+  const isRest = isRestExercise();
+  
   if (exercise.type === 'time') {
     // Ćwiczenie na czas
     workoutState.timeLeft = exercise.duration;
@@ -124,11 +201,33 @@ function displayExercise() {
     elements.exerciseDetails.textContent = detailsText;
     elements.buttonText.textContent = 'URUCHOM STOPER';
     elements.buttonIcon.innerHTML = icons.timer;
+    
+    // Dla odpoczynku: automatycznie uruchom timer i zmień UI przycisku "Pomiń"
+    if (isRest) {
+      // Automatycznie uruchom timer odpoczynku (tylko jeśli nie działa już)
+      if (!workoutState.timerInterval) {
+        setTimeout(() => {
+          // Sprawdź ponownie czy timer nie został już uruchomiony
+          if (!workoutState.timerInterval) {
+            startTimer();
+          }
+        }, 100);
+      }
+      
+      // Zmień przycisk "Pomiń" na bardziej widoczny dla odpoczynku
+      updateSkipButtonForRest(true);
+    } else {
+      // Przywróć normalny wygląd przycisku "Pomiń"
+      updateSkipButtonForRest(false);
+    }
   } else if (exercise.type === 'reps') {
     // Ćwiczenie na powtórzenia
     elements.exerciseDetails.textContent = exercise.details || 'Wykonaj ćwiczenie';
     elements.buttonText.textContent = 'ZROBIONE! (Dalej)';
     elements.buttonIcon.innerHTML = icons.next;
+    
+    // Przywróć normalny wygląd przycisku "Pomiń"
+    updateSkipButtonForRest(false);
   }
   
   // Zapisz postęp
@@ -152,11 +251,41 @@ function getCurrentExercise() {
 }
 
 /**
+ * Sprawdza czy aktualne ćwiczenie to odpoczynek
+ * @returns {boolean} true jeśli to odpoczynek
+ */
+function isRestExercise() {
+  const exercise = getCurrentExercise();
+  if (!exercise) return false;
+  
+  // Odpoczynek to ćwiczenie czasowe o nazwie "Odpoczynek"
+  return exercise.type === 'time' && exercise.name === 'Odpoczynek';
+}
+
+/**
  * Resetuje główny przycisk do stanu początkowego
  */
 function resetMainButton() {
   elements.mainButton.disabled = false;
   elements.mainButton.className = 'w-full bg-green-600 hover:bg-green-700 text-white font-bold py-6 px-6 rounded-lg text-2xl transition shadow-lg flex items-center justify-center';
+}
+
+/**
+ * Zmienia wygląd przycisku "Pomiń" w zależności czy to odpoczynek
+ * @param {boolean} isRest - czy aktualne ćwiczenie to odpoczynek
+ */
+function updateSkipButtonForRest(isRest) {
+  if (!elements.skipButton) return;
+  
+  if (isRest) {
+    // Dla odpoczynku: większy, bardziej widoczny przycisk w kolorze pomarańczowym
+    elements.skipButton.className = 'w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-4 px-6 rounded-lg text-xl transition shadow-lg';
+    elements.skipButton.innerHTML = '⏭️ Pomiń odpoczynek';
+  } else {
+    // Normalny przycisk "Pomiń ćwiczenie" (szary, mniejszy)
+    elements.skipButton.className = 'w-full bg-gray-500 hover:bg-gray-600 text-white font-semibold py-3 px-4 rounded-lg transition';
+    elements.skipButton.textContent = 'Pomiń ćwiczenie';
+  }
 }
 
 /**

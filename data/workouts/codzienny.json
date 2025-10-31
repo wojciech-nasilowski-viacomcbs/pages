@@ -9,101 +9,61 @@
         {
           "name": "Push Up",
           "type": "reps",
-          "details": "4 serie × 15 powtórzeń",
+          "reps": "15",
+          "sets": 4,
+          "restBetweenSets": 30,
           "description": "Pompki klasyczne. Dłonie na szerokość barków, ciało w linii prostej, łokcie przy tułowiu. Klatka piersiowa dotyka podłogi.",
-          "mediaUrl": ""
-        },
-        {
-          "name": "Odpoczynek",
-          "type": "time",
-          "duration": 30,
-          "description": "Przerwa między seriami pompek.",
-          "details": "",
           "mediaUrl": ""
         },
         {
           "name": "Jump Rope",
           "type": "time",
-          "duration": 180,
+          "duration": 60,
+          "sets": 3,
+          "restBetweenSets": 30,
           "description": "Skakanka. Lekkie podskoki, nadgarstki wykonują pracę. Utrzymuj rytm i oddech.",
-          "details": "3 serie",
-          "mediaUrl": ""
-        },
-        {
-          "name": "Odpoczynek",
-          "type": "time",
-          "duration": 30,
-          "description": "Przerwa po skakance.",
-          "details": "",
           "mediaUrl": ""
         },
         {
           "name": "Pull Up",
           "type": "reps",
-          "details": "4 serie × MAX powtórzeń",
+          "reps": "MAX",
+          "sets": 4,
+          "restBetweenSets": 30,
           "description": "Podciąganie na drążku. Chwyt na szerokość barków, pełny zakres ruchu. Broda powyżej drążka.",
-          "mediaUrl": ""
-        },
-        {
-          "name": "Odpoczynek",
-          "type": "time",
-          "duration": 30,
-          "description": "Przerwa między seriami podciągań.",
-          "details": "",
           "mediaUrl": ""
         },
         {
           "name": "Boxing - Skręty z kettle",
           "type": "time",
-          "duration": 180,
+          "duration": 60,
+          "sets": 3,
+          "restBetweenSets": 30,
           "description": "Skręty tułowia z kettlebell. Trzymaj kettlebell obiema rękami przed sobą, wykonuj dynamiczne skręty w prawo i lewo. Angażuj mięśnie brzucha.",
-          "details": "3 serie",
-          "mediaUrl": ""
-        },
-        {
-          "name": "Odpoczynek",
-          "type": "time",
-          "duration": 30,
-          "description": "Przerwa po skrętach.",
-          "details": "",
           "mediaUrl": ""
         },
         {
           "name": "Boxing - Uderzenia z ciężarkiem",
           "type": "time",
-          "duration": 180,
+          "duration": 60,
+          "sets": 3,
+          "restBetweenSets": 30,
           "description": "Uderzenia bokserskie z małymi ciężarkami w rękach. Proste, sierpowe, haki. Utrzymuj gardę, rotacja bioder.",
-          "details": "3 serie",
-          "mediaUrl": ""
-        },
-        {
-          "name": "Odpoczynek",
-          "type": "time",
-          "duration": 30,
-          "description": "Przerwa po uderzeniach z ciężarkami.",
-          "details": "",
           "mediaUrl": ""
         },
         {
           "name": "Boxing - Uderzenia na worek",
           "type": "time",
-          "duration": 180,
+          "duration": 60,
+          "sets": 3,
+          "restBetweenSets": 30,
           "description": "Praca na worku bokserskim. Kombinacje uderzeń, ruch wokół worka, praca nóg. Utrzymuj wysoką intensywność.",
-          "details": "3 serie",
-          "mediaUrl": ""
-        },
-        {
-          "name": "Odpoczynek",
-          "type": "time",
-          "duration": 30,
-          "description": "Przerwa po pracy na worku.",
-          "details": "",
           "mediaUrl": ""
         },
         {
           "name": "Squat (Bodyweight)",
           "type": "reps",
-          "details": "MAX powtórzeń",
+          "reps": "MAX",
           "description": "Przysiady bez obciążenia. Stopy na szerokość bioder, kolana w linii stóp. Zejdź nisko, biodra poniżej kolan.",
           "mediaUrl": ""
         }
