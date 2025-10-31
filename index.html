@@ -279,25 +279,53 @@
         
         <!-- Nagłówek -->
         <header class="flex justify-between items-center mb-6 pt-4">
-            <h1 class="text-2xl font-bold text-white">eTrener</h1>
+            <h1 class="text-xl sm:text-2xl font-bold text-white">eTrener</h1>
             
-            <div class="flex items-center gap-2">
-                <!-- Przyciski dla gości (niezalogowanych) -->
-                <div id="guest-buttons" class="flex gap-2">
-                    <button id="login-button" class="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium transition">
-                        Zaloguj
+            <div class="flex items-center gap-1 sm:gap-2">
+                <!-- User Menu Dropdown (mobile-friendly) -->
+                <div class="relative">
+                    <!-- User Menu Button -->
+                    <button id="user-menu-button" class="p-2 rounded-lg bg-gray-800 hover:bg-gray-700 transition" title="Menu użytkownika">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
                     </button>
-                    <button id="register-button" class="px-4 py-2 rounded-lg bg-green-600 hover:bg-green-700 text-white font-medium transition">
-                        Zarejestruj
-                    </button>
-                </div>
-                
-                <!-- Informacje dla zalogowanych -->
-                <div id="user-info" class="hidden flex items-center gap-2">
-                    <span id="user-email" class="text-sm text-gray-300"></span>
-                    <button id="logout-button" class="px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white font-medium transition">
-                        Wyloguj
-                    </button>
+                    
+                    <!-- Dropdown Menu -->
+                    <div id="user-menu-dropdown" class="hidden absolute right-0 mt-2 w-56 bg-gray-800 border border-gray-700 rounded-lg shadow-2xl z-50">
+                        <!-- Dla gości (niezalogowanych) -->
+                        <div id="guest-menu" class="py-2">
+                            <div class="px-4 py-2 text-xs text-gray-400 border-b border-gray-700">
+                                Nie jesteś zalogowany
+                            </div>
+                            <button id="login-button" class="w-full text-left px-4 py-3 hover:bg-gray-700 text-white transition flex items-center gap-3">
+                                <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+                                </svg>
+                                <span>Zaloguj się</span>
+                            </button>
+                            <button id="register-button" class="w-full text-left px-4 py-3 hover:bg-gray-700 text-white transition flex items-center gap-3">
+                                <svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                                </svg>
+                                <span>Zarejestruj się</span>
+                            </button>
+                        </div>
+                        
+                        <!-- Dla zalogowanych -->
+                        <div id="user-menu-logged" class="hidden py-2">
+                            <div class="px-4 py-2 border-b border-gray-700">
+                                <div class="text-xs text-gray-400 mb-1">Zalogowany jako:</div>
+                                <div id="user-email" class="text-sm text-white font-medium truncate"></div>
+                            </div>
+                            <button id="logout-button" class="w-full text-left px-4 py-3 hover:bg-gray-700 text-red-400 transition flex items-center gap-3">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                                </svg>
+                                <span>Wyloguj się</span>
+                            </button>
+                        </div>
+                    </div>
                 </div>
                 
                 <!-- Przyciski nawigacji -->

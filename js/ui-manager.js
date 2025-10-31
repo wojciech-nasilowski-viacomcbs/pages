@@ -228,14 +228,14 @@ const uiManager = {
    */
   updateAuthUI(state, elements, contentManager, sessionManager) {
     if (state.currentUser) {
-      // Zalogowany
-      elements.guestButtons.classList.add('hidden');
-      elements.userInfo.classList.remove('hidden');
+      // Zalogowany - pokaż menu zalogowanego użytkownika
+      elements.guestMenu.classList.add('hidden');
+      elements.userMenuLogged.classList.remove('hidden');
       elements.userEmail.textContent = state.currentUser.email;
     } else {
-      // Gość
-      elements.guestButtons.classList.remove('hidden');
-      elements.userInfo.classList.add('hidden');
+      // Gość - pokaż menu gościa
+      elements.guestMenu.classList.remove('hidden');
+      elements.userMenuLogged.classList.add('hidden');
     }
     
     // Odśwież widok

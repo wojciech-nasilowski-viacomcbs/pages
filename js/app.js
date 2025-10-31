@@ -60,9 +60,11 @@ const elements = {
   quizHome: document.getElementById('quiz-home'),
   workoutHome: document.getElementById('workout-home'),
   
-  // Autentykacja - przyciski
-  guestButtons: document.getElementById('guest-buttons'),
-  userInfo: document.getElementById('user-info'),
+  // Autentykacja - dropdown menu
+  userMenuButton: document.getElementById('user-menu-button'),
+  userMenuDropdown: document.getElementById('user-menu-dropdown'),
+  guestMenu: document.getElementById('guest-menu'),
+  userMenuLogged: document.getElementById('user-menu-logged'),
   userEmail: document.getElementById('user-email'),
   loginButton: document.getElementById('login-button'),
   registerButton: document.getElementById('register-button'),
@@ -316,6 +318,21 @@ function attachEventListeners() {
     uiManager.handleSoundToggle(elements);
   });
   
+  // User menu dropdown
+  elements.userMenuButton.addEventListener('click', (e) => {
+    e.stopPropagation();
+    elements.userMenuDropdown.classList.toggle('hidden');
+  });
+  
+  // Zamknij dropdown po kliknięciu poza nim
+  document.addEventListener('click', (e) => {
+    if (!elements.userMenuDropdown.classList.contains('hidden') && 
+        !elements.userMenuButton.contains(e.target) &&
+        !elements.userMenuDropdown.contains(e.target)) {
+      elements.userMenuDropdown.classList.add('hidden');
+    }
+  });
+  
   // Dialog kontynuacji
   elements.continueYes.addEventListener('click', () => {
     sessionManager.handleContinueYes(elements, contentManager, state, uiManager);
@@ -344,9 +361,18 @@ function attachEventListeners() {
   });
   
   // Autentykacja - przyciski
-  elements.loginButton.addEventListener('click', () => showModal('login'));
-  elements.registerButton.addEventListener('click', () => showModal('register'));
-  elements.logoutButton.addEventListener('click', handleLogout);
+  elements.loginButton.addEventListener('click', () => {
+    elements.userMenuDropdown.classList.add('hidden');
+    showModal('login');
+  });
+  elements.registerButton.addEventListener('click', () => {
+    elements.userMenuDropdown.classList.add('hidden');
+    showModal('register');
+  });
+  elements.logoutButton.addEventListener('click', () => {
+    elements.userMenuDropdown.classList.add('hidden');
+    handleLogout();
+  });
   
   // Autentykacja - formularze
   elements.loginForm.addEventListener('submit', handleLogin);
