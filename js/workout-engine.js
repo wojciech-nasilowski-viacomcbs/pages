@@ -32,6 +32,7 @@ const elements = {
   buttonText: document.getElementById('workout-button-text'),
   buttonIcon: document.getElementById('workout-button-icon'),
   skipButton: document.getElementById('workout-skip-button'),
+  skipAllButton: document.getElementById('workout-skip-all-button'),
   restartBtn: document.getElementById('workout-restart-btn'),
   restIndicator: document.getElementById('workout-rest-indicator'),
   
@@ -68,6 +69,7 @@ function initWorkoutEngine(showScreen, state) {
   // Event listenery
   elements.mainButton.addEventListener('click', handleMainButtonClick);
   elements.skipButton.addEventListener('click', handleSkip);
+  elements.skipAllButton?.addEventListener('click', skipAllSets);
   elements.restartButton.addEventListener('click', handleRestart);
   elements.restartBtn?.addEventListener('click', handleRestartClick);
   elements.restartConfirm?.addEventListener('click', handleRestartConfirm);
@@ -188,6 +190,9 @@ function displayExercise() {
     elements.buttonIcon.innerHTML = icons.next;
   }
   
+  // Zaktualizuj przyciski pomijania
+  updateSkipButtons(isRest);
+  
   // Zapisz postęp
   saveProgress();
 }
@@ -236,6 +241,40 @@ function resetMainButton(isRest = false) {
   } else {
     // Kolor zielony dla normalnych ćwiczeń
     elements.mainButton.className = 'w-full bg-green-600 hover:bg-green-700 text-white font-bold py-6 px-6 rounded-lg text-2xl transition shadow-lg flex items-center justify-center';
+  }
+}
+
+/**
+ * Zaktualizowuje przyciski pomijania w zależności od kontekstu
+ */
+function updateSkipButtons(isRest) {
+  if (!elements.skipButton) return;
+  
+  if (isRest) {
+    // Podczas odpoczynku - "Pomiń odpoczynek"
+    elements.skipButton.textContent = 'Pomiń odpoczynek';
+  } else if (workoutState.totalSets > 1) {
+    // Ćwiczenie z wieloma seriami - "Pomiń serię"
+    elements.skipButton.textContent = 'Pomiń serię';
+    
+    // Pokaż przycisk "Pomiń wszystkie serie"
+    if (elements.skipAllButton) {
+      elements.skipAllButton.classList.remove('hidden');
+      elements.skipAllButton.textContent = `Pomiń wszystkie serie (${workoutState.totalSets - workoutState.currentSet + 1} pozostało)`;
+    }
+  } else {
+    // Ćwiczenie bez serii - "Pomiń ćwiczenie"
+    elements.skipButton.textContent = 'Pomiń ćwiczenie';
+    
+    // Ukryj przycisk "Pomiń wszystkie serie"
+    if (elements.skipAllButton) {
+      elements.skipAllButton.classList.add('hidden');
+    }
+  }
+  
+  // Ukryj "Pomiń wszystkie serie" podczas odpoczynku
+  if (isRest && elements.skipAllButton) {
+    elements.skipAllButton.classList.add('hidden');
   }
 }
 
@@ -308,7 +347,7 @@ function nextExercise() {
   const isRest = exercise.name.toLowerCase().includes('odpoczynek');
   
   if (isRest) {
-    // Po odpoczynku, sprawdź czy poprzednie ćwiczenie ma jeszcze serie do wykonania
+    // Po odpoczynku, wróć do poprzedniego ćwiczenia (które ma wiele serii)
     const prevExerciseIndex = workoutState.currentExerciseIndex - 1;
     if (prevExerciseIndex >= 0) {
       const prevExercise = phase.exercises[prevExerciseIndex];
@@ -322,16 +361,13 @@ function nextExercise() {
         return;
       }
     }
-  }
-  
-  // Sprawdź czy aktualne ćwiczenie ma wiele serii i czy nie skończyliśmy wszystkich
-  if (!isRest && workoutState.currentSet < workoutState.totalSets) {
-    // Przejdź do następnej pozycji (prawdopodobnie odpoczynek)
+    
+    // Jeśli nie ma już więcej serii, przejdź do następnego ćwiczenia
     workoutState.currentExerciseIndex++;
+    workoutState.currentSet = 0;
     
     // Sprawdź, czy koniec fazy
     if (workoutState.currentExerciseIndex >= phase.exercises.length) {
-      // Przejdź do następnej fazy
       workoutState.currentPhaseIndex++;
       workoutState.currentExerciseIndex = 0;
       workoutState.currentSet = 0;
@@ -341,13 +377,43 @@ function nextExercise() {
     return;
   }
   
+  // Dla nie-odpoczynku: sprawdź czy ma wiele serii
+  if (workoutState.currentSet < workoutState.totalSets) {
+    // Ma jeszcze serie - szukaj odpoczynku lub przejdź do następnego
+    const nextIndex = workoutState.currentExerciseIndex + 1;
+    
+    if (nextIndex < phase.exercises.length) {
+      const nextExercise = phase.exercises[nextIndex];
+      const nextIsRest = nextExercise.name.toLowerCase().includes('odpoczynek');
+      
+      if (nextIsRest) {
+        // Następne to odpoczynek - przejdź do niego
+        workoutState.currentExerciseIndex = nextIndex;
+        displayExercise();
+        return;
+      }
+    }
+    
+    // Brak odpoczynku - przejdź do następnej serii bezpośrednio
+    workoutState.currentSet++;
+    displayExercise();
+    return;
+  }
+  
   // Wszystkie serie zakończone, przejdź do następnego ćwiczenia
   workoutState.currentExerciseIndex++;
-  workoutState.currentSet = 0; // Reset licznika serii dla nowego ćwiczenia
+  workoutState.currentSet = 0;
+  
+  // Pomiń odpoczynek jeśli to następne ćwiczenie (bo nie ma już serii do wykonania)
+  if (workoutState.currentExerciseIndex < phase.exercises.length) {
+    const nextExercise = phase.exercises[workoutState.currentExerciseIndex];
+    if (nextExercise.name.toLowerCase().includes('odpoczynek')) {
+      workoutState.currentExerciseIndex++;
+    }
+  }
   
   // Sprawdź, czy koniec fazy
   if (workoutState.currentExerciseIndex >= phase.exercises.length) {
-    // Przejdź do następnej fazy
     workoutState.currentPhaseIndex++;
     workoutState.currentExerciseIndex = 0;
     workoutState.currentSet = 0;
@@ -357,7 +423,7 @@ function nextExercise() {
 }
 
 /**
- * Pomija aktualne ćwiczenie
+ * Pomija aktualny krok (odpoczynek lub serię)
  */
 function handleSkip() {
   // Zatrzymaj timer jeśli działa
@@ -369,7 +435,69 @@ function handleSkip() {
   // Przywróć domyślną funkcję przycisku
   elements.mainButton.onclick = handleMainButtonClick;
   
-  nextExercise();
+  const exercise = getCurrentExercise();
+  const isRest = exercise.name.toLowerCase().includes('odpoczynek');
+  
+  if (isRest) {
+    // Pomijanie odpoczynku - przejdź do następnej serii
+    nextExercise();
+  } else {
+    // Pomijanie serii - przejdź do odpoczynku lub następnej serii
+    nextExercise();
+  }
+}
+
+/**
+ * Pomija wszystkie pozostałe serie bieżącego ćwiczenia
+ */
+function skipAllSets() {
+  // Zatrzymaj timer jeśli działa
+  if (workoutState.timerInterval) {
+    clearInterval(workoutState.timerInterval);
+    workoutState.timerInterval = null;
+  }
+  
+  // Przywróć domyślną funkcję przycisku
+  elements.mainButton.onclick = handleMainButtonClick;
+  
+  const phase = getCurrentPhase();
+  const exercise = getCurrentExercise();
+  const isRest = exercise.name.toLowerCase().includes('odpoczynek');
+  
+  if (isRest) {
+    // Jeśli jesteśmy na odpoczynku, pomiń wszystkie pozostałe serie poprzedniego ćwiczenia
+    workoutState.currentExerciseIndex++;
+    workoutState.currentSet = 0;
+    
+    // Pomiń odpoczynek jeśli następne ćwiczenie to odpoczynek
+    if (workoutState.currentExerciseIndex < phase.exercises.length) {
+      const nextExercise = phase.exercises[workoutState.currentExerciseIndex];
+      if (nextExercise.name.toLowerCase().includes('odpoczynek')) {
+        workoutState.currentExerciseIndex++;
+      }
+    }
+  } else {
+    // Pomiń wszystkie serie - przejdź do następnego ćwiczenia
+    workoutState.currentExerciseIndex++;
+    workoutState.currentSet = 0;
+    
+    // Pomiń odpoczynek jeśli następne ćwiczenie to odpoczynek
+    if (workoutState.currentExerciseIndex < phase.exercises.length) {
+      const nextExercise = phase.exercises[workoutState.currentExerciseIndex];
+      if (nextExercise.name.toLowerCase().includes('odpoczynek')) {
+        workoutState.currentExerciseIndex++;
+      }
+    }
+  }
+  
+  // Sprawdź, czy koniec fazy
+  if (workoutState.currentExerciseIndex >= phase.exercises.length) {
+    workoutState.currentPhaseIndex++;
+    workoutState.currentExerciseIndex = 0;
+    workoutState.currentSet = 0;
+  }
+  
+  displayExercise();
 }
 
 /**
