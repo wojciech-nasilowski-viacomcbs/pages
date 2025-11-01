@@ -67,8 +67,7 @@ export function getEnabledTabs() {
   const tabs = [];
 
   // Sprawdź czy użytkownik jest zalogowany
-  const isAuthenticated =
-    window.state?.currentUser !== null && window.state?.currentUser !== undefined;
+  const isAuthenticated = !!window.state?.currentUser;
 
   // Główne moduły - priorytet: Treningi, Wiedza, Quizy, Słuchanie
   // Wszystkie moduły wymagają logowania
@@ -104,8 +103,7 @@ export function getActiveCoreTabs() {
   const coreTabs = [];
 
   // Sprawdź czy użytkownik jest zalogowany
-  const isAuthenticated =
-    window.state?.currentUser !== null && window.state?.currentUser !== undefined;
+  const isAuthenticated = !!window.state?.currentUser;
 
   // Kolejność priorytetów: Treningi, Wiedza, Quizy, Słuchanie (spójna z getEnabledTabs)
   // Wszystkie moduły wymagają logowania

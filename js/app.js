@@ -16,6 +16,9 @@
     currentUser: null
   };
 
+  // Eksportuj state do window, aby był dostępny dla feature-flags.js
+  window.state = state;
+
   /**
    * Centralna konfiguracja typów treści
    * Mapuje typy na odpowiednie funkcje i ustawienia
@@ -718,15 +721,19 @@
       elements.tabMore.classList.add('hidden');
     }
 
-    // Sprawdź, czy jakikolwiek moduł jest włączony
-    if (enabledTabs.length === 0) {
-      // Ukryj cały tab bar, jeśli nic nie jest aktywne
-      const tabBar = document.getElementById('tab-bar');
-      if (tabBar) {
+    // Pokaż/ukryj cały tab bar w zależności od tego czy są zakładki
+    const tabBar = document.getElementById('tab-bar');
+    if (tabBar) {
+      if (enabledTabs.length === 0) {
         tabBar.classList.add('hidden');
+      } else {
+        tabBar.classList.remove('hidden');
       }
     }
   }
+
+  // Eksportuj applyFeatureFlags do window, aby był dostępny dla ui-manager.js
+  window.applyFeatureFlags = applyFeatureFlags;
 
   /**
    * Sprawdza stan autentykacji użytkownika
