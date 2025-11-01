@@ -1,10 +1,10 @@
 /**
  * @fileoverview Screen Wake Lock API - zapobiega wygaszaniu ekranu
- * Uniwersalny moduł zarządzający blokadą ekranu dla różnych aktywności
- * (treningi, nauka ze słuchu, quizy itp.)
+ * Uniwersalny moduł zarządzający blokadą ekranu dla różnych aktywności.
  * 
- * Używa systemu referencji - blokada jest aktywna dopóki przynajmniej
- * jedna aktywność jej potrzebuje.
+ * UWAGA: Wake Lock API nie zawsze działa na urządzeniach mobilnych,
+ * szczególnie z Web Speech API (TTS). Użytkownik powinien zmienić
+ * ustawienia telefonu (Wygaszanie ekranu → 10 minut).
  * 
  * @module wake-lock
  */
@@ -18,6 +18,7 @@
  * @property {function(): number} getReferenceCount
  * @property {function(): string[]} getActiveSources
  * @property {function(): Promise<void>} reacquire
+ * @property {function(): boolean} openAndroidDisplaySettings
  * @property {function(): Promise<void>} acquire
  * @property {function(): Promise<void>} release
  */
@@ -39,6 +40,38 @@
     return 'wakeLock' in navigator;
   }
 
+  /**
+   * Otwiera ustawienia systemowe Androida (wyświetlacz/wygaszanie ekranu)
+   * Działa tylko na urządzeniach Android w przeglądarkach obsługujących Intent URLs
+   * @returns {boolean} - true jeśli udało się otworzyć ustawienia, false w przeciwnym razie
+   */
+  function openAndroidDisplaySettings() {
+    // Sprawdź czy to Android
+    const isAndroid = /Android/i.test(navigator.userAgent);
+    
+    if (!isAndroid) {
+      console.log('⚠️ Not an Android device');
+      return false;
+    }
+
+    try {
+      // Próbuj otworzyć ustawienia wyświetlacza
+      // Intent URL dla ustawień wyświetlacza Androida
+      const intentUrl = 'intent://settings/display#Intent;scheme=android.settings;end';
+      
+      // Alternatywnie można użyć:
+      // - 'android.settings.DISPLAY_SETTINGS' - ustawienia wyświetlacza
+      // - 'android.settings.SETTINGS' - główne ustawienia
+      
+      window.location.href = intentUrl;
+      console.log('✅ Opening Android display settings');
+      return true;
+    } catch (err) {
+      console.error('❌ Failed to open Android settings:', err);
+      return false;
+    }
+  }
+
 
   /**
    * Wewnętrzna funkcja aktywująca blokadę ekranu
@@ -47,14 +80,7 @@
    */
   async function _acquireWakeLock() {
     if (!isSupported()) {
-      console.log('⚠️ Wake Lock API not supported - using fallback methods');
-      // Nawet jeśli Wake Lock nie jest wspierane, użyj fallbacków
-      _createDummyVideo();
-      if (dummyVideo) {
-        await dummyVideo.play().catch(() => {});
-      }
-      _startSilentAudio(); // Ciągły, niesłyszalny dźwięk
-      _startKeepalive();
+      console.log('⚠️ Wake Lock API not supported');
       return;
     }
 
@@ -65,38 +91,15 @@
 
     try {
       wakeLock = await navigator.wakeLock.request('screen');
-      console.log('✅ Wake Lock acquired - screen will stay on');
+      console.log('✅ Wake Lock acquired');
 
       wakeLock.addEventListener('release', () => {
-        console.log('🔓 Wake Lock released (possibly by system)');
+        console.log('🔓 Wake Lock released');
         wakeLock = null;
-        
-        // Jeśli nadal są aktywne referencje, spróbuj ponownie
-        if (activeReferences.size > 0) {
-          console.log('🔄 Attempting to reacquire Wake Lock...');
-          setTimeout(() => _acquireWakeLock(), 100);
-        }
       });
-      
-      // Dodatkowe zabezpieczenia dla Androida
-      _createDummyVideo();
-      if (dummyVideo) {
-        await dummyVideo.play().catch(() => {});
-      }
-      _startSilentAudio(); // Ciągły, niesłyszalny dźwięk
-      _startKeepalive();
       
     } catch (err) {
       console.error(`❌ Wake Lock error: ${err.name}, ${err.message}`);
-      console.log('⚠️ Falling back to alternative methods');
-      
-      // Fallback - użyj wszystkich dostępnych metod
-      _createDummyVideo();
-      if (dummyVideo) {
-        await dummyVideo.play().catch(() => {});
-      }
-      _startSilentAudio(); // Ciągły, niesłyszalny dźwięk
-      _startKeepalive();
     }
   }
 
@@ -106,7 +109,6 @@
    * @private
    */
   async function _releaseWakeLock() {
-    // Zwolnij Wake Lock API
     if (wakeLock !== null) {
       try {
         await wakeLock.release();
@@ -115,11 +117,6 @@
         console.error(`❌ Wake Lock release error: ${err.name}, ${err.message}`);
       }
     }
-    
-    // Zatrzymaj wszystkie fallbacki
-    _stopKeepalive();
-    _stopSilentAudio();
-    _removeDummyVideo();
   }
 
   /**
@@ -240,6 +237,7 @@
     
     // Utility
     reacquire,
+    openAndroidDisplaySettings,
     
     // Legacy API (dla kompatybilności wstecznej)
     acquire: () => addReference('legacy'),

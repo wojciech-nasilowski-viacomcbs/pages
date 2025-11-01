@@ -132,6 +132,9 @@ function initWorkoutEngine(showScreen, state) {
   elements.restartConfirm?.addEventListener('click', handleRestartConfirm);
   elements.restartCancel?.addEventListener('click', handleRestartCancel);
   
+  // Wskazówka o wygaszaniu ekranu
+  setupWorkoutScreenTipListeners();
+  
   // Zwolnij Wake Lock przy opuszczeniu strony
   document.addEventListener('visibilitychange', handleVisibilityChange);
 }
@@ -527,6 +530,47 @@ function handleRestartCancel() {
   }
 }
 
+/**
+ * Konfiguracja event listeners dla wskazówki o wygaszaniu ekranu (workout)
+ */
+function setupWorkoutScreenTipListeners() {
+  // Sprawdź czy użytkownik już ukrył wskazówkę
+  const tipDismissed = localStorage.getItem('workoutScreenTipDismissed');
+  const screenTip = document.getElementById('workout-screen-timeout-tip');
+  
+  if (tipDismissed === 'true' && screenTip) {
+    screenTip.classList.add('hidden');
+  }
+  
+  // Przycisk zamknięcia (X) - ukrywa tylko tymczasowo
+  const closeBtn = document.getElementById('close-workout-screen-tip');
+  closeBtn?.addEventListener('click', () => {
+    if (screenTip) {
+      screenTip.classList.add('hidden');
+    }
+  });
+  
+  // Przycisk "Rozumiem, nie pokazuj więcej" - ukrywa na stałe
+  const dismissBtn = document.getElementById('dismiss-workout-screen-tip');
+  dismissBtn?.addEventListener('click', () => {
+    if (screenTip) {
+      screenTip.classList.add('hidden');
+      localStorage.setItem('workoutScreenTipDismissed', 'true');
+    }
+  });
+  
+  // Przycisk "Otwórz ustawienia" dla Androida
+  const openSettingsBtn = document.getElementById('open-android-settings-workout');
+  openSettingsBtn?.addEventListener('click', () => {
+    if (window.wakeLockManager && window.wakeLockManager.openAndroidDisplaySettings) {
+      const success = window.wakeLockManager.openAndroidDisplaySettings();
+      if (!success) {
+        // Jeśli nie udało się otworzyć (np. nie Android), pokaż komunikat
+        alert('Ta funkcja działa tylko na urządzeniach Android.');
+      }
+    }
+  });
+}
 
 
 // ============================================

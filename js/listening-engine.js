@@ -57,6 +57,11 @@ const elements = {
   // Ikona kolejności języków
   langOrderText: document.getElementById('lang-order-text'),
   
+  // Wskazówka o wygaszaniu ekranu
+  screenTimeoutTip: document.getElementById('screen-timeout-tip'),
+  closeScreenTip: document.getElementById('close-screen-tip'),
+  dismissScreenTip: document.getElementById('dismiss-screen-tip'),
+  
   // Dialogi
   restartDialog: document.getElementById('restart-dialog'),
   restartConfirm: document.getElementById('restart-confirm'),
@@ -119,6 +124,9 @@ function setupEventListeners() {
   
   // Zmiana kolejności języków
   elements.btnSwitchLang?.addEventListener('click', switchLanguageOrder);
+  
+  // Wskazówka o wygaszaniu ekranu
+  setupScreenTipListeners();
   
   // Poprzednia/następna para
   elements.btnPrevious?.addEventListener('click', () => navigatePair(-1));
@@ -835,6 +843,44 @@ function handleRestartCancel() {
     elements.restartDialog.classList.add('hidden');
     delete elements.restartDialog.dataset.source;
   }
+}
+
+/**
+ * Konfiguracja event listeners dla wskazówki o wygaszaniu ekranu
+ */
+function setupScreenTipListeners() {
+  // Sprawdź czy użytkownik już ukrył wskazówkę
+  const tipDismissed = localStorage.getItem('screenTipDismissed');
+  if (tipDismissed === 'true' && elements.screenTimeoutTip) {
+    elements.screenTimeoutTip.classList.add('hidden');
+  }
+  
+  // Przycisk zamknięcia (X) - ukrywa tylko tymczasowo
+  elements.closeScreenTip?.addEventListener('click', () => {
+    if (elements.screenTimeoutTip) {
+      elements.screenTimeoutTip.classList.add('hidden');
+    }
+  });
+  
+  // Przycisk "Rozumiem, nie pokazuj więcej" - ukrywa na stałe
+  elements.dismissScreenTip?.addEventListener('click', () => {
+    if (elements.screenTimeoutTip) {
+      elements.screenTimeoutTip.classList.add('hidden');
+      localStorage.setItem('screenTipDismissed', 'true');
+    }
+  });
+  
+  // Przycisk "Otwórz ustawienia" dla Androida
+  const openSettingsBtn = document.getElementById('open-android-settings-listening');
+  openSettingsBtn?.addEventListener('click', () => {
+    if (window.wakeLockManager && window.wakeLockManager.openAndroidDisplaySettings) {
+      const success = window.wakeLockManager.openAndroidDisplaySettings();
+      if (!success) {
+        // Jeśli nie udało się otworzyć (np. nie Android), pokaż komunikat
+        alert('Ta funkcja działa tylko na urządzeniach Android.');
+      }
+    }
+  });
 }
 
 // Eksportuj funkcje publiczne
