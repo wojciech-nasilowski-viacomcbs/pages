@@ -28,6 +28,8 @@
           if (contentManager) {
             contentManager.renderCards(state, elements, this, sessionManager);
           }
+          // Aktualizuj wizualnie aktywną zakładkę w tab barze (bez zmiany state.currentTab)
+          this.updateActiveTab(state, elements);
           break;
         case 'quiz':
           elements.quizScreen.classList.remove('hidden');
@@ -125,6 +127,35 @@
         // Domyślnie ukryj dla nieznanych ekranów
         tabBar.classList.add('hidden');
       }
+    },
+
+    /**
+     * Aktualizuje wizualnie aktywną zakładkę w tab barze (bez zmiany logiki)
+     * Używane gdy wracamy do ekranu głównego z przycisku "home"
+     */
+    updateActiveTab(state, elements) {
+      // Usuń klasę 'active' ze wszystkich tabów
+      [
+        elements.tabQuizzes,
+        elements.tabWorkouts,
+        elements.tabListening,
+        elements.tabKnowledgeBase,
+        elements.tabImport,
+        elements.tabAIGenerator,
+        elements.tabMore
+      ].forEach(btn => btn?.classList.remove('active'));
+
+      // Dodaj klasę 'active' do aktywnego taba (na podstawie state.currentTab)
+      const activeTabButton = {
+        quizzes: elements.tabQuizzes,
+        workouts: elements.tabWorkouts,
+        listening: elements.tabListening,
+        'knowledge-base': elements.tabKnowledgeBase,
+        import: elements.tabImport,
+        'ai-generator': elements.tabAIGenerator,
+        more: elements.tabMore
+      }[state.currentTab];
+      activeTabButton?.classList.add('active');
     },
 
     /**
