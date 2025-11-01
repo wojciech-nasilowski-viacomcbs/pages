@@ -452,23 +452,18 @@
       });
     }
 
-    // Zakładki dla funkcji dodatkowych (jeśli są w tab barze)
-    if (featureFlags.getEnabledTabs().includes('import')) {
-      elements.tabImport.addEventListener('click', () => {
-        contentManager.openImportModal(state, elements);
-      });
-    }
-    if (featureFlags.getEnabledTabs().includes('ai-generator')) {
-      elements.tabAIGenerator.addEventListener('click', () => {
-        contentManager.openAIGeneratorModal(state, elements);
-      });
-    }
+    // Zakładki dla funkcji dodatkowych - listenery zawsze aktywne (przyciski pokazywane/ukrywane przez applyFeatureFlags)
+    elements.tabImport.addEventListener('click', () => {
+      contentManager.openImportModal(state, elements);
+    });
+    elements.tabAIGenerator.addEventListener('click', () => {
+      contentManager.openAIGeneratorModal(state, elements);
+    });
 
-    if (featureFlags.getEnabledTabs().includes('more')) {
-      elements.tabMore.addEventListener('click', () => {
-        uiManager.switchTab('more', state, elements, contentManager, sessionManager);
-      });
-    }
+    // Zakładka "Więcej" - listener zawsze aktywny (przycisk pokazywany/ukrywany przez applyFeatureFlags)
+    elements.tabMore.addEventListener('click', () => {
+      uiManager.switchTab('more', state, elements, contentManager, sessionManager);
+    });
 
     // Przycisk powrotu do strony głównej
     elements.homeButton.addEventListener('click', () => {
