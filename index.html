@@ -182,6 +182,27 @@
             background: #374151 !important; /* gray-700 */
             border: 1px solid #4b5563 !important; /* gray-600 */
             border-radius: 0.5rem 0.5rem 0 0 !important;
+            
+            /* Sticky toolbar - przypięty pasek narzędzi */
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            
+            /* Smooth transition przy przewijaniu */
+            transition: box-shadow 0.3s ease, transform 0.2s ease;
+        }
+        
+        /* Shadow effect gdy toolbar jest przypięty */
+        .ql-toolbar.is-stuck {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* Container dla edytora z odpowiednim marginesem */
+        .ql-container {
+            background: #ffffff !important;
+            border: 1px solid #4b5563 !important; /* gray-600 */
+            border-top: none !important;
+            border-radius: 0 0 0.5rem 0.5rem !important;
         }
         
         /* Ikony w toolbarze - rozjaśnione */
@@ -234,6 +255,114 @@
         .ql-picker-options {
             background: #374151 !important; /* gray-700 */
             border: 1px solid #4b5563 !important; /* gray-600 */
+        }
+        
+        /* Custom emoji button */
+        .ql-toolbar button.ql-emoji {
+            font-size: 18px;
+            width: 28px !important;
+            height: 24px !important;
+            padding: 0 !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            line-height: 1 !important;
+            vertical-align: middle !important;
+        }
+        
+        .ql-toolbar button.ql-emoji:hover {
+            color: #ffffff !important;
+        }
+        
+        /* Emoji Picker Popup */
+        .emoji-picker-popup {
+            background: #1f2937;
+            border: 2px solid #4b5563;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            max-width: 400px;
+            max-height: 500px;
+            overflow-y: auto;
+            padding: 16px;
+            animation: fadeInScale 0.2s ease;
+        }
+        
+        @keyframes fadeInScale {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        
+        .emoji-picker-header {
+            color: #e5e7eb;
+            font-size: 16px;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #4b5563;
+        }
+        
+        .emoji-picker-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .emoji-category-label {
+            color: #9ca3af;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 8px;
+        }
+        
+        .emoji-category-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(36px, 1fr));
+            gap: 4px;
+        }
+        
+        .emoji-item {
+            font-size: 24px;
+            cursor: pointer;
+            padding: 6px;
+            border-radius: 6px;
+            text-align: center;
+            transition: all 0.15s ease;
+            user-select: none;
+        }
+        
+        .emoji-item:hover {
+            background: #374151;
+            transform: scale(1.2);
+        }
+        
+        .emoji-item:active {
+            transform: scale(1.1);
+        }
+        
+        /* Scrollbar dla emoji picker */
+        .emoji-picker-popup::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .emoji-picker-popup::-webkit-scrollbar-track {
+            background: #1f2937;
+            border-radius: 4px;
+        }
+        
+        .emoji-picker-popup::-webkit-scrollbar-thumb {
+            background: #4b5563;
+            border-radius: 4px;
+        }
+        
+        .emoji-picker-popup::-webkit-scrollbar-thumb:hover {
+            background: #6b7280;
         }
         
         .ql-picker-item {
