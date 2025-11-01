@@ -18,7 +18,6 @@
  * @property {function(): number} getReferenceCount
  * @property {function(): string[]} getActiveSources
  * @property {function(): Promise<void>} reacquire
- * @property {function(): boolean} openAndroidDisplaySettings
  * @property {function(): Promise<void>} acquire
  * @property {function(): Promise<void>} release
  */
@@ -39,52 +38,6 @@
   function isSupported() {
     return 'wakeLock' in navigator;
   }
-
-  /**
-   * Otwiera ustawienia systemowe Androida (wyświetlacz/wygaszanie ekranu)
-   * Próbuje różne metody w zależności od przeglądarki i wersji Androida
-   * @returns {boolean} - true jeśli udało się otworzyć ustawienia, false w przeciwnym razie
-   */
-  function openAndroidDisplaySettings() {
-    // Sprawdź czy to Android
-    const isAndroid = /Android/i.test(navigator.userAgent);
-    
-    if (!isAndroid) {
-      console.log('⚠️ Not an Android device');
-      return false;
-    }
-
-    try {
-      // Metoda 1: Intent URL z action (najnowsze Androidy)
-      const intentUrls = [
-        // Główne ustawienia (najbardziej uniwersalne)
-        'intent:#Intent;action=android.settings.SETTINGS;end',
-        // Ustawienia wyświetlacza
-        'intent:#Intent;action=android.settings.DISPLAY_SETTINGS;end',
-        // Starszy format
-        'intent://settings#Intent;scheme=android.settings;end',
-      ];
-      
-      // Próbuj pierwszy URL
-      const intentUrl = intentUrls[0];
-      
-      // Użyj window.open zamiast window.location.href
-      // (niektóre przeglądarki blokują location.href dla Intent URLs)
-      const opened = window.open(intentUrl, '_blank');
-      
-      if (opened === null) {
-        // Jeśli window.open nie zadziałało, spróbuj location.href
-        window.location.href = intentUrl;
-      }
-      
-      console.log('✅ Attempting to open Android settings');
-      return true;
-    } catch (err) {
-      console.error('❌ Failed to open Android settings:', err);
-      return false;
-    }
-  }
-
 
   /**
    * Wewnętrzna funkcja aktywująca blokadę ekranu
@@ -250,7 +203,6 @@
     
     // Utility
     reacquire,
-    openAndroidDisplaySettings,
     
     // Legacy API (dla kompatybilności wstecznej)
     acquire: () => addReference('legacy'),

@@ -558,18 +558,6 @@ function setupWorkoutScreenTipListeners() {
       localStorage.setItem('workoutScreenTipDismissed', 'true');
     }
   });
-  
-  // Przycisk "Otwórz ustawienia" dla Androida
-  const openSettingsBtn = document.getElementById('open-android-settings-workout');
-  openSettingsBtn?.addEventListener('click', () => {
-    if (window.wakeLockManager && window.wakeLockManager.openAndroidDisplaySettings) {
-      const success = window.wakeLockManager.openAndroidDisplaySettings();
-      if (!success) {
-        // Jeśli nie udało się otworzyć (np. nie Android), pokaż komunikat
-        alert('Ta funkcja działa tylko na urządzeniach Android.');
-      }
-    }
-  });
 }
 
 
