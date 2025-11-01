@@ -126,7 +126,13 @@ const contentManager = {
       const badge = item.isSample ? '<span class="text-xs bg-blue-600 px-2 py-1 rounded">Przykład</span>' : '';
       const actionButtons = !item.isSample ? `
         <div class="absolute top-2 right-2 md:top-3 md:right-3 md:opacity-0 md:group-hover:opacity-100 transition-all duration-200 flex gap-2 z-10">
-          <button class="export-btn bg-gray-700/90 md:bg-transparent text-gray-300 hover:text-green-500 active:scale-95 md:hover:scale-110 text-2xl md:text-xl p-2 md:p-0 rounded-lg md:rounded-none min-w-[44px] min-h-[44px] md:min-w-0 md:min-h-0 flex items-center justify-center"fix
+          <button class="share-btn bg-gray-700/90 md:bg-transparent text-gray-300 hover:text-blue-500 active:scale-95 md:hover:scale-110 text-2xl md:text-xl p-2 md:p-0 rounded-lg md:rounded-none min-w-[44px] min-h-[44px] md:min-w-0 md:min-h-0 flex items-center justify-center"
+                  data-id="${item.id}"
+                  data-title="${item.title.replace(/"/g, '&quot;')}"
+                  title="Udostępnij link">
+            🔗
+          </button>
+          <button class="export-btn bg-gray-700/90 md:bg-transparent text-gray-300 hover:text-green-500 active:scale-95 md:hover:scale-110 text-2xl md:text-xl p-2 md:p-0 rounded-lg md:rounded-none min-w-[44px] min-h-[44px] md:min-w-0 md:min-h-0 flex items-center justify-center"
                   data-id="${item.id}"
                   data-title="${item.title.replace(/"/g, '&quot;')}"
                   title="Eksportuj JSON">
@@ -157,7 +163,20 @@ const contentManager = {
       `;
     }).join('');
     
-    // Dodaj event listenery do przycisków usuń/eksportuj NAJPIERW
+    // Dodaj event listenery do przycisków share/eksportuj/usuń NAJPIERW
+    elements.contentCards.querySelectorAll('.share-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+        const id = btn.dataset.id;
+        const title = btn.dataset.title;
+        const type = state.currentTab === 'quizzes' ? 'quiz' : 'workout';
+        this.copyShareLink(type, id, title);
+        return false;
+      });
+    });
+    
     elements.contentCards.querySelectorAll('.export-btn').forEach(btn => {
       btn.addEventListener('click', (e) => {
         e.preventDefault();
@@ -185,7 +204,7 @@ const contentManager = {
     elements.contentCards.querySelectorAll('.content-card').forEach(card => {
       card.addEventListener('click', (e) => {
         // Jeśli kliknięto w przyciski akcji, ignoruj
-        if (e.target.closest('.export-btn') || e.target.closest('.delete-btn')) {
+        if (e.target.closest('.share-btn') || e.target.closest('.export-btn') || e.target.closest('.delete-btn')) {
           return;
         }
         
@@ -1105,13 +1124,14 @@ const contentManager = {
         throw new Error('Wygenerowane dane są nieprawidłowe: ' + errors.join(', '));
       }
       
-      // Zapisz do Supabase
+      // Zapisz do Supabase i pobierz ID nowo utworzonej treści
+      let savedItem;
       if (contentType === 'quiz') {
-        await dataService.saveQuiz(generatedData);
+        savedItem = await dataService.saveQuiz(generatedData);
       } else if (contentType === 'workout') {
-        await dataService.saveWorkout(generatedData);
+        savedItem = await dataService.saveWorkout(generatedData);
       } else if (contentType === 'listening') {
-        await dataService.createListeningSet(
+        savedItem = await dataService.createListeningSet(
           generatedData.title,
           generatedData.description,
           generatedData.lang1_code,
@@ -1120,16 +1140,28 @@ const contentManager = {
         );
       }
       
-      this.showAISuccess('✅ Treść wygenerowana i zapisana!', elements);
+      this.showAISuccess('✅ Treść wygenerowana! Uruchamiam...', elements);
       
       // Odśwież dane
       await this.loadData(state, elements, uiManager);
       this.renderCards(state, elements, uiManager, window.sessionManager);
       
-      // Zamknij modal po 2s
-      setTimeout(() => {
-        this.closeAIGeneratorModal(elements);
-      }, 2000);
+      // Zamknij modal
+      this.closeAIGeneratorModal(elements);
+      
+      // Przekieruj użytkownika do nowo utworzonej treści
+      if (savedItem && savedItem.id) {
+        if (contentType === 'quiz') {
+          await this.loadAndStartQuiz(savedItem.id, state, elements, window.sessionManager, uiManager, true);
+        } else if (contentType === 'workout') {
+          await this.loadAndStartWorkout(savedItem.id, state, elements, uiManager, window.sessionManager);
+        } else if (contentType === 'listening') {
+          // Dla listening przekieruj do ekranu listening z tym zestawem
+          if (window.listeningEngine && typeof window.listeningEngine.loadAndStartListening === 'function') {
+            await window.listeningEngine.loadAndStartListening(savedItem.id);
+          }
+        }
+      }
       
     } catch (error) {
       console.error('Błąd generowania AI:', error);
@@ -1662,6 +1694,56 @@ const contentManager = {
         saveButton.disabled = false;
         saveButton.textContent = '💾 Zapisz artykuł';
       }
+    }
+  },
+  
+  /**
+   * Generuje link do udostępniania treści
+   * @param {string} type - Typ treści: 'quiz', 'workout', 'listening'
+   * @param {string} id - UUID treści
+   * @returns {string} Pełny URL do udostępnienia
+   */
+  generateShareLink(type, id) {
+    const baseUrl = window.location.origin + window.location.pathname;
+    return `${baseUrl}?type=${type}&id=${id}`;
+  },
+  
+  /**
+   * Kopiuje link do schowka i pokazuje powiadomienie
+   * @param {string} type - Typ treści
+   * @param {string} id - UUID treści
+   * @param {string} title - Tytuł treści (do powiadomienia)
+   */
+  async copyShareLink(type, id, title) {
+    try {
+      const link = this.generateShareLink(type, id);
+      
+      // Skopiuj do schowka
+      await navigator.clipboard.writeText(link);
+      
+      // Pokaż powiadomienie
+      const notification = document.createElement('div');
+      notification.className = 'fixed top-4 left-1/2 transform -translate-x-1/2 bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-fade-in';
+      notification.innerHTML = `
+        <div class="flex items-center gap-2">
+          <span>🔗</span>
+          <span>Link skopiowany do schowka!</span>
+        </div>
+      `;
+      document.body.appendChild(notification);
+      
+      // Usuń po 3 sekundach
+      setTimeout(() => {
+        notification.style.opacity = '0';
+        notification.style.transition = 'opacity 0.3s';
+        setTimeout(() => notification.remove(), 300);
+      }, 3000);
+      
+      console.log(`📋 Link skopiowany: ${link}`);
+      
+    } catch (error) {
+      console.error('Błąd kopiowania linku:', error);
+      alert('Nie udało się skopiować linku. Spróbuj ponownie.');
     }
   }
 };

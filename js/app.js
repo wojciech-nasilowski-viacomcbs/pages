@@ -156,6 +156,101 @@ const elements = {
 };
 
 /**
+ * Obsługuje deep linki z query params (np. ?type=quiz&id=xxx)
+ * @returns {Promise<boolean>} True jeśli link został obsłużony
+ */
+async function handleDeepLink() {
+  try {
+    const urlParams = new URLSearchParams(window.location.search);
+    const type = urlParams.get('type');
+    const id = urlParams.get('id');
+    
+    // Jeśli brak parametrów, nie rób nic
+    if (!type || !id) {
+      return false;
+    }
+    
+    console.log(`🔗 Deep link detected: type=${type}, id=${id}`);
+    
+    // Sprawdź czy użytkownik jest zalogowany
+    if (!state.currentUser) {
+      console.warn('⚠️ User not authenticated, cannot load shared content');
+      uiManager.showError('Zaloguj się, aby otworzyć udostępnioną treść', elements);
+      // Wyczyść query params
+      window.history.replaceState({}, document.title, window.location.pathname);
+      return false;
+    }
+    
+    // Obsłuż różne typy treści
+    try {
+      switch (type) {
+        case 'quiz':
+          if (!featureFlags.isQuizzesEnabled()) {
+            throw new Error('Quizy są wyłączone');
+          }
+          await contentManager.loadAndStartQuiz(id, state, elements, sessionManager, uiManager, true);
+          break;
+          
+        case 'workout':
+          if (!featureFlags.isWorkoutsEnabled()) {
+            throw new Error('Treningi są wyłączone');
+          }
+          await contentManager.loadAndStartWorkout(id, state, elements, uiManager, sessionManager);
+          break;
+          
+        case 'listening':
+          if (!featureFlags.isListeningEnabled()) {
+            throw new Error('Listening jest wyłączony');
+          }
+          if (window.listeningEngine && window.listeningEngine.loadAndStartListening) {
+            await window.listeningEngine.loadAndStartListening(id);
+          } else {
+            throw new Error('Listening engine nie jest dostępny');
+          }
+          break;
+          
+        default:
+          throw new Error(`Nieznany typ treści: ${type}`);
+      }
+      
+      // Wyczyść query params po pomyślnym załadowaniu
+      window.history.replaceState({}, document.title, window.location.pathname);
+      return true;
+      
+    } catch (error) {
+      console.error('Error loading shared content:', error);
+      
+      // Rozpoznaj typ błędu
+      let errorMessage = 'Nie udało się otworzyć udostępnionej treści';
+      
+      if (error.message && error.message.includes('not found')) {
+        errorMessage = 'Treść nie została znaleziona';
+      } else if (error.code === 'PGRST116' || error.message.includes('row-level security')) {
+        errorMessage = 'Nie masz dostępu do tej treści';
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
+      uiManager.showError(errorMessage, elements);
+      
+      // Wyczyść query params
+      window.history.replaceState({}, document.title, window.location.pathname);
+      
+      // Pokaż główny ekran
+      const enabledTabs = featureFlags.getActiveCoreTabs();
+      const tabToShow = enabledTabs.length > 0 ? enabledTabs[0] : 'more';
+      uiManager.switchTab(tabToShow, state, elements, contentManager, sessionManager);
+      
+      return false;
+    }
+    
+  } catch (error) {
+    console.error('Error in handleDeepLink:', error);
+    return false;
+  }
+}
+
+/**
  * Inicjalizacja aplikacji
  */
 async function init() {
@@ -227,16 +322,22 @@ async function init() {
   // Wczytaj dane z Supabase
   await contentManager.loadData(state, elements, uiManager);
   
-  // Sprawdź zapisaną sesję
-  sessionManager.checkSavedSession();
+  // Sprawdź query params (np. ?type=quiz&id=xxx)
+  const handled = await handleDeepLink();
   
-  // Pokaż zakładkę (zapisaną lub domyślną)
-  const enabledTabs = featureFlags.getActiveCoreTabs();
-  // Użyj zapisanej zakładki jeśli jest włączona, w przeciwnym razie użyj pierwszej włączonej
-  const tabToShow = (state.currentTab && enabledTabs.includes(state.currentTab)) 
-    ? state.currentTab 
-    : (enabledTabs.length > 0 ? enabledTabs[0] : 'more');
-  uiManager.switchTab(tabToShow, state, elements, contentManager, sessionManager);
+  // Jeśli deep link nie został obsłużony, kontynuuj normalny flow
+  if (!handled) {
+    // Sprawdź zapisaną sesję
+    sessionManager.checkSavedSession();
+    
+    // Pokaż zakładkę (zapisaną lub domyślną)
+    const enabledTabs = featureFlags.getActiveCoreTabs();
+    // Użyj zapisanej zakładki jeśli jest włączona, w przeciwnym razie użyj pierwszej włączonej
+    const tabToShow = (state.currentTab && enabledTabs.includes(state.currentTab)) 
+      ? state.currentTab 
+      : (enabledTabs.length > 0 ? enabledTabs[0] : 'more');
+    uiManager.switchTab(tabToShow, state, elements, contentManager, sessionManager);
+  }
   
   // Aktualizuj UI autentykacji
   uiManager.updateAuthUI(state, elements, contentManager, sessionManager);

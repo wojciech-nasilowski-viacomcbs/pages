@@ -871,12 +871,71 @@ function setupScreenTipListeners() {
   });
 }
 
+/**
+ * Wczytuje i uruchamia zestaw listening po ID
+ * @param {string} setId - UUID zestawu listening
+ */
+async function loadAndStartListening(setId) {
+  try {
+    // Pokaż ekran listening
+    if (navigateToScreen) {
+      navigateToScreen('listening');
+    }
+    
+    // Pokaż loader
+    if (elements.listeningListLoader) {
+      elements.listeningListLoader.classList.remove('hidden');
+    }
+    
+    // Pobierz zestaw z Supabase
+    const { data: set, error } = await window.supabaseClient
+      .from('listening_sets')
+      .select('*')
+      .eq('id', setId)
+      .single();
+    
+    if (error) {
+      console.error('Error loading listening set:', error);
+      throw error;
+    }
+    
+    if (!set) {
+      throw new Error('Listening set not found');
+    }
+    
+    // Ukryj loader
+    if (elements.listeningListLoader) {
+      elements.listeningListLoader.classList.add('hidden');
+    }
+    
+    // Uruchom odtwarzacz
+    await openPlayer(set);
+    
+  } catch (error) {
+    console.error('Error in loadAndStartListening:', error);
+    
+    // Ukryj loader
+    if (elements.listeningListLoader) {
+      elements.listeningListLoader.classList.add('hidden');
+    }
+    
+    // Pokaż błąd
+    if (elements.listeningListError) {
+      elements.listeningListError.textContent = 'Nie udało się wczytać zestawu. ' + error.message;
+      elements.listeningListError.classList.remove('hidden');
+    }
+    
+    throw error;
+  }
+}
+
 // Eksportuj funkcje publiczne
 window.initListeningEngine = init;
 window.showListeningList = showListeningList;
 window.listeningEngine = {
   isPlaying: () => playerState.isPlaying,
-  getCurrentSet: () => playerState.currentSet
+  getCurrentSet: () => playerState.currentSet,
+  loadAndStartListening: loadAndStartListening
 };
 
 })();
