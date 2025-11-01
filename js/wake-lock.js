@@ -42,7 +42,7 @@
 
   /**
    * Otwiera ustawienia systemowe Androida (wyświetlacz/wygaszanie ekranu)
-   * Działa tylko na urządzeniach Android w przeglądarkach obsługujących Intent URLs
+   * Próbuje różne metody w zależności od przeglądarki i wersji Androida
    * @returns {boolean} - true jeśli udało się otworzyć ustawienia, false w przeciwnym razie
    */
   function openAndroidDisplaySettings() {
@@ -55,16 +55,29 @@
     }
 
     try {
-      // Próbuj otworzyć ustawienia wyświetlacza
-      // Intent URL dla ustawień wyświetlacza Androida
-      const intentUrl = 'intent://settings/display#Intent;scheme=android.settings;end';
+      // Metoda 1: Intent URL z action (najnowsze Androidy)
+      const intentUrls = [
+        // Główne ustawienia (najbardziej uniwersalne)
+        'intent:#Intent;action=android.settings.SETTINGS;end',
+        // Ustawienia wyświetlacza
+        'intent:#Intent;action=android.settings.DISPLAY_SETTINGS;end',
+        // Starszy format
+        'intent://settings#Intent;scheme=android.settings;end',
+      ];
       
-      // Alternatywnie można użyć:
-      // - 'android.settings.DISPLAY_SETTINGS' - ustawienia wyświetlacza
-      // - 'android.settings.SETTINGS' - główne ustawienia
+      // Próbuj pierwszy URL
+      const intentUrl = intentUrls[0];
       
-      window.location.href = intentUrl;
-      console.log('✅ Opening Android display settings');
+      // Użyj window.open zamiast window.location.href
+      // (niektóre przeglądarki blokują location.href dla Intent URLs)
+      const opened = window.open(intentUrl, '_blank');
+      
+      if (opened === null) {
+        // Jeśli window.open nie zadziałało, spróbuj location.href
+        window.location.href = intentUrl;
+      }
+      
+      console.log('✅ Attempting to open Android settings');
       return true;
     } catch (err) {
       console.error('❌ Failed to open Android settings:', err);
