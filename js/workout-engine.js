@@ -16,8 +16,7 @@ const workoutState = {
   currentPhaseIndex: 0,
   currentExerciseIndex: 0,
   timerInterval: null,
-  timeLeft: 0,
-  wakeLock: null
+  timeLeft: 0
 };
 
 // Elementy DOM
@@ -434,48 +433,32 @@ function loadProgress() {
 
 /**
  * Aktywuje Wake Lock (zapobiega wygaszaniu ekranu)
+ * Używa centralnego wakeLockManager
  */
 async function requestWakeLock() {
-  if (!('wakeLock' in navigator)) {
-    console.warn('Wake Lock API nie jest dostępne w tej przeglądarce');
-    return;
-  }
-  
-  try {
-    workoutState.wakeLock = await navigator.wakeLock.request('screen');
-    console.log('✅ Wake Lock aktywny - ekran nie zgaśnie');
-    
-    // Obsługa zwolnienia Wake Lock
-    workoutState.wakeLock.addEventListener('release', () => {
-      console.log('Wake Lock zwolniony');
-    });
-  } catch (err) {
-    console.error('Nie udało się aktywować Wake Lock:', err);
+  if (window.wakeLockManager && window.wakeLockManager.isSupported()) {
+    await window.wakeLockManager.addReference('workout');
   }
 }
 
 /**
  * Zwalnia Wake Lock
+ * Używa centralnego wakeLockManager
  */
-function releaseWakeLock() {
-  if (workoutState.wakeLock) {
-    workoutState.wakeLock.release();
-    workoutState.wakeLock = null;
-    console.log('Wake Lock zwolniony');
+async function releaseWakeLock() {
+  if (window.wakeLockManager && window.wakeLockManager.isSupported()) {
+    await window.wakeLockManager.removeReference('workout');
   }
 }
 
 /**
  * Obsługuje zmianę widoczności strony
- * Ponownie aktywuje Wake Lock gdy użytkownik wraca do karty
+ * UWAGA: Obsługa visibilitychange jest teraz w centralnym wakeLockManager (js/wake-lock.js)
+ * Ta funkcja jest zachowana dla kompatybilności, ale nie jest już potrzebna.
  */
 function handleVisibilityChange() {
-  if (document.visibilityState === 'visible' && appState.currentView === 'workout') {
-    // Strona ponownie widoczna i jesteśmy w treningu
-    if (!workoutState.wakeLock) {
-      requestWakeLock();
-    }
-  }
+  // Centralna obsługa w wakeLockManager automatycznie reaktywuje blokadę
+  // gdy dokument staje się widoczny i są aktywne referencje
 }
 
 /**

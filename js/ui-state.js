@@ -70,6 +70,21 @@ uiStore.subscribe((state, prevState) => {
 });
 
 /**
+ * Zarządzanie blokadą ekranu (Wake Lock) w zależności od stanu odtwarzacza
+ */
+uiStore.subscribe(async (state, prevState) => {
+  if (state.isListeningPlayerActive !== prevState.isListeningPlayerActive) {
+    if (window.wakeLockManager && window.wakeLockManager.isSupported()) {
+      if (state.isListeningPlayerActive) {
+        await window.wakeLockManager.addReference('listening');
+      } else {
+        await window.wakeLockManager.removeReference('listening');
+      }
+    }
+  }
+});
+
+/**
  * Określa czy dany ekran to aktywność (quiz/trening/odtwarzacz)
  * @param {ScreenType} screenName - Nazwa ekranu
  * @returns {boolean} True jeśli to aktywność
