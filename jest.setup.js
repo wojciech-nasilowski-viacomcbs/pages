@@ -29,7 +29,7 @@ global.speechSynthesis = {
   cancel: jest.fn(),
   pause: jest.fn(),
   resume: jest.fn(),
-  getVoices: jest.fn(() => []),
+  getVoices: jest.fn(() => [])
 };
 
 global.SpeechSynthesisUtterance = jest.fn();
@@ -41,6 +41,20 @@ global.fetch = jest.fn();
 global.Audio = jest.fn(() => ({
   play: jest.fn(),
   pause: jest.fn(),
-  addEventListener: jest.fn(),
+  addEventListener: jest.fn()
 }));
 
+// Suppress jsdom navigation errors (they're expected in tests with window.location mocking)
+const originalError = console.error;
+beforeAll(() => {
+  console.error = (...args) => {
+    if (typeof args[0] === 'string' && args[0].includes('Not implemented: navigation')) {
+      return;
+    }
+    originalError.call(console, ...args);
+  };
+});
+
+afterAll(() => {
+  console.error = originalError;
+});

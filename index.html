@@ -768,18 +768,27 @@
             
             <!-- Widok pojedynczego artykułu -->
             <div id="knowledge-base-article" class="hidden">
-                <div class="mb-6 flex justify-between items-center">
+                <div class="mb-6 flex justify-between items-center flex-wrap gap-2">
                     <button id="kb-back-to-list" class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg transition">
                         ← Powrót do listy
                     </button>
-                    <!-- Przyciski admina -->
-                    <div id="kb-article-admin-actions" class="hidden flex gap-2">
-                        <button id="kb-edit-article" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition">
-                            ✏️ Edytuj
+                    <div class="flex gap-2 flex-wrap">
+                        <!-- Przycisk kopiowania linku (dla wszystkich) -->
+                        <button id="kb-copy-link" class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg transition flex items-center gap-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                            </svg>
+                            <span>Kopiuj link</span>
                         </button>
-                        <button id="kb-delete-article" class="bg-gray-700 hover:bg-red-600 text-gray-300 hover:text-white font-bold py-2 px-4 rounded-lg transition">
-                            🗑️ Usuń
-                        </button>
+                        <!-- Przyciski admina -->
+                        <div id="kb-article-admin-actions" class="hidden flex gap-2">
+                            <button id="kb-edit-article" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition">
+                                ✏️ Edytuj
+                            </button>
+                            <button id="kb-delete-article" class="bg-gray-700 hover:bg-red-600 text-gray-300 hover:text-white font-bold py-2 px-4 rounded-lg transition">
+                                🗑️ Usuń
+                            </button>
+                        </div>
                     </div>
                 </div>
                 
@@ -1467,17 +1476,18 @@
     </nav>
 
     <!-- Skrypty JS -->
-    <script src="js/audio.js"></script>
+    <script type="module" src="js/audio.js"></script>
     <script src="js/config.js"></script>
-    <script src="js/feature-flags.js"></script>
-    <script src="js/supabase-client.js"></script>
-    <script src="js/auth-service.js"></script>
-    <script src="js/data-service.js"></script>
+    <script type="module" src="js/feature-flags.js"></script>
+    <script type="module" src="js/supabase-client.js"></script>
+    <script type="module" src="js/auth-service.js"></script>
+    <script type="module" src="js/data-service.js"></script>
     
     <!-- State Management (v2.1 - reactive state) -->
-    <script src="js/wake-lock.js"></script>
-    <script src="js/state-manager.js"></script>
-    <script src="js/ui-state.js"></script>
+    <script type="module" src="js/wake-lock.js"></script>
+    <script type="module" src="js/state-manager.js"></script>
+    <script type="module" src="js/ui-state.js"></script>
+    <script type="module" src="js/modules-shim.js"></script>
     
     <!-- Managers (v2.0 refactored) -->
     <script src="js/ui-manager.js"></script>

@@ -7,9 +7,6 @@
 /** @typedef {import('./types.js').TTSOptions} TTSOptions */
 /** @typedef {import('./types.js').AudioConfig} AudioConfig */
 
-(function() {
-'use strict';
-
 /**
  * Audio context instance (lazy loaded)
  * @type {AudioContext|null}
@@ -35,65 +32,32 @@ function getAudioContext() {
 }
 
 /**
- * Generates a tone with specified frequency and duration
- * @param {number} frequency - Frequency in Hz
- * @param {number} duration - Duration in seconds
- * @param {OscillatorType} [type='sine'] - Oscillator type ('sine', 'square', 'sawtooth', 'triangle')
- * @private
- */
-function playTone(frequency, duration, type = 'sine') {
-  if (isMuted) return;
-  
-  try {
-    const ctx = getAudioContext();
-    const oscillator = ctx.createOscillator();
-    const gainNode = ctx.createGain();
-    
-    oscillator.connect(gainNode);
-    gainNode.connect(ctx.destination);
-    
-    oscillator.type = type;
-    oscillator.frequency.value = frequency;
-    
-    // Envelope (fade in/out dla gładszego dźwięku)
-    gainNode.gain.setValueAtTime(0, ctx.currentTime);
-    gainNode.gain.linearRampToValueAtTime(0.3, ctx.currentTime + 0.01);
-    gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + duration);
-    
-    oscillator.start(ctx.currentTime);
-    oscillator.stop(ctx.currentTime + duration);
-  } catch (error) {
-    console.warn('Nie udało się odtworzyć dźwięku:', error);
-  }
-}
-
-/**
  * Plays a sound for correct answer
  * Pleasant, rising tone (C5 to E5)
  * @example
  * playCorrectSound();
  */
-function playCorrectSound() {
+export function playCorrectSound() {
   if (isMuted) return;
-  
+
   try {
     const ctx = getAudioContext();
     const oscillator = ctx.createOscillator();
     const gainNode = ctx.createGain();
-    
+
     oscillator.connect(gainNode);
     gainNode.connect(ctx.destination);
-    
+
     oscillator.type = 'sine';
-    
+
     // Rosnący ton: 523 Hz (C5) -> 659 Hz (E5)
     oscillator.frequency.setValueAtTime(523, ctx.currentTime);
     oscillator.frequency.linearRampToValueAtTime(659, ctx.currentTime + 0.15);
-    
+
     gainNode.gain.setValueAtTime(0, ctx.currentTime);
     gainNode.gain.linearRampToValueAtTime(0.3, ctx.currentTime + 0.01);
     gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.15);
-    
+
     oscillator.start(ctx.currentTime);
     oscillator.stop(ctx.currentTime + 0.15);
   } catch (error) {
@@ -107,24 +71,24 @@ function playCorrectSound() {
  * @example
  * playIncorrectSound();
  */
-function playIncorrectSound() {
+export function playIncorrectSound() {
   if (isMuted) return;
-  
+
   try {
     const ctx = getAudioContext();
     const oscillator = ctx.createOscillator();
     const gainNode = ctx.createGain();
-    
+
     oscillator.connect(gainNode);
     gainNode.connect(ctx.destination);
-    
+
     oscillator.type = 'sawtooth';
     oscillator.frequency.value = 200; // Niski ton
-    
+
     gainNode.gain.setValueAtTime(0, ctx.currentTime);
     gainNode.gain.linearRampToValueAtTime(0.2, ctx.currentTime + 0.01);
     gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.2);
-    
+
     oscillator.start(ctx.currentTime);
     oscillator.stop(ctx.currentTime + 0.2);
   } catch (error) {
@@ -138,12 +102,12 @@ function playIncorrectSound() {
  * @example
  * playTimerEndSound();
  */
-function playTimerEndSound() {
+export function playTimerEndSound() {
   if (isMuted) return;
-  
+
   try {
     const ctx = getAudioContext();
-    
+
     // Pierwszy "bip"
     const osc1 = ctx.createOscillator();
     const gain1 = ctx.createGain();
@@ -154,7 +118,7 @@ function playTimerEndSound() {
     gain1.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.1);
     osc1.start(ctx.currentTime);
     osc1.stop(ctx.currentTime + 0.1);
-    
+
     // Drugi "bip" (po krótkiej przerwie)
     const osc2 = ctx.createOscillator();
     const gain2 = ctx.createGain();
@@ -165,7 +129,7 @@ function playTimerEndSound() {
     gain2.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.25);
     osc2.start(ctx.currentTime + 0.15);
     osc2.stop(ctx.currentTime + 0.25);
-    
+
     // Wibracja (jeśli dostępna)
     if (navigator.vibrate) {
       navigator.vibrate([100, 50, 100]);
@@ -182,7 +146,7 @@ function playTimerEndSound() {
  * const muted = toggleMute();
  * console.log('Sound is', muted ? 'muted' : 'unmuted');
  */
-function toggleMute() {
+export function toggleMute() {
   isMuted = !isMuted;
   return isMuted;
 }
@@ -195,7 +159,7 @@ function toggleMute() {
  *   console.log('Sounds are muted');
  * }
  */
-function isSoundMuted() {
+export function isSoundMuted() {
   return isMuted;
 }
 
@@ -205,7 +169,7 @@ function isSoundMuted() {
  * @example
  * setMuted(true); // Mute all sounds
  */
-function setMuted(muted) {
+export function setMuted(muted) {
   isMuted = muted;
 }
 
@@ -222,29 +186,29 @@ function setMuted(muted) {
  * speakText('Hello world', 'en-US');
  * speakText('Hola mundo', 'es-ES', 0.7); // Slower for learning
  */
-function speakText(text, lang = 'en-US', rate = 0.85) {
+export function speakText(text, lang = 'en-US', rate = 0.85) {
   if (isMuted) return;
-  
+
   if (!('speechSynthesis' in window)) {
     console.warn('Web Speech API nie jest wspierane w tej przeglądarce');
     return;
   }
-  
+
   try {
     // Zatrzymaj poprzednie odtwarzanie
     stopSpeaking();
-    
+
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = lang;
     utterance.rate = rate;
     utterance.pitch = 1.0;
     utterance.volume = 1.0;
-    
+
     // Obsługa błędów
-    utterance.onerror = (event) => {
+    utterance.onerror = event => {
       console.warn('Błąd TTS:', event.error);
     };
-    
+
     speechSynthesis.speak(utterance);
   } catch (error) {
     console.warn('Nie udało się odtworzyć tekstu:', error);
@@ -256,7 +220,7 @@ function speakText(text, lang = 'en-US', rate = 0.85) {
  * @example
  * stopSpeaking();
  */
-function stopSpeaking() {
+export function stopSpeaking() {
   if ('speechSynthesis' in window) {
     speechSynthesis.cancel();
   }
@@ -270,7 +234,7 @@ function stopSpeaking() {
  *   speakText('Hello', 'en-US');
  * }
  */
-function isTTSAvailable() {
+export function isTTSAvailable() {
   return 'speechSynthesis' in window;
 }
 
@@ -282,46 +246,31 @@ function isTTSAvailable() {
  * const englishVoices = getAvailableVoices('en');
  * const allVoices = getAvailableVoices();
  */
-function getAvailableVoices(lang = null) {
+export function getAvailableVoices(lang = null) {
   if (!isTTSAvailable()) return [];
-  
+
   const voices = speechSynthesis.getVoices();
-  
+
   if (lang) {
     return voices.filter(voice => voice.lang.startsWith(lang));
   }
-  
+
   return voices;
 }
-
-// ============================================
-// EXPORTS (Global scope for non-module usage)
-// ============================================
-
-window.playCorrectSound = playCorrectSound;
-window.playIncorrectSound = playIncorrectSound;
-window.playTimerEndSound = playTimerEndSound;
-window.toggleMute = toggleMute;
-window.isSoundMuted = isSoundMuted;
-window.setMuted = setMuted;
-window.speakText = speakText;
-window.stopSpeaking = stopSpeaking;
-window.isTTSAvailable = isTTSAvailable;
-window.getAvailableVoices = getAvailableVoices;
 
 /**
  * Inicjalizuje i "rozgrzewa" Web Audio API.
  * Musi być wywołane w odpowiedzi na interakcję użytkownika (np. kliknięcie).
  * @returns {Promise<void>}
  */
-async function initAudio() {
+export async function initAudio() {
   try {
     const ctx = getAudioContext();
     // Chrome wymaga, aby resume() było wywołane po interakcji użytkownika
     if (ctx.state === 'suspended') {
       await ctx.resume();
     }
-    
+
     // Odtwórz pusty bufor, aby "obudzić" system audio
     const buffer = ctx.createBuffer(1, 1, 22050);
     const source = ctx.createBufferSource();
@@ -334,8 +283,4 @@ async function initAudio() {
   }
 }
 
-window.initAudio = initAudio;
-
 console.log('✅ Audio module initialized');
-
-})(); // End of IIFE

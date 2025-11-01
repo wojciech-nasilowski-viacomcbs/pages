@@ -1,5 +1,9 @@
 # eTrener - Interaktywna Platforma Edukacyjna
 
+[![Tests](https://github.com/[twoj-username]/[nazwa-repo]/actions/workflows/test.yml/badge.svg)](https://github.com/[twoj-username]/[nazwa-repo]/actions/workflows/test.yml)
+[![CI/CD](https://github.com/[twoj-username]/[nazwa-repo]/actions/workflows/ci.yml/badge.svg)](https://github.com/[twoj-username]/[nazwa-repo]/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/[twoj-username]/[nazwa-repo]/branch/main/graph/badge.svg)](https://codecov.io/gh/[twoj-username]/[nazwa-repo])
+
 Nowoczesna aplikacja webowa do nauki i treningów - quizy, treningi fitness i nauka języków przez słuchanie.
 
 ## 📋 Spis Treści
@@ -7,6 +11,8 @@ Nowoczesna aplikacja webowa do nauki i treningów - quizy, treningi fitness i na
 - [Opis Projektu](#opis-projektu)
 - [Funkcjonalności](#funkcjonalności)
 - [Instalacja i Uruchomienie](#instalacja-i-uruchomienie)
+- [Development](#development)
+- [Testowanie](#testowanie)
 - [Jak Dodać Nowe Treści](#jak-dodać-nowe-treści)
 - [Struktura Projektu](#struktura-projektu)
 - [Dokumentacja](#dokumentacja)
@@ -92,6 +98,252 @@ npx http-server
 ```
 
 Następnie otwórz: `http://localhost:8000`
+
+---
+
+## Development
+
+### Instalacja zależności deweloperskich
+
+```bash
+npm install
+```
+
+To zainstaluje:
+- **Jest** - framework do testowania
+- **ESLint** - linter do sprawdzania jakości kodu
+- **Prettier** - formatter do automatycznego formatowania
+- **Husky** - pre-commit hooks
+- **Babel** - transpilacja ES6 modules dla testów
+
+### Komendy deweloperskie
+
+```bash
+# Uruchom wszystkie testy (197 testów)
+npm test
+
+# Testy w trybie watch (automatyczne uruchamianie przy zmianach)
+npm run test:watch
+
+# Testy z raportem pokrycia kodu
+npm run test:coverage
+
+# Testy z raportem HTML (otwiera w przeglądarce)
+npm run test:report
+
+# Sprawdź kod (ESLint)
+npm run lint
+
+# Napraw automatycznie błędy lintera
+npm run lint:fix
+
+# Formatuj kod (Prettier)
+npm run format
+
+# Sprawdź formatowanie bez zmian
+npm run format:check
+```
+
+### Pre-commit Hooks
+
+Projekt używa **Husky** do automatycznego sprawdzania kodu przed commitem:
+
+✅ **Co się dzieje przy `git commit`:**
+1. ESLint sprawdza kod JavaScript
+2. Prettier formatuje kod automatycznie
+3. Jeśli są błędy - commit zostanie zablokowany
+4. Napraw błędy i spróbuj ponownie
+
+**Przykład:**
+```bash
+git add .
+git commit -m "Add new feature"
+# → Automatycznie uruchomi się linter i formatter
+# → Jeśli OK - commit przejdzie
+# → Jeśli błędy - zobaczysz komunikat i musisz je naprawić
+```
+
+### Code Quality Standards
+
+Projekt wymusza:
+- ✅ **ESLint** - brak błędów składniowych i logicznych
+- ✅ **Prettier** - spójny styl kodu (wcięcia, cudzysłowy, itp.)
+- ✅ **JSDoc** - dokumentacja funkcji
+- ✅ **ES6+ syntax** - nowoczesny JavaScript
+
+---
+
+## Testowanie
+
+### 📊 Statystyki Testów
+
+- **197 testów** (11 test suites)
+- **94.91% pokrycia** dla `auth-service.js`
+- **62.86% pokrycia** dla `data-service.js`
+
+### 🧪 Typy Testów
+
+#### 1. **Testy Jednostkowe** (Unit Tests)
+Testują izolowane funkcje i moduły:
+- `auth-service.test.js` - 33 testy (autentykacja, role, sesje)
+- `data-service.test.js` - 33 testy (CRUD dla quizów, workoutów, itp.)
+- `utilities.test.js` - testy funkcji pomocniczych
+- `data-validation.test.js` - walidacja struktur danych
+
+#### 2. **Testy Integracyjne** (Integration Tests)
+Testują pełne ścieżki użytkownika:
+- `integration-auth-flow.test.js` - 15 testów (rejestracja → logowanie → wylogowanie)
+- `integration-content-management.test.js` - 13 testów (tworzenie → edycja → usuwanie treści)
+- `quiz-retry-integration.test.js` - workflow retry mistakes
+- `workout-sets-expansion.test.js` - ekspansja serii treningowych
+
+#### 3. **Testy Funkcjonalne** (Functional Tests)
+Testują konkretne funkcjonalności:
+- `session-manager.test.js` - zarządzanie sesjami w localStorage
+- `quiz-retry-mistakes.test.js` - funkcja retry mistakes
+- `workout-skip-rest.test.js` - pomijanie odpoczynku
+
+### 🚀 Uruchamianie Testów
+
+```bash
+# Wszystkie testy
+npm test
+
+# Konkretny plik testowy
+npm test -- auth-service.test.js
+
+# Testy z pokryciem kodu
+npm run test:coverage
+
+# Testy w trybie watch (przydatne podczas developmentu)
+npm run test:watch
+```
+
+### 📈 Raport Pokrycia
+
+Po uruchomieniu `npm run test:coverage` zobaczysz:
+
+```
+--------------------------|---------|----------|---------|---------|
+File                      | % Stmts | % Branch | % Funcs | % Lines |
+--------------------------|---------|----------|---------|---------|
+All files                 |    5.88 |     4.67 |    6.64 |    5.96 |
+ auth-service.js          |   94.91 |    81.25 |     100 |   94.54 |
+ data-service.js          |   62.86 |    54.34 |   92.59 |   69.80 |
+--------------------------|---------|----------|---------|---------|
+```
+
+Raport HTML jest dostępny w `coverage/index.html`
+
+### ✍️ Pisanie Testów
+
+Przykład testu jednostkowego:
+
+```javascript
+/**
+ * @jest-environment jsdom
+ */
+
+import authService from '../js/auth-service.js';
+
+describe('Auth Service', () => {
+  it('should successfully sign in a user', async () => {
+    const result = await authService.signIn('user@example.com', 'password123');
+    
+    expect(result.success).toBe(true);
+    expect(result.user.email).toBe('user@example.com');
+  });
+});
+```
+
+Przykład testu integracyjnego:
+
+```javascript
+describe('Complete User Flow', () => {
+  it('should handle registration → login → logout', async () => {
+    // 1. Register
+    const signUpResult = await signUp('new@example.com', 'pass123');
+    expect(signUpResult.success).toBe(true);
+    
+    // 2. Login
+    const signInResult = await signIn('new@example.com', 'pass123');
+    expect(signInResult.success).toBe(true);
+    
+    // 3. Logout
+    const signOutResult = await signOut();
+    expect(signOutResult.success).toBe(true);
+  });
+});
+```
+
+### 🎯 Best Practices
+
+1. **Mockuj zależności zewnętrzne** (Supabase, API)
+2. **Testuj edge cases** (błędy, puste dane, null)
+3. **Używaj opisowych nazw** testów
+4. **Jeden test = jedna rzecz**
+5. **Arrange → Act → Assert** pattern
+
+### 🤖 GitHub Actions (CI/CD)
+
+Projekt używa **GitHub Actions** do automatycznego testowania:
+
+#### ✅ Co się dzieje automatycznie:
+
+**Przy każdym push/PR do `main` lub `exercises`:**
+
+1. **Code Quality Check** 🔍
+   - ESLint sprawdza jakość kodu
+   - Prettier sprawdza formatowanie
+   
+2. **Test Suite** 🧪
+   - Uruchamia wszystkie 197 testów
+   - Testuje na Node.js 18.x i 20.x
+   - Dzieli testy na unit i integration
+   
+3. **Code Coverage** 📊
+   - Generuje raport pokrycia kodu
+   - Wysyła do Codecov (opcjonalnie)
+   - Komentuje pokrycie na PR
+   
+4. **Build Verification** 🔨
+   - Generuje manifest.json
+   - Waliduje strukturę danych
+
+#### 📊 Status Checks
+
+Wszystkie PR muszą przejść testy przed merge:
+- ✅ Linter (ESLint + Prettier)
+- ✅ Testy jednostkowe
+- ✅ Testy integracyjne
+- ✅ Build verification
+
+#### 🔧 Konfiguracja
+
+Pliki workflow znajdują się w `.github/workflows/`:
+- `test.yml` - Podstawowe testy i linting
+- `ci.yml` - Zaawansowany pipeline CI/CD
+
+#### 📈 Viewing Results
+
+1. Przejdź do zakładki **Actions** w repozytorium GitHub
+2. Zobacz status wszystkich workflow
+3. Kliknij na konkretny run, żeby zobaczyć szczegóły
+4. Pobierz artifacts (coverage reports, test results)
+
+#### 🚫 Jeśli testy failują
+
+```bash
+# Lokalnie uruchom te same testy co CI
+npm run lint
+npm test
+npm run test:coverage
+
+# Napraw błędy i commituj
+git add .
+git commit -m "Fix tests"
+git push
+```
 
 ---
 

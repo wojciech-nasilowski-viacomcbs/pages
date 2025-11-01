@@ -4,24 +4,21 @@
  * @module state-manager
  */
 
-(function() {
-'use strict';
-
 /**
  * Creates a reactive store with state management and subscriptions
  * @template T
  * @param {T} initialState - Initial state object
  * @returns {Store<T>} Store instance with getState, setState, and subscribe methods
- * 
+ *
  * @example
  * const store = createStore({ count: 0 });
  * store.subscribe((state) => console.log('Count:', state.count));
  * store.setState({ count: 1 }); // Logs: "Count: 1"
  */
-function createStore(initialState) {
+export function createStore(initialState) {
   let state = { ...initialState };
   const listeners = new Set();
-  
+
   return {
     /**
      * Gets current state (returns a copy to prevent mutations)
@@ -30,7 +27,7 @@ function createStore(initialState) {
     getState() {
       return { ...state };
     },
-    
+
     /**
      * Updates state and notifies all subscribers
      * @param {Partial<T>} updates - Object with state updates (shallow merge)
@@ -39,7 +36,7 @@ function createStore(initialState) {
     setState(updates, silent = false) {
       const prevState = { ...state };
       state = { ...state, ...updates };
-      
+
       if (!silent) {
         // Notify all listeners with new state and previous state
         listeners.forEach(listener => {
@@ -51,12 +48,12 @@ function createStore(initialState) {
         });
       }
     },
-    
+
     /**
      * Subscribes to state changes
      * @param {(state: T, prevState: T) => void} listener - Callback function
      * @returns {() => void} Unsubscribe function
-     * 
+     *
      * @example
      * const unsubscribe = store.subscribe((state) => {
      *   console.log('State changed:', state);
@@ -65,13 +62,13 @@ function createStore(initialState) {
      */
     subscribe(listener) {
       listeners.add(listener);
-      
+
       // Return unsubscribe function
       return () => {
         listeners.delete(listener);
       };
     },
-    
+
     /**
      * Gets number of active subscribers (for debugging)
      * @returns {number} Number of subscribers
@@ -79,7 +76,7 @@ function createStore(initialState) {
     getSubscriberCount() {
       return listeners.size;
     },
-    
+
     /**
      * Resets state to initial values
      */
@@ -96,10 +93,4 @@ function createStore(initialState) {
   };
 }
 
-// Export to global scope
-window.createStore = createStore;
-
 console.log('✅ State manager initialized');
-
-})(); // End of IIFE
-

@@ -1,0 +1,178 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+      - exercises
+  pull_request:
+    branches:
+      - main
+      - exercises
+
+jobs:
+  quality-check:
+    name: Code Quality Check
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Full history for better analysis
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+
+      - name: 📦 Install dependencies
+        run: npm ci
+
+      - name: 🔍 Lint JavaScript files
+        run: npm run lint
+
+      - name: 💅 Check code formatting
+        run: npm run format:check
+
+  test:
+    name: Test Suite
+    runs-on: ubuntu-latest
+    needs: quality-check
+    
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x]
+        test-type: [unit, integration]
+    
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🟢 Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - name: 📦 Install dependencies
+        run: npm ci
+
+      - name: 🧪 Run ${{ matrix.test-type }} tests
+        run: |
+          if [ "${{ matrix.test-type }}" = "unit" ]; then
+            npm test -- --testPathIgnorePatterns=integration
+          else
+            npm test -- --testPathPattern=integration
+          fi
+
+  coverage:
+    name: Code Coverage
+    runs-on: ubuntu-latest
+    needs: test
+    
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+
+      - name: 📦 Install dependencies
+        run: npm ci
+
+      - name: 📊 Generate coverage report
+        run: npm run test:coverage
+
+      - name: 📈 Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          file: ./coverage/coverage-final.json
+          flags: unittests
+          name: codecov-umbrella
+          fail_ci_if_error: false
+
+      - name: 💬 Comment coverage on PR
+        if: github.event_name == 'pull_request'
+        uses: romeovs/lcov-reporter-action@v0.3.1
+        with:
+          lcov-file: ./coverage/lcov.info
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+        continue-on-error: true
+
+      - name: 💾 Archive coverage report
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage-report
+          path: coverage/
+          retention-days: 30
+
+  build-check:
+    name: Build Verification
+    runs-on: ubuntu-latest
+    needs: quality-check
+    
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+
+      - name: 📦 Install dependencies
+        run: npm ci
+
+      - name: 🔨 Generate manifest
+        run: node generate-manifest.js
+
+      - name: ✅ Verify manifest exists
+        run: |
+          if [ ! -f "data/manifest.json" ]; then
+            echo "❌ Manifest file not generated!"
+            exit 1
+          fi
+          echo "✅ Manifest file exists"
+
+      - name: 📋 Validate manifest structure
+        run: |
+          node -e "
+            const manifest = require('./data/manifest.json');
+            if (!manifest.quizzes || !manifest.workouts) {
+              console.error('❌ Invalid manifest structure');
+              process.exit(1);
+            }
+            console.log('✅ Manifest structure is valid');
+            console.log('📊 Quizzes:', manifest.quizzes.length);
+            console.log('📊 Workouts:', manifest.workouts.length);
+          "
+
+  status-check:
+    name: All Checks Passed
+    runs-on: ubuntu-latest
+    needs: [quality-check, test, coverage, build-check]
+    if: always()
+    
+    steps:
+      - name: ✅ All checks passed
+        if: ${{ !contains(needs.*.result, 'failure') }}
+        run: |
+          echo "🎉 All checks passed successfully!"
+          echo "✅ Code quality: PASSED"
+          echo "✅ Tests: PASSED"
+          echo "✅ Coverage: PASSED"
+          echo "✅ Build: PASSED"
+
+      - name: ❌ Some checks failed
+        if: ${{ contains(needs.*.result, 'failure') }}
+        run: |
+          echo "❌ Some checks failed!"
+          echo "Please review the failed jobs above."
+          exit 1
+
