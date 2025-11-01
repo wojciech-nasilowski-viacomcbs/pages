@@ -602,6 +602,45 @@ const uiManager = {
     if (contentManager && contentManager.loadKnowledgeBaseArticles) {
       contentManager.loadKnowledgeBaseArticles(sessionManager);
     }
+  },
+  
+  /**
+   * Pokazuje powiadomienie (toast notification)
+   * @param {string} message - Treść powiadomienia
+   * @param {string} icon - Emoji ikona (np. '🔗', '🌍', '❌')
+   * @param {string} type - Typ powiadomienia: 'success', 'error', 'info', 'warning'
+   * @param {number} duration - Czas wyświetlania w ms (domyślnie 3000)
+   */
+  showNotification(message, icon = '', type = 'success', duration = 3000) {
+    // Mapowanie typów na kolory
+    const typeColors = {
+      success: 'bg-green-600',
+      error: 'bg-red-600',
+      info: 'bg-blue-600',
+      warning: 'bg-yellow-600',
+      purple: 'bg-purple-600' // Dla kompatybilności wstecznej
+    };
+    
+    const bgColor = typeColors[type] || typeColors.success;
+    
+    // Utwórz element powiadomienia
+    const notification = document.createElement('div');
+    notification.className = `fixed top-4 left-1/2 transform -translate-x-1/2 ${bgColor} text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg shadow-lg z-50 max-w-[90vw] sm:max-w-md`;
+    notification.innerHTML = `
+      <div class="flex items-center gap-2">
+        ${icon ? `<span class="text-lg sm:text-xl flex-shrink-0">${icon}</span>` : ''}
+        <span class="text-sm sm:text-base">${message}</span>
+      </div>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Animacja fade-out i usunięcie
+    setTimeout(() => {
+      notification.style.opacity = '0';
+      notification.style.transition = 'opacity 0.3s';
+      setTimeout(() => notification.remove(), 300);
+    }, duration);
   }
 };
 

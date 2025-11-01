@@ -16,8 +16,7 @@ const workoutState = {
   currentPhaseIndex: 0,
   currentExerciseIndex: 0,
   timerInterval: null,
-  timeLeft: 0,
-  wakeLock: null
+  timeLeft: 0
 };
 
 // Elementy DOM
@@ -132,6 +131,9 @@ function initWorkoutEngine(showScreen, state) {
   elements.restartBtn?.addEventListener('click', handleRestartClick);
   elements.restartConfirm?.addEventListener('click', handleRestartConfirm);
   elements.restartCancel?.addEventListener('click', handleRestartCancel);
+  
+  // Wskazówka o wygaszaniu ekranu
+  setupWorkoutScreenTipListeners();
   
   // Zwolnij Wake Lock przy opuszczeniu strony
   document.addEventListener('visibilitychange', handleVisibilityChange);
@@ -434,48 +436,32 @@ function loadProgress() {
 
 /**
  * Aktywuje Wake Lock (zapobiega wygaszaniu ekranu)
+ * Używa centralnego wakeLockManager
  */
 async function requestWakeLock() {
-  if (!('wakeLock' in navigator)) {
-    console.warn('Wake Lock API nie jest dostępne w tej przeglądarce');
-    return;
-  }
-  
-  try {
-    workoutState.wakeLock = await navigator.wakeLock.request('screen');
-    console.log('✅ Wake Lock aktywny - ekran nie zgaśnie');
-    
-    // Obsługa zwolnienia Wake Lock
-    workoutState.wakeLock.addEventListener('release', () => {
-      console.log('Wake Lock zwolniony');
-    });
-  } catch (err) {
-    console.error('Nie udało się aktywować Wake Lock:', err);
+  if (window.wakeLockManager && window.wakeLockManager.isSupported()) {
+    await window.wakeLockManager.addReference('workout');
   }
 }
 
 /**
  * Zwalnia Wake Lock
+ * Używa centralnego wakeLockManager
  */
-function releaseWakeLock() {
-  if (workoutState.wakeLock) {
-    workoutState.wakeLock.release();
-    workoutState.wakeLock = null;
-    console.log('Wake Lock zwolniony');
+async function releaseWakeLock() {
+  if (window.wakeLockManager && window.wakeLockManager.isSupported()) {
+    await window.wakeLockManager.removeReference('workout');
   }
 }
 
 /**
  * Obsługuje zmianę widoczności strony
- * Ponownie aktywuje Wake Lock gdy użytkownik wraca do karty
+ * UWAGA: Obsługa visibilitychange jest teraz w centralnym wakeLockManager (js/wake-lock.js)
+ * Ta funkcja jest zachowana dla kompatybilności, ale nie jest już potrzebna.
  */
 function handleVisibilityChange() {
-  if (document.visibilityState === 'visible' && appState.currentView === 'workout') {
-    // Strona ponownie widoczna i jesteśmy w treningu
-    if (!workoutState.wakeLock) {
-      requestWakeLock();
-    }
-  }
+  // Centralna obsługa w wakeLockManager automatycznie reaktywuje blokadę
+  // gdy dokument staje się widoczny i są aktywne referencje
 }
 
 /**
@@ -544,6 +530,35 @@ function handleRestartCancel() {
   }
 }
 
+/**
+ * Konfiguracja event listeners dla wskazówki o wygaszaniu ekranu (workout)
+ */
+function setupWorkoutScreenTipListeners() {
+  // Sprawdź czy użytkownik już ukrył wskazówkę
+  const tipDismissed = localStorage.getItem('workoutScreenTipDismissed');
+  const screenTip = document.getElementById('workout-screen-timeout-tip');
+  
+  if (tipDismissed === 'true' && screenTip) {
+    screenTip.classList.add('hidden');
+  }
+  
+  // Przycisk zamknięcia (X) - ukrywa tylko tymczasowo
+  const closeBtn = document.getElementById('close-workout-screen-tip');
+  closeBtn?.addEventListener('click', () => {
+    if (screenTip) {
+      screenTip.classList.add('hidden');
+    }
+  });
+  
+  // Przycisk "Rozumiem, nie pokazuj więcej" - ukrywa na stałe
+  const dismissBtn = document.getElementById('dismiss-workout-screen-tip');
+  dismissBtn?.addEventListener('click', () => {
+    if (screenTip) {
+      screenTip.classList.add('hidden');
+      localStorage.setItem('workoutScreenTipDismissed', 'true');
+    }
+  });
+}
 
 
 // ============================================

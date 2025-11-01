@@ -57,6 +57,11 @@ const elements = {
   // Ikona kolejności języków
   langOrderText: document.getElementById('lang-order-text'),
   
+  // Wskazówka o wygaszaniu ekranu
+  screenTimeoutTip: document.getElementById('screen-timeout-tip'),
+  closeScreenTip: document.getElementById('close-screen-tip'),
+  dismissScreenTip: document.getElementById('dismiss-screen-tip'),
+  
   // Dialogi
   restartDialog: document.getElementById('restart-dialog'),
   restartConfirm: document.getElementById('restart-confirm'),
@@ -119,6 +124,9 @@ function setupEventListeners() {
   
   // Zmiana kolejności języków
   elements.btnSwitchLang?.addEventListener('click', switchLanguageOrder);
+  
+  // Wskazówka o wygaszaniu ekranu
+  setupScreenTipListeners();
   
   // Poprzednia/następna para
   elements.btnPrevious?.addEventListener('click', () => navigatePair(-1));
@@ -837,12 +845,97 @@ function handleRestartCancel() {
   }
 }
 
+/**
+ * Konfiguracja event listeners dla wskazówki o wygaszaniu ekranu
+ */
+function setupScreenTipListeners() {
+  // Sprawdź czy użytkownik już ukrył wskazówkę
+  const tipDismissed = localStorage.getItem('screenTipDismissed');
+  if (tipDismissed === 'true' && elements.screenTimeoutTip) {
+    elements.screenTimeoutTip.classList.add('hidden');
+  }
+  
+  // Przycisk zamknięcia (X) - ukrywa tylko tymczasowo
+  elements.closeScreenTip?.addEventListener('click', () => {
+    if (elements.screenTimeoutTip) {
+      elements.screenTimeoutTip.classList.add('hidden');
+    }
+  });
+  
+  // Przycisk "Rozumiem, nie pokazuj więcej" - ukrywa na stałe
+  elements.dismissScreenTip?.addEventListener('click', () => {
+    if (elements.screenTimeoutTip) {
+      elements.screenTimeoutTip.classList.add('hidden');
+      localStorage.setItem('screenTipDismissed', 'true');
+    }
+  });
+}
+
+/**
+ * Wczytuje i uruchamia zestaw listening po ID
+ * @param {string} setId - UUID zestawu listening
+ */
+async function loadAndStartListening(setId) {
+  try {
+    // Pokaż ekran listening
+    if (navigateToScreen) {
+      navigateToScreen('listening');
+    }
+    
+    // Pokaż loader
+    if (elements.listeningListLoader) {
+      elements.listeningListLoader.classList.remove('hidden');
+    }
+    
+    // Pobierz zestaw z Supabase
+    const { data: set, error } = await window.supabaseClient
+      .from('listening_sets')
+      .select('*')
+      .eq('id', setId)
+      .single();
+    
+    if (error) {
+      console.error('Error loading listening set:', error);
+      throw error;
+    }
+    
+    if (!set) {
+      throw new Error('Listening set not found');
+    }
+    
+    // Ukryj loader
+    if (elements.listeningListLoader) {
+      elements.listeningListLoader.classList.add('hidden');
+    }
+    
+    // Uruchom odtwarzacz
+    await openPlayer(set);
+    
+  } catch (error) {
+    console.error('Error in loadAndStartListening:', error);
+    
+    // Ukryj loader
+    if (elements.listeningListLoader) {
+      elements.listeningListLoader.classList.add('hidden');
+    }
+    
+    // Pokaż błąd
+    if (elements.listeningListError) {
+      elements.listeningListError.textContent = 'Nie udało się wczytać zestawu. ' + error.message;
+      elements.listeningListError.classList.remove('hidden');
+    }
+    
+    throw error;
+  }
+}
+
 // Eksportuj funkcje publiczne
 window.initListeningEngine = init;
 window.showListeningList = showListeningList;
 window.listeningEngine = {
   isPlaying: () => playerState.isPlaying,
-  getCurrentSet: () => playerState.currentSet
+  getCurrentSet: () => playerState.currentSet,
+  loadAndStartListening: loadAndStartListening
 };
 
 })();

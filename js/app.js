@@ -16,6 +16,40 @@ const state = {
   currentUser: null
 };
 
+/**
+ * Centralna konfiguracja typów treści
+ * Mapuje typy na odpowiednie funkcje i ustawienia
+ */
+const contentTypeConfig = {
+  quiz: {
+    tabName: 'quizzes',
+    featureFlagCheck: () => featureFlags.isQuizzesEnabled(),
+    loadAndStartFn: (id) => contentManager.loadAndStartQuiz(id, state, elements, sessionManager, uiManager, true),
+    dataServiceSaveFn: (data, isPublic) => dataService.saveQuiz(data, isPublic),
+    dataServiceUpdateStatusFn: (id, isPublic) => dataService.updateQuizPublicStatus(id, isPublic),
+  },
+  workout: {
+    tabName: 'workouts',
+    featureFlagCheck: () => featureFlags.isWorkoutsEnabled(),
+    loadAndStartFn: (id) => contentManager.loadAndStartWorkout(id, state, elements, uiManager, sessionManager),
+    dataServiceSaveFn: (data, isPublic) => dataService.saveWorkout(data, isPublic),
+    dataServiceUpdateStatusFn: (id, isPublic) => dataService.updateWorkoutPublicStatus(id, isPublic),
+  },
+  listening: {
+    tabName: 'listening',
+    featureFlagCheck: () => featureFlags.isListeningEnabled(),
+    loadAndStartFn: (id) => {
+      if (window.listeningEngine && window.listeningEngine.loadAndStartListening) {
+        return window.listeningEngine.loadAndStartListening(id);
+      }
+      throw new Error('Listening engine nie jest dostępny');
+    },
+    dataServiceSaveFn: (title, description, lang1Code, lang2Code, content, isPublic) => 
+      dataService.createListeningSet(title, description, lang1Code, lang2Code, content, isPublic),
+    dataServiceUpdateStatusFn: (id, isPublic) => dataService.updateListeningSetPublicStatus(id, isPublic),
+  }
+};
+
 // Elementy DOM
 const elements = {
   // Ekrany
@@ -126,6 +160,8 @@ const elements = {
   importSubmit: document.getElementById('import-submit'),
   importCancel: document.getElementById('import-cancel'),
   importClose: document.getElementById('import-close'),
+  importPublicOption: document.getElementById('import-public-option'),
+  importMakePublic: document.getElementById('import-make-public'),
   
   // Delete modal
   deleteModal: document.getElementById('delete-modal'),
@@ -152,8 +188,90 @@ const elements = {
   aiLoading: document.getElementById('ai-loading'),
   aiGenerate: document.getElementById('ai-generate'),
   aiCancel: document.getElementById('ai-cancel'),
-  aiClose: document.getElementById('ai-close')
+  aiClose: document.getElementById('ai-close'),
+  aiPublicOption: document.getElementById('ai-public-option'),
+  aiMakePublic: document.getElementById('ai-make-public')
 };
+
+/**
+ * Obsługuje deep linki z query params (np. ?type=quiz&id=xxx)
+ * @returns {Promise<boolean>} True jeśli link został obsłużony
+ */
+async function handleDeepLink() {
+  try {
+    const urlParams = new URLSearchParams(window.location.search);
+    const type = urlParams.get('type');
+    const id = urlParams.get('id');
+    
+    // Jeśli brak parametrów, nie rób nic
+    if (!type || !id) {
+      return false;
+    }
+    
+    console.log(`🔗 Deep link detected: type=${type}, id=${id}`);
+    
+    // Sprawdź czy użytkownik jest zalogowany
+    if (!state.currentUser) {
+      console.warn('⚠️ User not authenticated, cannot load shared content');
+      uiManager.showError('Zaloguj się, aby otworzyć udostępnioną treść', elements);
+      // Wyczyść query params
+      window.history.replaceState({}, document.title, window.location.pathname);
+      return false;
+    }
+    
+    // Obsłuż różne typy treści za pomocą konfiguracji
+    try {
+      const config = contentTypeConfig[type];
+      
+      // Sprawdź czy typ jest obsługiwany
+      if (!config) {
+        throw new Error(`Nieznany typ treści: ${type}`);
+      }
+      
+      // Sprawdź czy funkcja jest włączona
+      if (!config.featureFlagCheck()) {
+        throw new Error(`Moduł '${type}' jest wyłączony`);
+      }
+      
+      // Załaduj i uruchom treść
+      await config.loadAndStartFn(id);
+      
+      // Wyczyść query params po pomyślnym załadowaniu
+      window.history.replaceState({}, document.title, window.location.pathname);
+      return true;
+      
+    } catch (error) {
+      console.error('Error loading shared content:', error);
+      
+      // Rozpoznaj typ błędu
+      let errorMessage = 'Nie udało się otworzyć udostępnionej treści';
+      
+      if (error.message && error.message.includes('not found')) {
+        errorMessage = 'Treść nie została znaleziona';
+      } else if (error.code === 'PGRST116' || error.message.includes('row-level security')) {
+        errorMessage = 'Nie masz dostępu do tej treści';
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
+      uiManager.showError(errorMessage, elements);
+      
+      // Wyczyść query params
+      window.history.replaceState({}, document.title, window.location.pathname);
+      
+      // Pokaż główny ekran
+      const enabledTabs = featureFlags.getActiveCoreTabs();
+      const tabToShow = enabledTabs.length > 0 ? enabledTabs[0] : 'more';
+      uiManager.switchTab(tabToShow, state, elements, contentManager, sessionManager);
+      
+      return false;
+    }
+    
+  } catch (error) {
+    console.error('Error in handleDeepLink:', error);
+    return false;
+  }
+}
 
 /**
  * Inicjalizacja aplikacji
@@ -227,16 +345,22 @@ async function init() {
   // Wczytaj dane z Supabase
   await contentManager.loadData(state, elements, uiManager);
   
-  // Sprawdź zapisaną sesję
-  sessionManager.checkSavedSession();
+  // Sprawdź query params (np. ?type=quiz&id=xxx)
+  const handled = await handleDeepLink();
   
-  // Pokaż zakładkę (zapisaną lub domyślną)
-  const enabledTabs = featureFlags.getActiveCoreTabs();
-  // Użyj zapisanej zakładki jeśli jest włączona, w przeciwnym razie użyj pierwszej włączonej
-  const tabToShow = (state.currentTab && enabledTabs.includes(state.currentTab)) 
-    ? state.currentTab 
-    : (enabledTabs.length > 0 ? enabledTabs[0] : 'more');
-  uiManager.switchTab(tabToShow, state, elements, contentManager, sessionManager);
+  // Jeśli deep link nie został obsłużony, kontynuuj normalny flow
+  if (!handled) {
+    // Sprawdź zapisaną sesję
+    sessionManager.checkSavedSession();
+    
+    // Pokaż zakładkę (zapisaną lub domyślną)
+    const enabledTabs = featureFlags.getActiveCoreTabs();
+    // Użyj zapisanej zakładki jeśli jest włączona, w przeciwnym razie użyj pierwszej włączonej
+    const tabToShow = (state.currentTab && enabledTabs.includes(state.currentTab)) 
+      ? state.currentTab 
+      : (enabledTabs.length > 0 ? enabledTabs[0] : 'more');
+    uiManager.switchTab(tabToShow, state, elements, contentManager, sessionManager);
+  }
   
   // Aktualizuj UI autentykacji
   uiManager.updateAuthUI(state, elements, contentManager, sessionManager);
@@ -578,6 +702,8 @@ async function checkAuthState() {
     if (state.currentUser) {
       const role = await authService.getUserRole(state.currentUser);
       sessionManager.setUserRole(role);
+      state.currentUser.role = role; // ← Zapisz też w state.currentUser dla łatwego dostępu
+      console.log('✅ User role initialized:', role);
     } else {
       sessionManager.resetUserRole();
     }
@@ -617,6 +743,7 @@ function setupAuthListener() {
         // Ustaw rolę użytkownika
         const role = await authService.getUserRole(state.currentUser);
         sessionManager.setUserRole(role);
+        if (state.currentUser) state.currentUser.role = role;
         
         await contentManager.loadData(state, elements, uiManager);
         uiManager.updateAuthUI(state, elements, contentManager, sessionManager);
@@ -630,6 +757,7 @@ function setupAuthListener() {
         // Ustaw rolę użytkownika
         const role = await authService.getUserRole(state.currentUser);
         sessionManager.setUserRole(role);
+        if (state.currentUser) state.currentUser.role = role;
         
         uiManager.updateAuthUI(state, elements, contentManager, sessionManager);
       } else {
@@ -640,6 +768,7 @@ function setupAuthListener() {
         // Ustaw rolę użytkownika
         const role = await authService.getUserRole(state.currentUser);
         sessionManager.setUserRole(role);
+        if (state.currentUser) state.currentUser.role = role;
         
         await contentManager.loadData(state, elements, uiManager);
         uiManager.updateAuthUI(state, elements, contentManager, sessionManager);
@@ -655,6 +784,7 @@ function setupAuthListener() {
         // Ustaw rolę użytkownika
         const role = await authService.getUserRole(state.currentUser);
         sessionManager.setUserRole(role);
+        if (state.currentUser) state.currentUser.role = role;
         
         uiManager.updateAuthUI(state, elements, contentManager, sessionManager);
         return;
@@ -688,6 +818,7 @@ function setupAuthListener() {
       if (state.currentUser) {
         const role = await authService.getUserRole(state.currentUser);
         sessionManager.setUserRole(role);
+        state.currentUser.role = role;
       }
       
       // Jeśli użytkownik NIE jest w trakcie aktywności, odśwież dane
@@ -962,6 +1093,9 @@ async function handleNewPassword(e) {
     showModalError('newPassword', error.message || 'Błąd podczas zmiany hasła');
   }
 }
+
+// Eksportuj contentTypeConfig globalnie (dla content-manager.js)
+window.contentTypeConfig = contentTypeConfig;
 
 // Inicjalizuj aplikację po załadowaniu DOM
 if (document.readyState === 'loading') {
