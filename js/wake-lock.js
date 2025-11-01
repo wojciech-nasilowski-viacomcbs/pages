@@ -36,6 +36,15 @@
   
   /** @type {ReturnType<typeof setInterval> | null} - Interval ID dla keepalive */
   let keepaliveInterval = null;
+  
+  /** @type {AudioContext | null} - Web Audio API context dla ciągłego dźwięku */
+  let audioContext = null;
+  
+  /** @type {OscillatorNode | null} - Generator bardzo cichego dźwięku */
+  let oscillator = null;
+  
+  /** @type {GainNode | null} - Kontrola głośności (prawie niesłyszalne) */
+  let gainNode = null;
 
   /**
    * Sprawdza, czy API Wake Lock jest obsługiwane przez przeglądarkę
@@ -57,6 +66,7 @@
       dummyVideo.setAttribute('playsinline', '');
       dummyVideo.setAttribute('muted', '');
       dummyVideo.setAttribute('loop', '');
+      dummyVideo.setAttribute('autoplay', ''); // Dodano autoplay
       dummyVideo.style.position = 'fixed';
       dummyVideo.style.opacity = '0.01'; // Prawie niewidoczne, ale nie 0
       dummyVideo.style.width = '1px';
@@ -67,7 +77,29 @@
       dummyVideo.style.zIndex = '-1000';
       
       // Bardzo krótkie, ciche wideo w formacie data URL (1 sekunda ciszy)
+      // To jest minimalny plik MP4 z cichym dźwiękiem
       dummyVideo.src = 'data:video/mp4;base64,AAAAIGZ0eXBpc29tAAACAGlzb21pc28yYXZjMW1wNDEAAAAIZnJlZQAAAu1tZGF0AAACrQYF//+p3EXpvebZSLeWLNgg2SPu73gyNjQgLSBjb3JlIDE1NSByMjkwMSA3ZDBmZjIyIC0gSC4yNjQvTVBFRy00IEFWQyBjb2RlYyAtIENvcHlsZWZ0IDIwMDMtMjAxOCAtIGh0dHA6Ly93d3cudmlkZW9sYW4ub3JnL3gyNjQuaHRtbCAtIG9wdGlvbnM6IGNhYmFjPTEgcmVmPTMgZGVibG9jaz0xOjA6MCBhbmFseXNlPTB4MzoweDExMyBtZT1oZXggc3VibWU9NyBwc3k9MSBwc3lfcmQ9MS4wMDowLjAwIG1peGVkX3JlZj0xIG1lX3JhbmdlPTE2IGNocm9tYV9tZT0xIHRyZWxsaXM9MSA4eDhkY3Q9MSBjcW09MCBkZWFkem9uZT0yMSwxMSBmYXN0X3Bza2lwPTEgY2hyb21hX3FwX29mZnNldD0tMiB0aHJlYWRzPTEgbG9va2FoZWFkX3RocmVhZHM9MSBzbGljZWRfdGhyZWFkcz0wIG5yPTAgZGVjaW1hdGU9MSBpbnRlcmxhY2VkPTAgYmx1cmF5X2NvbXBhdD0wIGNvbnN0cmFpbmVkX2ludHJhPTAgYmZyYW1lcz0zIGJfcHlyYW1pZD0yIGJfYWRhcHQ9MSBiX2JpYXM9MCBkaXJlY3Q9MSB3ZWlnaHRiPTEgb3Blbl9nb3A9MCB3ZWlnaHRwPTIga2V5aW50PTI1MCBrZXlpbnRfbWluPTEgc2NlbmVjdXQ9NDAgaW50cmFfcmVmcmVzaD0wIHJjX2xvb2thaGVhZD00MCByYz1jcmYgbWJ0cmVlPTEgY3JmPTIzLjAgcWNvbXA9MC42MCBxcG1pbj0wIHFwbWF4PTY5IHFwc3RlcD00IGlwX3JhdGlvPTEuNDAgYXE9MToxLjAwAIAAAAAwZYiEAD//8m+P5OXfBeLGOf/+VqoAK4APADgDgB8A8AeAPAHgDwB4A8AeAPAHgDwB4A8AAAADSG1vb3YAAABsbXZoZAAAAAAAAAAAAAAAAAAAA+gAAAPoAAEAAAEAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAIUdHJhawAAAFx0a2hkAAAAAwAAAAAAAAAAAAAAAQAAAAAAAAPoAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAQAAAAACgAAAAWgAAAAAAJGVkdHMAAAAcZWxzdAAAAAAAAAABAAAD6AAAAAAAAQAAAAABjG1kaWEAAAAgbWRoZAAAAAAAAAAAAAAAAAAAKAAAACgAVcQAAAAAAC1oZGxyAAAAAAAAAAB2aWRlAAAAAAAAAAAAAAAAVmlkZW9IYW5kbGVyAAAAAT';
+      
+      // Obsługa błędów odtwarzania
+      dummyVideo.addEventListener('error', (e) => {
+        console.warn('⚠️ Dummy video error:', e);
+      });
+      
+      // Upewnij się że wideo jest zawsze odtwarzane
+      dummyVideo.addEventListener('pause', () => {
+        if (activeReferences.size > 0) {
+          console.log('📹 Dummy video paused, restarting...');
+          dummyVideo.play().catch(() => {});
+        }
+      });
+      
+      // Upewnij się że wideo jest zawsze zapętlone
+      dummyVideo.addEventListener('ended', () => {
+        if (activeReferences.size > 0) {
+          console.log('📹 Dummy video ended, restarting...');
+          dummyVideo.play().catch(() => {});
+        }
+      });
       
       document.body.appendChild(dummyVideo);
       console.log('📹 Dummy video created as fallback');
@@ -94,13 +126,75 @@
   }
   
   /**
+   * Uruchamia ciągły, prawie niesłyszalny dźwięk przez Web Audio API
+   * To zapobiega wygaszaniu ekranu podczas pauz w TTS
+   * @private
+   */
+  function _startSilentAudio() {
+    if (oscillator) return; // Już działa
+    
+    try {
+      // @ts-ignore - AudioContext może nie być w starszych typach
+      audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      
+      // Stwórz oscylator (generator dźwięku)
+      oscillator = audioContext.createOscillator();
+      oscillator.frequency.value = 20; // 20 Hz - poniżej progu słyszalności
+      
+      // Stwórz kontrolę głośności
+      gainNode = audioContext.createGain();
+      gainNode.gain.value = 0.001; // Prawie niesłyszalne (0.1%)
+      
+      // Połącz: oscylator -> gain -> output
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+      
+      // Uruchom
+      oscillator.start();
+      
+      console.log('🔊 Silent audio started (20Hz @ 0.1% volume)');
+    } catch (err) {
+      console.warn('⚠️ Could not start silent audio:', err);
+    }
+  }
+  
+  /**
+   * Zatrzymuje ciągły dźwięk
+   * @private
+   */
+  function _stopSilentAudio() {
+    try {
+      if (oscillator) {
+        oscillator.stop();
+        oscillator.disconnect();
+        oscillator = null;
+      }
+      
+      if (gainNode) {
+        gainNode.disconnect();
+        gainNode = null;
+      }
+      
+      if (audioContext) {
+        audioContext.close();
+        audioContext = null;
+      }
+      
+      console.log('🔊 Silent audio stopped');
+    } catch (err) {
+      console.warn('⚠️ Error stopping silent audio:', err);
+    }
+  }
+  
+  /**
    * Uruchamia keepalive interval (dodatkowa ochrona)
    * @private
    */
   function _startKeepalive() {
     if (keepaliveInterval) return;
     
-    // Co 10 sekund wykonuj małą operację aby utrzymać aktywność
+    // Co 3 sekundy wykonuj małą operację aby utrzymać aktywność
+    // WAŻNE: 3s to mniej niż najdłuższa pauza (2.5s), więc zawsze będziemy aktywni
     keepaliveInterval = setInterval(() => {
       if (activeReferences.size > 0) {
         // Małe "ping" - wymuś reflow
@@ -111,11 +205,17 @@
           dummyVideo.play().catch(() => {});
         }
         
+        // Spróbuj ponownie aktywować Wake Lock jeśli został zwolniony
+        if (wakeLock === null && isSupported()) {
+          console.log('🔄 Wake Lock lost, reacquiring...');
+          _acquireWakeLock().catch(() => {});
+        }
+        
         console.log('💓 Keepalive ping (active sources:', activeReferences.size, ')');
       }
-    }, 10000); // Co 10 sekund
+    }, 3000); // Co 3 sekundy (mniej niż najdłuższa pauza w TTS)
     
-    console.log('💓 Keepalive started');
+    console.log('💓 Keepalive started (interval: 3s)');
   }
   
   /**
@@ -143,6 +243,7 @@
       if (dummyVideo) {
         await dummyVideo.play().catch(() => {});
       }
+      _startSilentAudio(); // Ciągły, niesłyszalny dźwięk
       _startKeepalive();
       return;
     }
@@ -172,17 +273,19 @@
       if (dummyVideo) {
         await dummyVideo.play().catch(() => {});
       }
+      _startSilentAudio(); // Ciągły, niesłyszalny dźwięk
       _startKeepalive();
       
     } catch (err) {
       console.error(`❌ Wake Lock error: ${err.name}, ${err.message}`);
       console.log('⚠️ Falling back to alternative methods');
       
-      // Fallback - użyj dummy video i keepalive
+      // Fallback - użyj wszystkich dostępnych metod
       _createDummyVideo();
       if (dummyVideo) {
         await dummyVideo.play().catch(() => {});
       }
+      _startSilentAudio(); // Ciągły, niesłyszalny dźwięk
       _startKeepalive();
     }
   }
@@ -203,8 +306,9 @@
       }
     }
     
-    // Zatrzymaj fallbacki
+    // Zatrzymaj wszystkie fallbacki
     _stopKeepalive();
+    _stopSilentAudio();
     _removeDummyVideo();
   }
 
