@@ -657,29 +657,30 @@
   function applyFeatureFlags(elements) {
     const enabledTabs = featureFlags.getEnabledTabs();
 
-    // Główne moduły (zakładki)
-    if (!featureFlags.isQuizzesEnabled()) {
-      elements.tabQuizzes.classList.add('hidden');
-    } else {
+    // Główne moduły (zakładki) - pokazuj tylko jeśli są w enabledTabs
+    // enabledTabs uwzględnia już autentykację użytkownika
+    if (enabledTabs.includes('quizzes')) {
       elements.tabQuizzes.classList.remove('hidden');
+    } else {
+      elements.tabQuizzes.classList.add('hidden');
     }
 
-    if (!featureFlags.isWorkoutsEnabled()) {
-      elements.tabWorkouts.classList.add('hidden');
-    } else {
+    if (enabledTabs.includes('workouts')) {
       elements.tabWorkouts.classList.remove('hidden');
+    } else {
+      elements.tabWorkouts.classList.add('hidden');
     }
 
-    if (!featureFlags.isListeningEnabled()) {
-      elements.tabListening.classList.add('hidden');
-    } else {
+    if (enabledTabs.includes('listening')) {
       elements.tabListening.classList.remove('hidden');
+    } else {
+      elements.tabListening.classList.add('hidden');
     }
 
-    if (!featureFlags.isKnowledgeBaseEnabled()) {
-      elements.tabKnowledgeBase.classList.add('hidden');
-    } else {
+    if (enabledTabs.includes('knowledge-base')) {
       elements.tabKnowledgeBase.classList.remove('hidden');
+    } else {
+      elements.tabKnowledgeBase.classList.add('hidden');
     }
 
     // Funkcje dodatkowe - mogą być w tab barze lub w "Więcej"

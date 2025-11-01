@@ -36,9 +36,94 @@ Wykryto poważną lukę bezpieczeństwa w Row Level Security (RLS) dla tabeli `k
 
 ### 2. Aktualizacja kodu aplikacji
 
+#### Plik: `js/feature-flags.js`
+
+**Zmiana 1:** Wszystkie moduły wymagają logowania
+
+**Przed:**
+```javascript
+export function getEnabledTabs() {
+  // ...
+  if (getFlag('ENABLE_WORKOUTS')) tabs.push('workouts');
+  if (getFlag('ENABLE_KNOWLEDGE_BASE')) tabs.push('knowledge-base');
+  if (getFlag('ENABLE_QUIZZES')) tabs.push('quizzes');
+  if (getFlag('ENABLE_LISTENING')) tabs.push('listening');
+}
+```
+
+**Po:**
+```javascript
+export function getEnabledTabs() {
+  // Sprawdź czy użytkownik jest zalogowany
+  const isAuthenticated = window.state?.currentUser !== null && window.state?.currentUser !== undefined;
+  
+  // Wszystkie moduły wymagają logowania
+  if (getFlag('ENABLE_WORKOUTS') && isAuthenticated) tabs.push('workouts');
+  if (getFlag('ENABLE_KNOWLEDGE_BASE') && isAuthenticated) tabs.push('knowledge-base');
+  if (getFlag('ENABLE_QUIZZES') && isAuthenticated) tabs.push('quizzes');
+  if (getFlag('ENABLE_LISTENING') && isAuthenticated) tabs.push('listening');
+  
+  // Funkcje dodatkowe - również wymagają logowania
+  const hasImport = getFlag('ENABLE_FILE_IMPORT') && isAuthenticated;
+  const hasAI = getFlag('ENABLE_AI_GENERATOR') && isAuthenticated;
+}
+```
+
+**Efekt:** Wszystkie zakładki (w tym Import i AI Generator) są ukryte dla niezalogowanych użytkowników.
+
 #### Plik: `js/app.js`
 
-**Zmiana 1:** Usunięto logikę "publicznych artykułów"
+**Zmiana 2:** Dynamiczne pokazywanie/ukrywanie zakładek
+
+**Przed:**
+```javascript
+function applyFeatureFlags(elements) {
+  if (!featureFlags.isKnowledgeBaseEnabled()) {
+    elements.tabKnowledgeBase.classList.add('hidden');
+  } else {
+    elements.tabKnowledgeBase.classList.remove('hidden');
+  }
+}
+```
+
+**Po:**
+```javascript
+function applyFeatureFlags(elements) {
+  const enabledTabs = featureFlags.getEnabledTabs();
+  
+  // enabledTabs uwzględnia już autentykację użytkownika
+  if (enabledTabs.includes('knowledge-base')) {
+    elements.tabKnowledgeBase.classList.remove('hidden');
+  } else {
+    elements.tabKnowledgeBase.classList.add('hidden');
+  }
+}
+```
+
+#### Plik: `js/ui-manager.js`
+
+**Zmiana 3:** Odświeżanie tab bara po zmianie autentykacji
+
+**Po:**
+```javascript
+updateAuthUI(state, elements, contentManager, sessionManager) {
+  // ... aktualizacja menu ...
+  
+  // Odśwież tab bar (zakładki zależą od autentykacji)
+  if (window.applyFeatureFlags) {
+    window.applyFeatureFlags(elements);
+  }
+  
+  // Odśwież widok
+  if (contentManager) {
+    contentManager.renderCards(state, elements, this, sessionManager);
+  }
+}
+```
+
+#### Plik: `js/app.js`
+
+**Zmiana 4:** Usunięto logikę "publicznych artykułów"
 
 **Przed:**
 ```javascript
@@ -56,108 +141,6 @@ if (!state.currentUser && !isPublicArticle) {
 if (!state.currentUser) {
   uiManager.showError(`Zaloguj się, aby otworzyć udostępniony ${contentTypeName}`, elements);
   return false;
-}
-```
-
-#### Plik: `js/feature-flags.js`
-
-**Zmiana 2:** Ukrycie zakładki Bazy Wiedzy dla niezalogowanych użytkowników
-
-**Przed:**
-```javascript
-export function getEnabledTabs() {
-  // ...
-  if (getFlag('ENABLE_KNOWLEDGE_BASE')) tabs.push('knowledge-base');
-  // ...
-}
-```
-
-**Po:**
-```javascript
-export function getEnabledTabs() {
-  // Sprawdź czy użytkownik jest zalogowany (dla Bazy Wiedzy)
-  const isAuthenticated = window.state?.currentUser != null;
-  
-  // Baza Wiedzy wymaga logowania
-  if (getFlag('ENABLE_KNOWLEDGE_BASE') && isAuthenticated) tabs.push('knowledge-base');
-  // ...
-}
-```
-
-**Efekt:** Zakładka "Baza Wiedzy" nie pojawia się w tab barze dla niezalogowanych użytkowników, zachowując spójność z landing page.
-
-#### Plik: `js/ui-manager.js`
-
-**Zmiana 3:** Odświeżanie tab bara po zmianie stanu autentykacji
-
-**Przed:**
-```javascript
-updateAuthUI(state, elements, contentManager, sessionManager) {
-  // ... aktualizacja menu ...
-  
-  // Odśwież widok
-  if (contentManager) {
-    contentManager.renderCards(state, elements, this, sessionManager);
-  }
-}
-```
-
-**Po:**
-```javascript
-updateAuthUI(state, elements, contentManager, sessionManager) {
-  // ... aktualizacja menu ...
-  
-  // Odśwież tab bar (niektóre zakładki wymagają logowania, np. Baza Wiedzy)
-  if (window.applyFeatureFlags) {
-    window.applyFeatureFlags(elements);
-  }
-  
-  // Odśwież widok
-  if (contentManager) {
-    contentManager.renderCards(state, elements, this, sessionManager);
-  }
-}
-```
-
-#### Plik: `js/content-manager.js`
-
-**Zmiana 4:** Dodano sprawdzenie autentykacji w `loadKnowledgeBaseArticles()` (fallback)
-
-**Przed:**
-```javascript
-async loadKnowledgeBaseArticles(sessionManager) {
-  // Pokaż loader
-  if (loader) loader.classList.remove('hidden');
-  
-  try {
-    const dataService = window.dataService;
-    // ... ładowanie artykułów
-  }
-}
-```
-
-**Po:**
-```javascript
-async loadKnowledgeBaseArticles(sessionManager) {
-  // SPRAWDŹ CZY UŻYTKOWNIK JEST ZALOGOWANY
-  const currentUser = window.state?.currentUser;
-  if (!currentUser) {
-    // Pokaż komunikat o konieczności zalogowania
-    emptyState.innerHTML = `
-      <div class="text-center py-12">
-        <div class="text-6xl mb-4">🔒</div>
-        <h3 class="text-xl font-bold text-gray-300 mb-2">Wymagane logowanie</h3>
-        <p class="text-gray-400 mb-6">Zaloguj się, aby przeglądać bazę wiedzy</p>
-        <button onclick="document.getElementById('login-button').click()" 
-                class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg transition">
-          Zaloguj się
-        </button>
-      </div>
-    `;
-    return;
-  }
-  
-  // ... ładowanie artykułów
 }
 ```
 
@@ -265,43 +248,44 @@ console.assert(data.length > 0, 'Admin powinien widzieć wszystkie');
 ## 📝 Pliki zmodyfikowane
 
 1. **`supabase/fix_kb_security.sql`** (nowy) - Migracja RLS
-2. **`js/app.js`** - Usunięto logikę publicznych artykułów
-3. **`js/feature-flags.js`** - Ukrycie zakładki KB dla niezalogowanych
+2. **`js/feature-flags.js`** - Ukrywanie zakładek dla niezalogowanych
+3. **`js/app.js`** - Dynamiczne pokazywanie/ukrywanie zakładek + usunięto logikę publicznych artykułów
 4. **`js/ui-manager.js`** - Odświeżanie tab bara po zmianie autentykacji
-5. **`js/content-manager.js`** - Sprawdzenie autentykacji w loadKnowledgeBaseArticles() (fallback)
-6. **`__tests__/knowledge-base-auth-guard.test.js`** (nowy) - Testy zabezpieczeń (11 testów)
-7. **`__tests__/knowledge-base-tab-visibility.test.js`** (nowy) - Testy widoczności zakładki (15 testów)
-8. **`docs/KB_SECURITY_FIX.md`** (nowy) - Dokumentacja techniczna
-9. **`docs/CHANGELOG_KB_SECURITY.md`** (ten plik) - Changelog
-10. **`supabase/DEPLOY_KB_SECURITY.md`** (nowy) - Instrukcja wdrożenia
+5. **`docs/KB_SECURITY_FIX.md`** (nowy) - Dokumentacja techniczna
+6. **`docs/CHANGELOG_KB_SECURITY.md`** (ten plik) - Changelog
+7. **`supabase/DEPLOY_KB_SECURITY.md`** (nowy) - Instrukcja wdrożenia
 
-## ✨ Ulepszenia UX
+## ✨ Zachowanie UI
 
-### Spójność zachowania dla niezalogowanych użytkowników
+### Ukrywanie zakładek dla niezalogowanych użytkowników
 
-**Problem:** Niezalogowani użytkownicy widzieli zakładkę "Baza Wiedzy" w tab barze, ale po kliknięciu widzieli pełny interfejs z filtrami i dopiero w środku komunikat o konieczności logowania. To było niespójne z landing page, który pokazuje minimalistyczny ekran zachęcający do logowania.
+**Zachowanie:** 
+- **Niezalogowani:** NIE widzą żadnych zakładek w tab barze, tylko landing page z zachętą do logowania
+- **Zalogowani:** Widzą wszystkie zakładki i mają pełny dostęp do treści
 
-**Rozwiązanie:** Zakładka "Baza Wiedzy" jest teraz całkowicie ukryta dla niezalogowanych użytkowników, podobnie jak inne moduły wymagające autentykacji.
+**Moduły wymagające logowania:**
+- ✅ Treningi
+- ✅ Baza Wiedzy
+- ✅ Quizy
+- ✅ Słuchanie
+- ✅ Import treści
+- ✅ Generator AI
+- ✅ Więcej (zakładka)
 
 **Efekt:**
-- ✅ Spójne doświadczenie użytkownika
-- ✅ Brak mylących interfejsów (filtrów, wyszukiwarek) dla niezalogowanych
-- ✅ Jasna komunikacja: landing page → logowanie → dostęp do treści
-- ✅ Zakładka pojawia się automatycznie po zalogowaniu
+- ✅ Proste i intuicyjne doświadczenie użytkownika
+- ✅ Brak mylących zakładek bez dostępu do treści
+- ✅ Jasna komunikacja: landing page → logowanie → pojawienie się zakładek
+- ✅ Zabezpieczenie na poziomie UI i RLS w bazie danych
+- ✅ Wszystkie funkcje (w tym Import i AI) wymagają logowania
 
 ## ⚠️ Breaking Changes
 
-### 1. Zakładka Bazy Wiedzy ukryta dla gości
-**Przed:** Zakładka widoczna, po kliknięciu komunikat o logowaniu  
-**Po:** Zakładka całkowicie ukryta dla niezalogowanych
-
-**Wpływ:** Niezalogowani użytkownicy nie zobaczą zakładki "Baza Wiedzy" w tab barze. Po zalogowaniu zakładka pojawi się automatycznie.
-
-### 2. Deep linki wymagają logowania
+### 1. Deep linki wymagają logowania
 **Przed:** `?type=article&slug=xxx` działało dla wszystkich  
 **Po:** Wymaga zalogowania, w przeciwnym razie pokazuje landing page
 
-### 3. API calls wymagają autentykacji
+### 2. API calls wymagają autentykacji
 **Przed:**
 ```javascript
 const { data } = await supabase
@@ -318,7 +302,7 @@ const { data, error } = await supabase
 // error: "row-level security policy violation" bez logowania
 ```
 
-### 4. Funkcja increment_kb_article_views wymaga auth
+### 3. Funkcja increment_kb_article_views wymaga auth
 **Przed:** Działała dla wszystkich (anon, authenticated)  
 **Po:** Tylko dla authenticated
 
@@ -336,9 +320,8 @@ const { data, error } = await supabase
 
 - **Polityk RLS usuniętych:** 7
 - **Polityk RLS dodanych:** 5
-- **Linii kodu zmienionych:** ~150
-- **Plików zmodyfikowanych:** 5 (app.js, feature-flags.js, ui-manager.js, content-manager.js, fix_kb_security.sql)
-- **Testów dodanych:** 26 (11 auth-guard + 15 tab-visibility)
+- **Linii kodu zmienionych:** ~80
+- **Plików zmodyfikowanych:** 4 (feature-flags.js, app.js, ui-manager.js, fix_kb_security.sql)
 - **Dokumentacji utworzonej:** 3 pliki (KB_SECURITY_FIX.md, CHANGELOG_KB_SECURITY.md, DEPLOY_KB_SECURITY.md)
 
 ## 🔗 Powiązane dokumenty

@@ -244,7 +244,7 @@
         elements.userMenuLogged.classList.add('hidden');
       }
 
-      // Odśwież tab bar (niektóre zakładki wymagają logowania, np. Baza Wiedzy)
+      // Odśwież tab bar (zakładki zależą od autentykacji)
       if (window.applyFeatureFlags) {
         window.applyFeatureFlags(elements);
       }

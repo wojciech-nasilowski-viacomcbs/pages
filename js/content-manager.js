@@ -19,25 +19,7 @@
      * Renderuje karty quizów lub treningów
      */
     renderCards(state, elements, uiManager = null, sessionManager = null) {
-      const coreTabs = featureFlags.getActiveCoreTabs();
-      const isMoreTabEnabled = featureFlags.getEnabledTabs().includes('more');
-
-      // Sprawdź, czy jakikolwiek moduł jest włączony
-      if (coreTabs.length === 0 && !isMoreTabEnabled) {
-        elements.contentCards.innerHTML = `
-        <div class="col-span-full text-center py-16">
-          <div class="max-w-2xl mx-auto">
-            <h2 class="text-4xl font-bold text-white mb-4">Brak aktywnych modułów</h2>
-            <p class="text-xl text-gray-300">
-              Administrator nie włączył żadnych funkcjonalności. Skontaktuj się z pomocą techniczną.
-            </p>
-          </div>
-        </div>
-      `;
-        return;
-      }
-
-      // Jeśli użytkownik nie jest zalogowany, pokaż landing page
+      // NAJPIERW sprawdź czy użytkownik jest zalogowany
       if (!state.currentUser) {
         // Buduj dynamicznie listę funkcji na podstawie włączonych modułów
         let featuresList = '';
@@ -94,7 +76,24 @@
         return;
       }
 
-      // Dla zalogowanych użytkowników
+      // Dla zalogowanych użytkowników - sprawdź czy są włączone moduły
+      const coreTabs = featureFlags.getActiveCoreTabs();
+      const isMoreTabEnabled = featureFlags.getEnabledTabs().includes('more');
+
+      // Sprawdź, czy jakikolwiek moduł jest włączony (dla zalogowanych)
+      if (coreTabs.length === 0 && !isMoreTabEnabled) {
+        elements.contentCards.innerHTML = `
+        <div class="col-span-full text-center py-16">
+          <div class="max-w-2xl mx-auto">
+            <h2 class="text-4xl font-bold text-white mb-4">Brak aktywnych modułów</h2>
+            <p class="text-xl text-gray-300">
+              Administrator nie włączył żadnych funkcjonalności. Skontaktuj się z pomocą techniczną.
+            </p>
+          </div>
+        </div>
+      `;
+        return;
+      }
       const items = state.currentTab === 'quizzes' ? state.quizzes : state.workouts;
 
       if (items.length === 0) {
@@ -1542,38 +1541,11 @@
       const container = document.getElementById('kb-articles-container');
       const emptyState = document.getElementById('kb-empty-state');
 
-      // Ukryj loader
-      if (loader) loader.classList.add('hidden');
+      // Pokaż loader
+      if (loader) loader.classList.remove('hidden');
       if (error) error.classList.add('hidden');
       if (container) container.classList.add('hidden');
       if (emptyState) emptyState.classList.add('hidden');
-
-      // SPRAWDŹ CZY UŻYTKOWNIK JEST ZALOGOWANY
-      // Po wdrożeniu nowych polityk RLS, tylko zalogowani mogą czytać artykuły
-      const currentUser = window.state?.currentUser;
-      if (!currentUser) {
-        console.warn('⚠️ User not authenticated, cannot load knowledge base articles');
-
-        // Pokaż komunikat o konieczności zalogowania
-        if (emptyState) {
-          emptyState.innerHTML = `
-          <div class="text-center py-12">
-            <div class="text-6xl mb-4">🔒</div>
-            <h3 class="text-xl font-bold text-gray-300 mb-2">Wymagane logowanie</h3>
-            <p class="text-gray-400 mb-6">Zaloguj się, aby przeglądać bazę wiedzy</p>
-            <button onclick="document.getElementById('login-button').click()" 
-                    class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg transition">
-              Zaloguj się
-            </button>
-          </div>
-        `;
-          emptyState.classList.remove('hidden');
-        }
-        return;
-      }
-
-      // Pokaż loader
-      if (loader) loader.classList.remove('hidden');
 
       try {
         const dataService = window.dataService;

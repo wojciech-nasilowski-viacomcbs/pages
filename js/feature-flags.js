@@ -66,20 +66,20 @@ export function getEnabledTabs() {
   const MAX_TABS = 4;
   const tabs = [];
 
-  // Sprawdź czy użytkownik jest zalogowany (dla Bazy Wiedzy)
+  // Sprawdź czy użytkownik jest zalogowany
   const isAuthenticated =
     window.state?.currentUser !== null && window.state?.currentUser !== undefined;
 
   // Główne moduły - priorytet: Treningi, Wiedza, Quizy, Słuchanie
-  if (getFlag('ENABLE_WORKOUTS')) tabs.push('workouts');
-  // Baza Wiedzy wymaga logowania
+  // Wszystkie moduły wymagają logowania
+  if (getFlag('ENABLE_WORKOUTS') && isAuthenticated) tabs.push('workouts');
   if (getFlag('ENABLE_KNOWLEDGE_BASE') && isAuthenticated) tabs.push('knowledge-base');
-  if (getFlag('ENABLE_QUIZZES')) tabs.push('quizzes');
-  if (getFlag('ENABLE_LISTENING')) tabs.push('listening');
+  if (getFlag('ENABLE_QUIZZES') && isAuthenticated) tabs.push('quizzes');
+  if (getFlag('ENABLE_LISTENING') && isAuthenticated) tabs.push('listening');
 
-  // Funkcje dodatkowe
-  const hasImport = getFlag('ENABLE_FILE_IMPORT');
-  const hasAI = getFlag('ENABLE_AI_GENERATOR');
+  // Funkcje dodatkowe - również wymagają logowania
+  const hasImport = getFlag('ENABLE_FILE_IMPORT') && isAuthenticated;
+  const hasAI = getFlag('ENABLE_AI_GENERATOR') && isAuthenticated;
   const additionalFeatures = [];
   if (hasImport) additionalFeatures.push('import');
   if (hasAI) additionalFeatures.push('ai-generator');
@@ -103,16 +103,16 @@ export function getEnabledTabs() {
 export function getActiveCoreTabs() {
   const coreTabs = [];
 
-  // Sprawdź czy użytkownik jest zalogowany (dla Bazy Wiedzy)
+  // Sprawdź czy użytkownik jest zalogowany
   const isAuthenticated =
     window.state?.currentUser !== null && window.state?.currentUser !== undefined;
 
   // Kolejność priorytetów: Treningi, Wiedza, Quizy, Słuchanie (spójna z getEnabledTabs)
-  if (getFlag('ENABLE_WORKOUTS')) coreTabs.push('workouts');
-  // Baza Wiedzy wymaga logowania
+  // Wszystkie moduły wymagają logowania
+  if (getFlag('ENABLE_WORKOUTS') && isAuthenticated) coreTabs.push('workouts');
   if (getFlag('ENABLE_KNOWLEDGE_BASE') && isAuthenticated) coreTabs.push('knowledge-base');
-  if (getFlag('ENABLE_QUIZZES')) coreTabs.push('quizzes');
-  if (getFlag('ENABLE_LISTENING')) coreTabs.push('listening');
+  if (getFlag('ENABLE_QUIZZES') && isAuthenticated) coreTabs.push('quizzes');
+  if (getFlag('ENABLE_LISTENING') && isAuthenticated) coreTabs.push('listening');
   return coreTabs;
 }
 
