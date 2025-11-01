@@ -23,11 +23,39 @@
       // Pokaż wybrany ekran
       switch (screenName) {
         case 'main':
-          elements.mainScreen.classList.remove('hidden');
-          state.currentView = 'main';
-          if (contentManager) {
-            contentManager.renderCards(state, elements, this, sessionManager);
+          // WAŻNE: 'main' może oznaczać różne ekrany w zależności od currentTab
+          // - quizzes/workouts → ekran z kartami (mainScreen)
+          // - knowledge-base → ekran bazy wiedzy
+          // - listening → ekran listy zestawów
+          // - more → ekran więcej opcji
+
+          if (state.currentTab === 'knowledge-base') {
+            // Pokaż ekran bazy wiedzy (lista artykułów)
+            elements.knowledgeBaseScreen.classList.remove('hidden');
+            state.currentView = 'knowledge-base';
+            if (contentManager && contentManager.loadKnowledgeBaseArticles) {
+              contentManager.loadKnowledgeBaseArticles(sessionManager);
+            }
+          } else if (state.currentTab === 'listening') {
+            // Pokaż ekran listy zestawów słuchania
+            elements.listeningScreen.classList.remove('hidden');
+            state.currentView = 'listening';
+            if (window.showListeningList && typeof window.showListeningList === 'function') {
+              window.showListeningList();
+            }
+          } else if (state.currentTab === 'more') {
+            // Pokaż ekran więcej opcji
+            elements.moreScreen.classList.remove('hidden');
+            state.currentView = 'more';
+          } else {
+            // Dla quizzes i workouts - pokaż ekran z kartami
+            elements.mainScreen.classList.remove('hidden');
+            state.currentView = 'main';
+            if (contentManager) {
+              contentManager.renderCards(state, elements, this, sessionManager);
+            }
           }
+
           // Aktualizuj wizualnie aktywną zakładkę w tab barze (bez zmiany state.currentTab)
           this.updateActiveTab(state, elements);
           break;
