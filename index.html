@@ -1160,77 +1160,77 @@
         </div>
 
         <!-- MODAL IMPORTU JSON -->
-        <div id="import-modal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50">
-            <div class="bg-gray-800 p-6 rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-                <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-2xl font-bold text-white">
+        <div id="import-modal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center p-2 sm:p-4 z-50">
+            <div class="bg-gray-800 p-4 sm:p-6 rounded-2xl shadow-2xl max-w-2xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-y-auto">
+                <div class="flex justify-between items-center mb-3 sm:mb-4 sticky top-0 bg-gray-800 pb-2 -mt-4 sm:-mt-6 pt-4 sm:pt-6 z-10">
+                    <h2 class="text-xl sm:text-2xl font-bold text-white">
                         <span id="import-title">Dodaj Zawartość</span>
                     </h2>
-                    <button id="import-close" class="text-gray-400 hover:text-white text-2xl">×</button>
+                    <button id="import-close" class="text-gray-400 hover:text-white text-2xl flex-shrink-0">×</button>
                 </div>
 
                 <!-- Wybór typu treści -->
-                <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-300 mb-2">Co chcesz zaimportować?</label>
-                    <div class="grid grid-cols-3 gap-3">
-                        <button id="import-type-quiz" class="import-type-btn px-4 py-3 rounded-lg border-2 transition bg-blue-600 border-blue-600 text-white" data-type="quiz">
-                            <div class="text-2xl mb-1">📝</div>
-                            <div class="font-semibold">Quiz</div>
+                <div class="mb-3 sm:mb-4">
+                    <label class="block text-xs sm:text-sm font-medium text-gray-300 mb-2">Co chcesz zaimportować?</label>
+                    <div class="grid grid-cols-3 gap-2 sm:gap-3">
+                        <button id="import-type-quiz" class="import-type-btn px-2 sm:px-4 py-2 sm:py-3 rounded-lg border-2 transition bg-blue-600 border-blue-600 text-white" data-type="quiz">
+                            <div class="text-xl sm:text-2xl mb-1">📝</div>
+                            <div class="font-semibold text-xs sm:text-base">Quiz</div>
                         </button>
-                        <button id="import-type-workout" class="import-type-btn px-4 py-3 rounded-lg border-2 transition border-gray-600 text-gray-300 hover:border-gray-500" data-type="workout">
-                            <div class="text-2xl mb-1">💪</div>
-                            <div class="font-semibold">Trening</div>
+                        <button id="import-type-workout" class="import-type-btn px-2 sm:px-4 py-2 sm:py-3 rounded-lg border-2 transition border-gray-600 text-gray-300 hover:border-gray-500" data-type="workout">
+                            <div class="text-xl sm:text-2xl mb-1">💪</div>
+                            <div class="font-semibold text-xs sm:text-base">Trening</div>
                         </button>
-                        <button id="import-type-listening" class="import-type-btn px-4 py-3 rounded-lg border-2 transition border-gray-600 text-gray-300 hover:border-gray-500" data-type="listening">
-                            <div class="text-2xl mb-1">🎧</div>
-                            <div class="font-semibold text-sm">Słuchanie</div>
+                        <button id="import-type-listening" class="import-type-btn px-2 sm:px-4 py-2 sm:py-3 rounded-lg border-2 transition border-gray-600 text-gray-300 hover:border-gray-500" data-type="listening">
+                            <div class="text-xl sm:text-2xl mb-1">🎧</div>
+                            <div class="font-semibold text-xs sm:text-sm">Słuchanie</div>
                         </button>
                     </div>
                 </div>
 
                 <!-- Zakładki: Wgraj plik / Wklej JSON -->
-                <div class="flex gap-2 mb-4">
-                    <button id="import-tab-file" class="flex-1 py-2 px-4 rounded-lg font-medium transition bg-blue-600 text-white">
+                <div class="flex gap-2 mb-3 sm:mb-4">
+                    <button id="import-tab-file" class="flex-1 py-2 px-3 sm:px-4 rounded-lg font-medium transition bg-blue-600 text-white text-xs sm:text-base">
                         📁 Wgraj plik
                     </button>
-                    <button id="import-tab-paste" class="flex-1 py-2 px-4 rounded-lg font-medium transition bg-gray-700 text-gray-300 hover:bg-gray-600">
+                    <button id="import-tab-paste" class="flex-1 py-2 px-3 sm:px-4 rounded-lg font-medium transition bg-gray-700 text-gray-300 hover:bg-gray-600 text-xs sm:text-base">
                         📋 Wklej JSON
                     </button>
                 </div>
 
                 <!-- Panel: Wgraj plik -->
-                <div id="import-file-panel" class="space-y-4">
-                    <div class="border-2 border-dashed border-gray-600 rounded-lg p-8 text-center hover:border-blue-500 transition cursor-pointer" id="drop-zone">
-                        <svg class="mx-auto h-12 w-12 text-gray-400 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div id="import-file-panel" class="space-y-3 sm:space-y-4">
+                    <div class="border-2 border-dashed border-gray-600 rounded-lg p-4 sm:p-8 text-center hover:border-blue-500 transition cursor-pointer" id="drop-zone">
+                        <svg class="mx-auto h-8 w-8 sm:h-12 sm:w-12 text-gray-400 mb-2 sm:mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
                         </svg>
-                        <p class="text-gray-300 mb-2">Przeciągnij plik JSON tutaj lub kliknij, aby wybrać</p>
+                        <p class="text-gray-300 mb-2 text-xs sm:text-base">Przeciągnij plik JSON tutaj lub kliknij, aby wybrać</p>
                         <input type="file" id="file-input" accept=".json" class="hidden">
-                        <button type="button" id="file-select-btn" class="mt-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition">
+                        <button type="button" id="file-select-btn" class="mt-2 px-3 sm:px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition text-xs sm:text-base">
                             Wybierz plik
                         </button>
                     </div>
-                    <div id="file-name" class="hidden text-sm text-gray-400">
+                    <div id="file-name" class="hidden text-xs sm:text-sm text-gray-400">
                         <span class="font-medium">Wybrany plik:</span> <span id="file-name-text"></span>
                     </div>
                 </div>
 
                 <!-- Panel: Wklej JSON -->
-                <div id="import-paste-panel" class="hidden space-y-4">
-                    <textarea id="json-input" rows="12" placeholder='Wklej tutaj JSON...'
-                              class="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white font-mono text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                <div id="import-paste-panel" class="hidden space-y-3 sm:space-y-4">
+                    <textarea id="json-input" rows="10" placeholder='Wklej tutaj JSON...'
+                              class="w-full px-3 sm:px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white font-mono text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
                 </div>
 
                 <!-- Komunikaty -->
-                <div id="import-error" class="hidden mt-4 p-3 bg-red-900/50 border border-red-700 rounded-lg text-red-200 text-sm"></div>
-                <div id="import-success" class="hidden mt-4 p-3 bg-green-900/50 border border-green-700 rounded-lg text-green-200 text-sm"></div>
+                <div id="import-error" class="hidden mt-3 sm:mt-4 p-2 sm:p-3 bg-red-900/50 border border-red-700 rounded-lg text-red-200 text-xs sm:text-sm"></div>
+                <div id="import-success" class="hidden mt-3 sm:mt-4 p-2 sm:p-3 bg-green-900/50 border border-green-700 rounded-lg text-green-200 text-xs sm:text-sm"></div>
 
                 <!-- Przyciski -->
-                <div class="flex gap-3 mt-6">
-                    <button type="button" id="import-submit" class="flex-1 bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-6 rounded-lg transition">
+                <div class="flex gap-2 sm:gap-3 sticky bottom-0 bg-gray-800 pt-3 sm:pt-4 -mb-4 sm:-mb-6 pb-4 sm:pb-6 -mx-4 sm:-mx-6 px-4 sm:px-6 border-t border-gray-700 mt-4 sm:mt-6">
+                    <button type="button" id="import-submit" class="flex-1 bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-4 sm:px-6 rounded-lg transition text-sm sm:text-base">
                         Importuj
                     </button>
-                    <button type="button" id="import-cancel" class="flex-1 bg-gray-700 hover:bg-gray-600 text-white font-medium py-3 px-6 rounded-lg transition">
+                    <button type="button" id="import-cancel" class="flex-1 bg-gray-700 hover:bg-gray-600 text-white font-medium py-3 px-4 sm:px-6 rounded-lg transition text-sm sm:text-base">
                         Anuluj
                     </button>
                 </div>
@@ -1238,60 +1238,60 @@
         </div>
 
         <!-- MODAL GENERATORA AI -->
-        <div id="ai-generator-modal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50">
-            <div class="bg-gray-800 p-6 rounded-2xl shadow-2xl max-w-2xl w-full">
-                <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-2xl font-bold text-white">🤖 Generator AI</h2>
-                    <button id="ai-close" class="text-gray-400 hover:text-white text-2xl">&times;</button>
+        <div id="ai-generator-modal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center p-2 sm:p-4 z-50">
+            <div class="bg-gray-800 p-4 sm:p-6 rounded-2xl shadow-2xl max-w-2xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-y-auto">
+                <div class="flex justify-between items-center mb-4 sm:mb-6 sticky top-0 bg-gray-800 pb-2 -mt-4 sm:-mt-6 pt-4 sm:pt-6 z-10">
+                    <h2 class="text-xl sm:text-2xl font-bold text-white">🤖 Generator AI</h2>
+                    <button id="ai-close" class="text-gray-400 hover:text-white text-2xl flex-shrink-0">&times;</button>
                 </div>
 
-                <p class="text-gray-300 mb-4">Wybierz typ treści i opisz czego potrzebujesz.</p>
+                <p class="text-gray-300 text-sm sm:text-base mb-3 sm:mb-4">Wybierz typ treści i opisz czego potrzebujesz.</p>
                 
                 <!-- Wybór typu treści -->
-                <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-300 mb-2">Co chcesz wygenerować?</label>
-                    <div class="grid grid-cols-3 gap-3">
-                        <button id="ai-type-quiz" class="ai-type-btn px-4 py-3 rounded-lg border-2 transition bg-blue-600 border-blue-600 text-white" data-type="quiz">
-                            <div class="text-2xl mb-1">📝</div>
-                            <div class="font-semibold">Quiz</div>
+                <div class="mb-3 sm:mb-4">
+                    <label class="block text-xs sm:text-sm font-medium text-gray-300 mb-2">Co chcesz wygenerować?</label>
+                    <div class="grid grid-cols-3 gap-2 sm:gap-3">
+                        <button id="ai-type-quiz" class="ai-type-btn px-2 sm:px-4 py-2 sm:py-3 rounded-lg border-2 transition bg-blue-600 border-blue-600 text-white" data-type="quiz">
+                            <div class="text-xl sm:text-2xl mb-1">📝</div>
+                            <div class="font-semibold text-xs sm:text-base">Quiz</div>
                         </button>
-                        <button id="ai-type-workout" class="ai-type-btn px-4 py-3 rounded-lg border-2 transition border-gray-600 text-gray-300 hover:border-gray-500" data-type="workout">
-                            <div class="text-2xl mb-1">💪</div>
-                            <div class="font-semibold">Trening</div>
+                        <button id="ai-type-workout" class="ai-type-btn px-2 sm:px-4 py-2 sm:py-3 rounded-lg border-2 transition border-gray-600 text-gray-300 hover:border-gray-500" data-type="workout">
+                            <div class="text-xl sm:text-2xl mb-1">💪</div>
+                            <div class="font-semibold text-xs sm:text-base">Trening</div>
                         </button>
-                        <button id="ai-type-listening" class="ai-type-btn px-4 py-3 rounded-lg border-2 transition border-gray-600 text-gray-300 hover:border-gray-500" data-type="listening">
-                            <div class="text-2xl mb-1">🎧</div>
-                            <div class="font-semibold text-sm">Słuchanie</div>
+                        <button id="ai-type-listening" class="ai-type-btn px-2 sm:px-4 py-2 sm:py-3 rounded-lg border-2 transition border-gray-600 text-gray-300 hover:border-gray-500" data-type="listening">
+                            <div class="text-xl sm:text-2xl mb-1">🎧</div>
+                            <div class="font-semibold text-xs sm:text-sm">Słuchanie</div>
                         </button>
                     </div>
                 </div>
                 
-                <div id="ai-hint-quiz" class="bg-blue-900/30 border border-blue-600/50 rounded-lg p-3 mb-4">
-                    <p class="text-blue-200 text-sm">
+                <div id="ai-hint-quiz" class="bg-blue-900/30 border border-blue-600/50 rounded-lg p-2 sm:p-3 mb-3 sm:mb-4">
+                    <p class="text-blue-200 text-xs sm:text-sm">
                         💡 <strong>Wskazówka:</strong> Możesz określić typy pytań, np:
                         <br>"Quiz o angielskim, 10 pytań: 5 multiple-choice, 3 listening, 2 fill-in-blank"
                     </p>
                 </div>
                 
-                <div id="ai-hint-workout" class="hidden bg-green-900/30 border border-green-600/50 rounded-lg p-3 mb-4">
-                    <p class="text-green-200 text-sm">
+                <div id="ai-hint-workout" class="hidden bg-green-900/30 border border-green-600/50 rounded-lg p-2 sm:p-3 mb-3 sm:mb-4">
+                    <p class="text-green-200 text-xs sm:text-sm">
                         💡 <strong>Wskazówka:</strong> Opisz rodzaj treningu i poziom, np:
                         <br>"Trening FBW dla początkujących, 30 minut, bez sprzętu"
                     </p>
                 </div>
                 
-                <div id="ai-hint-listening" class="hidden bg-purple-900/30 border border-purple-600/50 rounded-lg p-3 mb-4">
-                    <p class="text-purple-200 text-sm">
+                <div id="ai-hint-listening" class="hidden bg-purple-900/30 border border-purple-600/50 rounded-lg p-2 sm:p-3 mb-3 sm:mb-4">
+                    <p class="text-purple-200 text-xs sm:text-sm">
                         💡 <strong>Wskazówka:</strong> Opisz czego chcesz się nauczyć, np:
                         <br>"Podstawowe czasowniki w hiszpańskim", "Kolory po angielsku", "Liczby 1-100 po niemiecku"
                     </p>
                 </div>
                 
                 <!-- Wybór języków (tylko dla Listening) -->
-                <div id="ai-language-selection" class="hidden mb-4 space-y-3">
+                <div id="ai-language-selection" class="hidden mb-3 sm:mb-4 space-y-2 sm:space-y-3">
                     <div>
-                        <label class="block text-sm font-medium text-gray-300 mb-2">Język 1 (bazowy)</label>
-                        <select id="ai-lang1" class="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                        <label class="block text-xs sm:text-sm font-medium text-gray-300 mb-1 sm:mb-2">Język 1 (bazowy)</label>
+                        <select id="ai-lang1" class="w-full bg-gray-700 border border-gray-600 text-white px-3 sm:px-4 py-2 rounded-lg text-sm sm:text-base focus:ring-2 focus:ring-purple-500 focus:border-transparent">
                             <option value="">-- Wybierz język --</option>
                             <option value="pl-PL">🇵🇱 Polski</option>
                             <option value="en-US">🇺🇸 Angielski (US)</option>
@@ -1310,8 +1310,8 @@
                         </select>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-300 mb-2">Język 2 (docelowy)</label>
-                        <select id="ai-lang2" class="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                        <label class="block text-xs sm:text-sm font-medium text-gray-300 mb-1 sm:mb-2">Język 2 (docelowy)</label>
+                        <select id="ai-lang2" class="w-full bg-gray-700 border border-gray-600 text-white px-3 sm:px-4 py-2 rounded-lg text-sm sm:text-base focus:ring-2 focus:ring-purple-500 focus:border-transparent">
                             <option value="">-- Wybierz język --</option>
                             <option value="pl-PL">🇵🇱 Polski</option>
                             <option value="en-US">🇺🇸 Angielski (US)</option>
@@ -1332,17 +1332,17 @@
                 </div>
 
                 <!-- Prompt -->
-                <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-300 mb-2">Opis treści (prompt)</label>
-                    <textarea id="ai-prompt" rows="6" placeholder="Przykład: Quiz o angielskim dla początkujących, 10 pytań: 5 multiple-choice, 3 listening (en-US), 2 fill-in-blank"
-                              class="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"></textarea>
+                <div class="mb-3 sm:mb-4">
+                    <label class="block text-xs sm:text-sm font-medium text-gray-300 mb-1 sm:mb-2">Opis treści (prompt)</label>
+                    <textarea id="ai-prompt" rows="4" placeholder="Przykład: Quiz o angielskim dla początkujących, 10 pytań: 5 multiple-choice, 3 listening (en-US), 2 fill-in-blank"
+                              class="w-full bg-gray-700 border border-gray-600 text-white px-3 sm:px-4 py-2 rounded-lg text-sm sm:text-base focus:ring-2 focus:ring-purple-500 focus:border-transparent"></textarea>
                 </div>
 
                 <!-- Komunikaty -->
-                <div id="ai-error" class="hidden bg-red-900/50 border border-red-600 text-red-200 px-4 py-3 rounded-lg mb-4"></div>
-                <div id="ai-success" class="hidden bg-green-900/50 border border-green-600 text-green-200 px-4 py-3 rounded-lg mb-4"></div>
-                <div id="ai-loading" class="hidden bg-blue-900/50 border border-blue-600 text-blue-200 px-4 py-3 rounded-lg mb-4 flex items-center">
-                    <svg class="animate-spin h-5 w-5 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <div id="ai-error" class="hidden bg-red-900/50 border border-red-600 text-red-200 px-3 sm:px-4 py-2 sm:py-3 rounded-lg mb-3 sm:mb-4 text-xs sm:text-sm"></div>
+                <div id="ai-success" class="hidden bg-green-900/50 border border-green-600 text-green-200 px-3 sm:px-4 py-2 sm:py-3 rounded-lg mb-3 sm:mb-4 text-xs sm:text-sm"></div>
+                <div id="ai-loading" class="hidden bg-blue-900/50 border border-blue-600 text-blue-200 px-3 sm:px-4 py-2 sm:py-3 rounded-lg mb-3 sm:mb-4 flex items-center text-xs sm:text-sm">
+                    <svg class="animate-spin h-4 w-4 sm:h-5 sm:w-5 mr-2 sm:mr-3 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>
@@ -1350,11 +1350,11 @@
                 </div>
 
                 <!-- Przyciski -->
-                <div class="flex gap-3">
-                    <button type="button" id="ai-generate" class="flex-1 bg-purple-600 hover:bg-purple-700 text-white font-medium py-3 px-6 rounded-lg transition">
+                <div class="flex gap-2 sm:gap-3 sticky bottom-0 bg-gray-800 pt-3 sm:pt-4 -mb-4 sm:-mb-6 pb-4 sm:pb-6 -mx-4 sm:-mx-6 px-4 sm:px-6 border-t border-gray-700 mt-4">
+                    <button type="button" id="ai-generate" class="flex-1 bg-purple-600 hover:bg-purple-700 text-white font-medium py-3 px-4 sm:px-6 rounded-lg transition text-sm sm:text-base">
                         Generuj
                     </button>
-                    <button type="button" id="ai-cancel" class="flex-1 bg-gray-700 hover:bg-gray-600 text-white font-medium py-3 px-6 rounded-lg transition">
+                    <button type="button" id="ai-cancel" class="flex-1 bg-gray-700 hover:bg-gray-600 text-white font-medium py-3 px-4 sm:px-6 rounded-lg transition text-sm sm:text-base">
                         Anuluj
                     </button>
                 </div>
