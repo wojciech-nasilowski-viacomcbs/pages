@@ -1,0 +1,46 @@
+{
+  "env": {
+    "browser": true,
+    "es2021": true,
+    "node": true,
+    "jest": true
+  },
+  "extends": [
+    "eslint:recommended",
+    "prettier"
+  ],
+  "parserOptions": {
+    "ecmaVersion": 2021,
+    "sourceType": "module"
+  },
+  "rules": {
+    "no-unused-vars": ["warn", { "argsIgnorePattern": "^_", "varsIgnorePattern": "^_" }],
+    "no-undef": "error",
+    "no-console": "off",
+    "no-debugger": "warn",
+    "no-alert": "warn",
+    "eqeqeq": ["error", "always"],
+    "no-eval": "error",
+    "no-var": "error",
+    "prefer-const": "warn",
+    "prefer-arrow-callback": "off",
+    "prefer-template": "off"
+  },
+  "globals": {
+    "supabaseClient": "readonly",
+    "featureFlags": "readonly",
+    "uiState": "readonly",
+    "createStore": "readonly",
+    "wakeLockManager": "readonly",
+    "authService": "readonly",
+    "dataService": "readonly",
+    "uiManager": "readonly",
+    "sessionManager": "readonly",
+    "contentManager": "readonly",
+    "quizEngine": "readonly",
+    "workoutEngine": "readonly",
+    "listeningEngine": "readonly",
+    "knowledgeBaseEngine": "readonly"
+  }
+}
+

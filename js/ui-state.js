@@ -4,8 +4,7 @@
  * @module ui-state
  */
 
-(function() {
-'use strict';
+import { createStore } from './state-manager.js';
 
 /**
  * Typy ekranów w aplikacji
@@ -34,7 +33,7 @@ try {
 }
 
 // Inicjalizacja store
-const uiStore = window.createStore({
+const uiStore = createStore({
   currentScreen: 'loading',
   currentTab: initialTab,
   isActivity: false,
@@ -57,10 +56,12 @@ uiStore.subscribe((state, prevState) => {
       }
     }
   }
-  
+
   // Debug log (można wyłączyć w produkcji)
-  if (state.currentScreen !== prevState.currentScreen || 
-      state.isActivity !== prevState.isActivity) {
+  if (
+    state.currentScreen !== prevState.currentScreen ||
+    state.isActivity !== prevState.isActivity
+  ) {
     console.log('🎨 UI State:', {
       screen: state.currentScreen,
       isActivity: state.isActivity,
@@ -89,7 +90,7 @@ uiStore.subscribe(async (state, prevState) => {
  * @param {ScreenType} screenName - Nazwa ekranu
  * @returns {boolean} True jeśli to aktywność
  */
-function isActivityScreen(screenName) {
+export function isActivityScreen(screenName) {
   return ['quiz', 'workout'].includes(screenName);
 }
 
@@ -98,7 +99,7 @@ function isActivityScreen(screenName) {
  * @param {ScreenType} screenName - Nazwa ekranu
  * @returns {boolean} True jeśli to ekran nawigacyjny
  */
-function isNavigationScreen(screenName) {
+export function isNavigationScreen(screenName) {
   return ['main', 'more', 'loading'].includes(screenName);
 }
 
@@ -107,7 +108,7 @@ function isNavigationScreen(screenName) {
  * @param {ScreenType} screenName - Nazwa ekranu
  * @returns {boolean} True jeśli to podsumowanie
  */
-function isSummaryScreen(screenName) {
+export function isSummaryScreen(screenName) {
   return ['quiz-summary', 'workout-end'].includes(screenName);
 }
 
@@ -116,19 +117,18 @@ function isSummaryScreen(screenName) {
  * @param {ScreenType} screenName - Nazwa ekranu do wyświetlenia
  * @param {Object} [options] - Dodatkowe opcje
  * @param {boolean} [options.isActivity] - Jawnie określ czy to aktywność
- * 
+ *
  * @example
  * uiState.navigateToScreen('quiz'); // Automatycznie wykryje że to aktywność
  * uiState.navigateToScreen('listening', { isActivity: true }); // Jawnie określ
  */
-function navigateToScreen(screenName, options = {}) {
-  const isActivity = options.isActivity !== undefined 
-    ? options.isActivity 
-    : isActivityScreen(screenName);
-  
+export function navigateToScreen(screenName, options = {}) {
+  const isActivity =
+    options.isActivity !== undefined ? options.isActivity : isActivityScreen(screenName);
+
   // Określ czy pokazywać tab bar
   let showTabBar = true;
-  
+
   if (isActivity) {
     // Aktywności - ukryj tab bar
     showTabBar = false;
@@ -143,7 +143,7 @@ function navigateToScreen(screenName, options = {}) {
     const state = uiStore.getState();
     showTabBar = !state.isListeningPlayerActive;
   }
-  
+
   // Aktualizuj stan
   uiStore.setState({
     currentScreen: screenName,
@@ -155,14 +155,14 @@ function navigateToScreen(screenName, options = {}) {
 /**
  * Ustawia stan odtwarzacza słuchania
  * @param {boolean} isActive - Czy odtwarzacz jest aktywny
- * 
+ *
  * @example
  * uiState.setListeningPlayerActive(true); // Odtwarzacz włączony - ukryj tab bar
  * uiState.setListeningPlayerActive(false); // Lista zestawów - pokaż tab bar
  */
-function setListeningPlayerActive(isActive) {
+export function setListeningPlayerActive(isActive) {
   const state = uiStore.getState();
-  
+
   uiStore.setState({
     isListeningPlayerActive: isActive,
     isActivity: isActive,
@@ -174,11 +174,11 @@ function setListeningPlayerActive(isActive) {
 /**
  * Przełącza zakładkę (tab)
  * @param {string} tabName - Nazwa zakładki ('quizzes', 'workouts', 'listening', 'more')
- * 
+ *
  * @example
  * uiState.switchTab('workouts');
  */
-function switchTab(tabName) {
+export function switchTab(tabName) {
   uiStore.setState({
     currentTab: tabName
   });
@@ -187,11 +187,11 @@ function switchTab(tabName) {
 /**
  * Pokazuje/ukrywa tab bar
  * @param {boolean} show - True = pokaż, false = ukryj
- * 
+ *
  * @example
  * uiState.setTabBarVisible(false); // Ukryj tab bar
  */
-function setTabBarVisible(show) {
+export function setTabBarVisible(show) {
   uiStore.setState({
     showTabBar: show
   });
@@ -200,12 +200,12 @@ function setTabBarVisible(show) {
 /**
  * Pobiera aktualny stan UI
  * @returns {UIState} Aktualny stan
- * 
+ *
  * @example
  * const state = uiState.getState();
  * console.log('Current screen:', state.currentScreen);
  */
-function getState() {
+export function getState() {
   return uiStore.getState();
 }
 
@@ -213,47 +213,37 @@ function getState() {
  * Subskrybuje zmiany stanu UI
  * @param {(state: UIState, prevState: UIState) => void} listener - Callback
  * @returns {() => void} Funkcja do anulowania subskrypcji
- * 
+ *
  * @example
  * const unsubscribe = uiState.subscribe((state) => {
  *   console.log('Screen changed to:', state.currentScreen);
  * });
  * // Później: unsubscribe();
  */
-function subscribe(listener) {
+export function subscribe(listener) {
   return uiStore.subscribe(listener);
 }
 
 /**
  * Resetuje stan UI do wartości domyślnych
  */
-function reset() {
+export function reset() {
   uiStore.reset();
 }
 
-// Eksportuj publiczne API
-window.uiState = {
-  // Główne funkcje
+// Export default object for backward compatibility
+export default {
   navigateToScreen,
   setListeningPlayerActive,
   switchTab,
   setTabBarVisible,
-  
-  // Gettery
   getState,
   subscribe,
-  
-  // Utility
   reset,
   isActivityScreen,
   isNavigationScreen,
   isSummaryScreen,
-  
-  // Bezpośredni dostęp do store (dla zaawansowanych przypadków)
   store: uiStore
 };
 
 console.log('✅ UI State manager initialized');
-
-})(); // End of IIFE
-

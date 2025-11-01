@@ -1,0 +1,8 @@
+node_modules/
+coverage/
+dist/
+build/
+*.min.js
+test-report.html
+package-lock.json
+
