@@ -1,5 +1,9 @@
 # eTrener - Interaktywna Platforma Edukacyjna
 
+[![Tests](https://github.com/[twoj-username]/[nazwa-repo]/actions/workflows/test.yml/badge.svg)](https://github.com/[twoj-username]/[nazwa-repo]/actions/workflows/test.yml)
+[![CI/CD](https://github.com/[twoj-username]/[nazwa-repo]/actions/workflows/ci.yml/badge.svg)](https://github.com/[twoj-username]/[nazwa-repo]/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/[twoj-username]/[nazwa-repo]/branch/main/graph/badge.svg)](https://codecov.io/gh/[twoj-username]/[nazwa-repo])
+
 Nowoczesna aplikacja webowa do nauki i treningów - quizy, treningi fitness i nauka języków przez słuchanie.
 
 ## 📋 Spis Treści
@@ -279,6 +283,67 @@ describe('Complete User Flow', () => {
 3. **Używaj opisowych nazw** testów
 4. **Jeden test = jedna rzecz**
 5. **Arrange → Act → Assert** pattern
+
+### 🤖 GitHub Actions (CI/CD)
+
+Projekt używa **GitHub Actions** do automatycznego testowania:
+
+#### ✅ Co się dzieje automatycznie:
+
+**Przy każdym push/PR do `main` lub `exercises`:**
+
+1. **Code Quality Check** 🔍
+   - ESLint sprawdza jakość kodu
+   - Prettier sprawdza formatowanie
+   
+2. **Test Suite** 🧪
+   - Uruchamia wszystkie 197 testów
+   - Testuje na Node.js 18.x i 20.x
+   - Dzieli testy na unit i integration
+   
+3. **Code Coverage** 📊
+   - Generuje raport pokrycia kodu
+   - Wysyła do Codecov (opcjonalnie)
+   - Komentuje pokrycie na PR
+   
+4. **Build Verification** 🔨
+   - Generuje manifest.json
+   - Waliduje strukturę danych
+
+#### 📊 Status Checks
+
+Wszystkie PR muszą przejść testy przed merge:
+- ✅ Linter (ESLint + Prettier)
+- ✅ Testy jednostkowe
+- ✅ Testy integracyjne
+- ✅ Build verification
+
+#### 🔧 Konfiguracja
+
+Pliki workflow znajdują się w `.github/workflows/`:
+- `test.yml` - Podstawowe testy i linting
+- `ci.yml` - Zaawansowany pipeline CI/CD
+
+#### 📈 Viewing Results
+
+1. Przejdź do zakładki **Actions** w repozytorium GitHub
+2. Zobacz status wszystkich workflow
+3. Kliknij na konkretny run, żeby zobaczyć szczegóły
+4. Pobierz artifacts (coverage reports, test results)
+
+#### 🚫 Jeśli testy failują
+
+```bash
+# Lokalnie uruchom te same testy co CI
+npm run lint
+npm test
+npm run test:coverage
+
+# Napraw błędy i commituj
+git add .
+git commit -m "Fix tests"
+git push
+```
 
 ---
 
