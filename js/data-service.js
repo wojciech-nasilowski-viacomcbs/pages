@@ -78,9 +78,10 @@ const dataService = {
     /**
      * Save a new quiz with questions
      * @param {Object} quizData - Quiz object with title, description, and questions array
+     * @param {boolean} [isPublic=false] - Whether the quiz should be public (only for admins)
      * @returns {Promise<Object>} Created quiz object
      */
-    async saveQuiz(quizData) {
+    async saveQuiz(quizData, isPublic = false) {
         try {
             const user = await getCurrentUser();
             if (!user) throw new Error('User must be authenticated to save quizzes');
@@ -92,7 +93,8 @@ const dataService = {
                     user_id: user.id,
                     title: quizData.title,
                     description: quizData.description || '',
-                    is_sample: false
+                    is_sample: false,
+                    is_public: isPublic || false
                 })
                 .select()
                 .single();
@@ -227,9 +229,10 @@ const dataService = {
     /**
      * Save a new workout with phases and exercises
      * @param {Object} workoutData - Workout object with title, description, and phases array
+     * @param {boolean} [isPublic=false] - Whether the workout should be public (only for admins)
      * @returns {Promise<Object>} Created workout object
      */
-    async saveWorkout(workoutData) {
+    async saveWorkout(workoutData, isPublic = false) {
         try {
             const user = await getCurrentUser();
             if (!user) throw new Error('User must be authenticated to save workouts');
@@ -257,7 +260,8 @@ const dataService = {
                     title: finalTitle,
                     description: workoutData.description || '',
                     emoji: workoutData.emoji || '💪', // Dodaj emoji
-                    is_sample: false
+                    is_sample: false,
+                    is_public: isPublic || false
                 })
                 .select()
                 .single();
@@ -367,14 +371,15 @@ const dataService = {
     
     /**
      * Create a new listening set
-     * @param {string} title - Title of the set
-     * @param {string} description - Description
+     * @param {string} title - Title of the listening set
+     * @param {string} description - Description of the listening set
      * @param {string} lang1Code - Language 1 code (e.g., 'pl-PL')
      * @param {string} lang2Code - Language 2 code (e.g., 'es-ES')
      * @param {Array} content - Array of language pairs
+     * @param {boolean} [isPublic=false] - Whether the listening set should be public (only for admins)
      * @returns {Promise<Object>} Created listening set
      */
-    async createListeningSet(title, description, lang1Code, lang2Code, content) {
+    async createListeningSet(title, description, lang1Code, lang2Code, content, isPublic = false) {
         try {
             const user = await getCurrentUser();
             if (!user) throw new Error('User must be authenticated');
@@ -388,7 +393,8 @@ const dataService = {
                     lang1_code: lang1Code,
                     lang2_code: lang2Code,
                     content,
-                    is_sample: false
+                    is_sample: false,
+                    is_public: isPublic || false
                 }])
                 .select()
                 .single();
@@ -647,6 +653,79 @@ const dataService = {
             console.error('Error searching knowledge base articles:', error);
             // Fallback to simple search
             return await this.getKnowledgeBaseArticles({ search: query, limit });
+        }
+    },
+    
+    // ============================================
+    // PUBLIC/PRIVATE STATUS MANAGEMENT
+    // ============================================
+    
+    /**
+     * Toggle public status of a quiz (admin only)
+     * @param {string} quizId - UUID of the quiz
+     * @param {boolean} isPublic - New public status
+     * @returns {Promise<Object>} Updated quiz
+     */
+    async updateQuizPublicStatus(quizId, isPublic) {
+        try {
+            const { data, error } = await supabaseClient
+                .from('quizzes')
+                .update({ is_public: isPublic })
+                .eq('id', quizId)
+                .select()
+                .single();
+            
+            if (error) throw error;
+            return data;
+        } catch (error) {
+            console.error('Error updating quiz public status:', error);
+            throw error;
+        }
+    },
+    
+    /**
+     * Toggle public status of a workout (admin only)
+     * @param {string} workoutId - UUID of the workout
+     * @param {boolean} isPublic - New public status
+     * @returns {Promise<Object>} Updated workout
+     */
+    async updateWorkoutPublicStatus(workoutId, isPublic) {
+        try {
+            const { data, error } = await supabaseClient
+                .from('workouts')
+                .update({ is_public: isPublic })
+                .eq('id', workoutId)
+                .select()
+                .single();
+            
+            if (error) throw error;
+            return data;
+        } catch (error) {
+            console.error('Error updating workout public status:', error);
+            throw error;
+        }
+    },
+    
+    /**
+     * Toggle public status of a listening set (admin only)
+     * @param {string} setId - UUID of the listening set
+     * @param {boolean} isPublic - New public status
+     * @returns {Promise<Object>} Updated listening set
+     */
+    async updateListeningSetPublicStatus(setId, isPublic) {
+        try {
+            const { data, error } = await supabaseClient
+                .from('listening_sets')
+                .update({ is_public: isPublic })
+                .eq('id', setId)
+                .select()
+                .single();
+            
+            if (error) throw error;
+            return data;
+        } catch (error) {
+            console.error('Error updating listening set public status:', error);
+            throw error;
         }
     }
 };

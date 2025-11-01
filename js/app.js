@@ -16,6 +16,40 @@ const state = {
   currentUser: null
 };
 
+/**
+ * Centralna konfiguracja typów treści
+ * Mapuje typy na odpowiednie funkcje i ustawienia
+ */
+const contentTypeConfig = {
+  quiz: {
+    tabName: 'quizzes',
+    featureFlagCheck: () => featureFlags.isQuizzesEnabled(),
+    loadAndStartFn: (id) => contentManager.loadAndStartQuiz(id, state, elements, sessionManager, uiManager, true),
+    dataServiceSaveFn: (data, isPublic) => dataService.saveQuiz(data, isPublic),
+    dataServiceUpdateStatusFn: (id, isPublic) => dataService.updateQuizPublicStatus(id, isPublic),
+  },
+  workout: {
+    tabName: 'workouts',
+    featureFlagCheck: () => featureFlags.isWorkoutsEnabled(),
+    loadAndStartFn: (id) => contentManager.loadAndStartWorkout(id, state, elements, uiManager, sessionManager),
+    dataServiceSaveFn: (data, isPublic) => dataService.saveWorkout(data, isPublic),
+    dataServiceUpdateStatusFn: (id, isPublic) => dataService.updateWorkoutPublicStatus(id, isPublic),
+  },
+  listening: {
+    tabName: 'listening',
+    featureFlagCheck: () => featureFlags.isListeningEnabled(),
+    loadAndStartFn: (id) => {
+      if (window.listeningEngine && window.listeningEngine.loadAndStartListening) {
+        return window.listeningEngine.loadAndStartListening(id);
+      }
+      throw new Error('Listening engine nie jest dostępny');
+    },
+    dataServiceSaveFn: (title, description, lang1Code, lang2Code, content, isPublic) => 
+      dataService.createListeningSet(title, description, lang1Code, lang2Code, content, isPublic),
+    dataServiceUpdateStatusFn: (id, isPublic) => dataService.updateListeningSetPublicStatus(id, isPublic),
+  }
+};
+
 // Elementy DOM
 const elements = {
   // Ekrany
@@ -126,6 +160,8 @@ const elements = {
   importSubmit: document.getElementById('import-submit'),
   importCancel: document.getElementById('import-cancel'),
   importClose: document.getElementById('import-close'),
+  importPublicOption: document.getElementById('import-public-option'),
+  importMakePublic: document.getElementById('import-make-public'),
   
   // Delete modal
   deleteModal: document.getElementById('delete-modal'),
@@ -152,7 +188,9 @@ const elements = {
   aiLoading: document.getElementById('ai-loading'),
   aiGenerate: document.getElementById('ai-generate'),
   aiCancel: document.getElementById('ai-cancel'),
-  aiClose: document.getElementById('ai-close')
+  aiClose: document.getElementById('ai-close'),
+  aiPublicOption: document.getElementById('ai-public-option'),
+  aiMakePublic: document.getElementById('ai-make-public')
 };
 
 /**
@@ -181,37 +219,22 @@ async function handleDeepLink() {
       return false;
     }
     
-    // Obsłuż różne typy treści
+    // Obsłuż różne typy treści za pomocą konfiguracji
     try {
-      switch (type) {
-        case 'quiz':
-          if (!featureFlags.isQuizzesEnabled()) {
-            throw new Error('Quizy są wyłączone');
-          }
-          await contentManager.loadAndStartQuiz(id, state, elements, sessionManager, uiManager, true);
-          break;
-          
-        case 'workout':
-          if (!featureFlags.isWorkoutsEnabled()) {
-            throw new Error('Treningi są wyłączone');
-          }
-          await contentManager.loadAndStartWorkout(id, state, elements, uiManager, sessionManager);
-          break;
-          
-        case 'listening':
-          if (!featureFlags.isListeningEnabled()) {
-            throw new Error('Listening jest wyłączony');
-          }
-          if (window.listeningEngine && window.listeningEngine.loadAndStartListening) {
-            await window.listeningEngine.loadAndStartListening(id);
-          } else {
-            throw new Error('Listening engine nie jest dostępny');
-          }
-          break;
-          
-        default:
-          throw new Error(`Nieznany typ treści: ${type}`);
+      const config = contentTypeConfig[type];
+      
+      // Sprawdź czy typ jest obsługiwany
+      if (!config) {
+        throw new Error(`Nieznany typ treści: ${type}`);
       }
+      
+      // Sprawdź czy funkcja jest włączona
+      if (!config.featureFlagCheck()) {
+        throw new Error(`Moduł '${type}' jest wyłączony`);
+      }
+      
+      // Załaduj i uruchom treść
+      await config.loadAndStartFn(id);
       
       // Wyczyść query params po pomyślnym załadowaniu
       window.history.replaceState({}, document.title, window.location.pathname);
@@ -679,6 +702,8 @@ async function checkAuthState() {
     if (state.currentUser) {
       const role = await authService.getUserRole(state.currentUser);
       sessionManager.setUserRole(role);
+      state.currentUser.role = role; // ← Zapisz też w state.currentUser dla łatwego dostępu
+      console.log('✅ User role initialized:', role);
     } else {
       sessionManager.resetUserRole();
     }
@@ -718,6 +743,7 @@ function setupAuthListener() {
         // Ustaw rolę użytkownika
         const role = await authService.getUserRole(state.currentUser);
         sessionManager.setUserRole(role);
+        if (state.currentUser) state.currentUser.role = role;
         
         await contentManager.loadData(state, elements, uiManager);
         uiManager.updateAuthUI(state, elements, contentManager, sessionManager);
@@ -731,6 +757,7 @@ function setupAuthListener() {
         // Ustaw rolę użytkownika
         const role = await authService.getUserRole(state.currentUser);
         sessionManager.setUserRole(role);
+        if (state.currentUser) state.currentUser.role = role;
         
         uiManager.updateAuthUI(state, elements, contentManager, sessionManager);
       } else {
@@ -741,6 +768,7 @@ function setupAuthListener() {
         // Ustaw rolę użytkownika
         const role = await authService.getUserRole(state.currentUser);
         sessionManager.setUserRole(role);
+        if (state.currentUser) state.currentUser.role = role;
         
         await contentManager.loadData(state, elements, uiManager);
         uiManager.updateAuthUI(state, elements, contentManager, sessionManager);
@@ -756,6 +784,7 @@ function setupAuthListener() {
         // Ustaw rolę użytkownika
         const role = await authService.getUserRole(state.currentUser);
         sessionManager.setUserRole(role);
+        if (state.currentUser) state.currentUser.role = role;
         
         uiManager.updateAuthUI(state, elements, contentManager, sessionManager);
         return;
@@ -789,6 +818,7 @@ function setupAuthListener() {
       if (state.currentUser) {
         const role = await authService.getUserRole(state.currentUser);
         sessionManager.setUserRole(role);
+        state.currentUser.role = role;
       }
       
       // Jeśli użytkownik NIE jest w trakcie aktywności, odśwież dane
@@ -1063,6 +1093,9 @@ async function handleNewPassword(e) {
     showModalError('newPassword', error.message || 'Błąd podczas zmiany hasła');
   }
 }
+
+// Eksportuj contentTypeConfig globalnie (dla content-manager.js)
+window.contentTypeConfig = contentTypeConfig;
 
 // Inicjalizuj aplikację po załadowaniu DOM
 if (document.readyState === 'loading') {

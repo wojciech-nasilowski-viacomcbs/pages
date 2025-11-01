@@ -84,6 +84,34 @@ GRANT EXECUTE ON FUNCTION get_user_role(UUID) TO authenticated;
 GRANT EXECUTE ON FUNCTION get_user_role(UUID) TO anon;
 
 -- ============================================
+-- FUNKCJA 4: Sprawdź czy użytkownik jest adminem (dla RLS)
+-- Używana w Row Level Security policies
+-- ============================================
+
+CREATE OR REPLACE FUNCTION is_admin(user_id UUID)
+RETURNS BOOLEAN
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+DECLARE
+  admin_status BOOLEAN;
+BEGIN
+  -- Pobierz is_super_admin z auth.users
+  SELECT is_super_admin INTO admin_status
+  FROM auth.users
+  WHERE id = user_id;
+  
+  -- Zwróć FALSE jeśli użytkownik nie istnieje lub nie jest adminem
+  RETURN COALESCE(admin_status, FALSE);
+END;
+$$;
+
+-- Nadaj uprawnienia
+GRANT EXECUTE ON FUNCTION is_admin(UUID) TO public;
+GRANT EXECUTE ON FUNCTION is_admin(UUID) TO authenticated;
+GRANT EXECUTE ON FUNCTION is_admin(UUID) TO anon;
+
+-- ============================================
 -- TESTY
 -- ============================================
 

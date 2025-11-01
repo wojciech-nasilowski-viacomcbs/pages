@@ -1225,6 +1225,17 @@
                 <div id="import-error" class="hidden mt-3 sm:mt-4 p-2 sm:p-3 bg-red-900/50 border border-red-700 rounded-lg text-red-200 text-xs sm:text-sm"></div>
                 <div id="import-success" class="hidden mt-3 sm:mt-4 p-2 sm:p-3 bg-green-900/50 border border-green-700 rounded-lg text-green-200 text-xs sm:text-sm"></div>
 
+                <!-- Opcje publikacji (tylko dla adminów) -->
+                <div id="import-public-option" class="hidden mt-3 sm:mt-4">
+                    <label class="flex items-center gap-2 sm:gap-3 cursor-pointer bg-gray-700/50 p-3 sm:p-4 rounded-lg hover:bg-gray-700/70 transition">
+                        <input type="checkbox" id="import-make-public" class="w-4 h-4 sm:w-5 sm:h-5 text-green-600 bg-gray-700 border-gray-600 rounded focus:ring-green-500 focus:ring-2">
+                        <div class="flex-1">
+                            <div class="text-white font-medium text-sm sm:text-base">🌍 Udostępnij publicznie</div>
+                            <div class="text-gray-400 text-xs sm:text-sm mt-1">Treść będzie widoczna dla wszystkich użytkowników</div>
+                        </div>
+                    </label>
+                </div>
+
                 <!-- Przyciski -->
                 <div class="flex gap-2 sm:gap-3 sticky bottom-0 bg-gray-800 pt-3 sm:pt-4 -mb-4 sm:-mb-6 pb-4 sm:pb-6 -mx-4 sm:-mx-6 px-4 sm:px-6 border-t border-gray-700 mt-4 sm:mt-6">
                     <button type="button" id="import-submit" class="flex-1 bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-4 sm:px-6 rounded-lg transition text-sm sm:text-base">
@@ -1347,6 +1358,17 @@
                         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>
                     <span>Generowanie... To może potrwać ~20-30 sekund</span>
+                </div>
+
+                <!-- Opcje publikacji (tylko dla adminów) -->
+                <div id="ai-public-option" class="hidden mb-3 sm:mb-4">
+                    <label class="flex items-center gap-2 sm:gap-3 cursor-pointer bg-gray-700/50 p-3 sm:p-4 rounded-lg hover:bg-gray-700/70 transition">
+                        <input type="checkbox" id="ai-make-public" class="w-4 h-4 sm:w-5 sm:h-5 text-green-600 bg-gray-700 border-gray-600 rounded focus:ring-green-500 focus:ring-2">
+                        <div class="flex-1">
+                            <div class="text-white font-medium text-sm sm:text-base">🌍 Udostępnij publicznie</div>
+                            <div class="text-gray-400 text-xs sm:text-sm mt-1">Treść będzie widoczna dla wszystkich użytkowników</div>
+                        </div>
+                    </label>
                 </div>
 
                 <!-- Przyciski -->

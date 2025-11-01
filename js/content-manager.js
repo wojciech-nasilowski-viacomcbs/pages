@@ -123,29 +123,56 @@ const contentManager = {
     elements.contentCards.innerHTML = items.map(item => {
       // Dla quizów zawsze 📝, dla treningów użyj emoji z danych lub domyślnie 💪
       const icon = state.currentTab === 'quizzes' ? '📝' : (item.emoji || '💪');
-      const badge = item.isSample ? '<span class="text-xs bg-blue-600 px-2 py-1 rounded">Przykład</span>' : '';
-      const actionButtons = !item.isSample ? `
-        <div class="absolute top-2 right-2 md:top-3 md:right-3 md:opacity-0 md:group-hover:opacity-100 transition-all duration-200 flex gap-2 z-10">
-          <button class="share-btn bg-gray-700/90 md:bg-transparent text-gray-300 hover:text-blue-500 active:scale-95 md:hover:scale-110 text-2xl md:text-xl p-2 md:p-0 rounded-lg md:rounded-none min-w-[44px] min-h-[44px] md:min-w-0 md:min-h-0 flex items-center justify-center"
+      
+      // Badge: Przykład (sample) lub Publiczny (is_public)
+      let badge = '';
+      if (item.isSample) {
+        badge = '<span class="text-xs bg-blue-600 px-2 py-1 rounded">Przykład</span>';
+      } else if (item.isPublic) {
+        badge = '<span class="text-xs bg-green-600 px-2 py-1 rounded">Publiczny</span>';
+      }
+      
+      // Przyciski akcji - różne dla adminów i zwykłych użytkowników
+      let actionButtons = '';
+      if (!item.isSample) {
+        const isAdmin = state.currentUser && state.currentUser.role === 'admin';
+        const isOwner = state.currentUser && item.userId === state.currentUser.id;
+        
+        // Przycisk toggle public/private (tylko dla adminów)
+        const togglePublicBtn = isAdmin ? `
+          <button class="toggle-public-btn bg-gray-700/90 md:bg-transparent text-gray-300 hover:text-purple-500 active:scale-95 md:hover:scale-110 text-2xl md:text-xl p-2 md:p-0 rounded-lg md:rounded-none min-w-[44px] min-h-[44px] md:min-w-0 md:min-h-0 flex items-center justify-center"
                   data-id="${item.id}"
+                  data-is-public="${item.isPublic || false}"
                   data-title="${item.title.replace(/"/g, '&quot;')}"
-                  title="Udostępnij link">
-            🔗
+                  title="${item.isPublic ? 'Zmień na prywatny' : 'Opublikuj dla wszystkich'}">
+            ${item.isPublic ? '🔒' : '🌍'}
           </button>
-          <button class="export-btn bg-gray-700/90 md:bg-transparent text-gray-300 hover:text-green-500 active:scale-95 md:hover:scale-110 text-2xl md:text-xl p-2 md:p-0 rounded-lg md:rounded-none min-w-[44px] min-h-[44px] md:min-w-0 md:min-h-0 flex items-center justify-center"
-                  data-id="${item.id}"
-                  data-title="${item.title.replace(/"/g, '&quot;')}"
-                  title="Eksportuj JSON">
-            ⬇
-          </button>
-          <button class="delete-btn bg-gray-700/90 md:bg-transparent text-gray-300 hover:text-red-500 active:scale-95 md:hover:scale-110 text-2xl md:text-xl p-2 md:p-0 rounded-lg md:rounded-none min-w-[44px] min-h-[44px] md:min-w-0 md:min-h-0 flex items-center justify-center"
-                  data-id="${item.id}"
-                  data-title="${item.title.replace(/"/g, '&quot;')}"
-                  title="Usuń">
-            ×
-          </button>
-        </div>
-      ` : '';
+        ` : '';
+        
+        actionButtons = `
+          <div class="absolute top-2 right-2 md:top-3 md:right-3 md:opacity-0 md:group-hover:opacity-100 transition-all duration-200 flex gap-2 z-10">
+            ${togglePublicBtn}
+            <button class="share-btn bg-gray-700/90 md:bg-transparent text-gray-300 hover:text-blue-500 active:scale-95 md:hover:scale-110 text-2xl md:text-xl p-2 md:p-0 rounded-lg md:rounded-none min-w-[44px] min-h-[44px] md:min-w-0 md:min-h-0 flex items-center justify-center"
+                    data-id="${item.id}"
+                    data-title="${item.title.replace(/"/g, '&quot;')}"
+                    title="Udostępnij link">
+              🔗
+            </button>
+            <button class="export-btn bg-gray-700/90 md:bg-transparent text-gray-300 hover:text-green-500 active:scale-95 md:hover:scale-110 text-2xl md:text-xl p-2 md:p-0 rounded-lg md:rounded-none min-w-[44px] min-h-[44px] md:min-w-0 md:min-h-0 flex items-center justify-center"
+                    data-id="${item.id}"
+                    data-title="${item.title.replace(/"/g, '&quot;')}"
+                    title="Eksportuj JSON">
+              ⬇
+            </button>
+            <button class="delete-btn bg-gray-700/90 md:bg-transparent text-gray-300 hover:text-red-500 active:scale-95 md:hover:scale-110 text-2xl md:text-xl p-2 md:p-0 rounded-lg md:rounded-none min-w-[44px] min-h-[44px] md:min-w-0 md:min-h-0 flex items-center justify-center"
+                    data-id="${item.id}"
+                    data-title="${item.title.replace(/"/g, '&quot;')}"
+                    title="Usuń">
+              ×
+            </button>
+          </div>
+        `;
+      }
       
       return `
         <div class="content-card bg-gray-800 p-6 rounded-xl hover:bg-gray-750 transition cursor-pointer group relative"
@@ -163,16 +190,67 @@ const contentManager = {
       `;
     }).join('');
     
-    // Dodaj event listenery do przycisków share/eksportuj/usuń NAJPIERW
-    elements.contentCards.querySelectorAll('.share-btn').forEach(btn => {
-      btn.addEventListener('click', (e) => {
+    // Dodaj event listenery do przycisków toggle-public/share/eksportuj/usuń NAJPIERW
+    elements.contentCards.querySelectorAll('.toggle-public-btn').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
         e.preventDefault();
         e.stopPropagation();
         e.stopImmediatePropagation();
+        
+        // Zabezpieczenie przed wielokrotnym kliknięciem
+        if (btn.disabled) return false;
+        
         const id = btn.dataset.id;
         const title = btn.dataset.title;
-        const type = state.currentTab === 'quizzes' ? 'quiz' : 'workout';
-        this.copyShareLink(type, id, title);
+        const isPublic = btn.dataset.isPublic === 'true';
+        const originalIcon = btn.innerHTML;
+        
+        // Zablokuj przycisk i pokaż spinner
+        btn.disabled = true;
+        btn.style.opacity = '0.5';
+        btn.innerHTML = '⏳';
+        
+        try {
+          await this.togglePublicStatus(id, !isPublic, title, state, elements, uiManager, sessionManager);
+        } finally {
+          // Przywróć przycisk (renderCards odświeży UI, ale na wszelki wypadek)
+          btn.disabled = false;
+          btn.style.opacity = '1';
+          btn.innerHTML = originalIcon;
+        }
+        
+        return false;
+      });
+    });
+    
+    elements.contentCards.querySelectorAll('.share-btn').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+        
+        // Zabezpieczenie przed wielokrotnym kliknięciem
+        if (btn.disabled) return false;
+        
+        const id = btn.dataset.id;
+        const title = btn.dataset.title;
+        const originalIcon = btn.innerHTML;
+        
+        // Pobierz typ z currentTab, obsługując wszystkie typy treści
+        const type = state.currentTab.replace(/s$/, ''); // 'quizzes' -> 'quiz', 'workouts' -> 'workout', 'listening' -> 'listening'
+        
+        // Zablokuj przycisk na czas operacji
+        btn.disabled = true;
+        btn.style.opacity = '0.5';
+        
+        try {
+          await this.copyShareLink(type, id, title);
+        } finally {
+          // Przywróć przycisk
+          btn.disabled = false;
+          btn.style.opacity = '1';
+        }
+        
         return false;
       });
     });
@@ -204,7 +282,7 @@ const contentManager = {
     elements.contentCards.querySelectorAll('.content-card').forEach(card => {
       card.addEventListener('click', (e) => {
         // Jeśli kliknięto w przyciski akcji, ignoruj
-        if (e.target.closest('.share-btn') || e.target.closest('.export-btn') || e.target.closest('.delete-btn')) {
+        if (e.target.closest('.toggle-public-btn') || e.target.closest('.share-btn') || e.target.closest('.export-btn') || e.target.closest('.delete-btn')) {
           return;
         }
         
@@ -247,6 +325,8 @@ const contentManager = {
         title: quiz.title,
         description: quiz.description,
         isSample: quiz.is_sample,
+        isPublic: quiz.is_public || false,
+        userId: quiz.user_id,
         questionCount: 0
       }));
       
@@ -256,6 +336,8 @@ const contentManager = {
         description: workout.description,
         emoji: workout.emoji, // Dodaj emoji z danych
         isSample: workout.is_sample,
+        isPublic: workout.is_public || false,
+        userId: workout.user_id,
         exerciseCount: 0
       }));
       
@@ -432,6 +514,15 @@ const contentManager = {
     elements.fileName.classList.add('hidden');
     elements.importError.classList.add('hidden');
     elements.importSuccess.classList.add('hidden');
+    
+    // Pokaż/ukryj opcję "Udostępnij publicznie" (tylko dla adminów)
+    const isAdmin = state.currentUser && state.currentUser.role === 'admin';
+    if (isAdmin && elements.importPublicOption) {
+      elements.importPublicOption.classList.remove('hidden');
+      elements.importMakePublic.checked = false; // Domyślnie odznaczone
+    } else if (elements.importPublicOption) {
+      elements.importPublicOption.classList.add('hidden');
+    }
     
     // Pokaż panel pliku
     elements.importFilePanel.classList.remove('hidden');
@@ -617,14 +708,24 @@ const contentManager = {
       return;
     }
     
+    // Pobierz wartość checkboxa "Udostępnij publicznie"
+    const isPublic = elements.importMakePublic && elements.importMakePublic.checked;
+    
     // Zapisz do Supabase
     try {
       if (this.currentImportType === 'quiz') {
-        await dataService.saveQuiz(jsonData);
+        await dataService.saveQuiz(jsonData, isPublic);
       } else if (this.currentImportType === 'workout') {
-        await dataService.saveWorkout(jsonData);
+        await dataService.saveWorkout(jsonData, isPublic);
       } else if (this.currentImportType === 'listening') {
-        await dataService.saveListeningSet(jsonData);
+        await dataService.createListeningSet(
+          jsonData.title,
+          jsonData.description,
+          jsonData.lang1_code,
+          jsonData.lang2_code,
+          jsonData.content,
+          isPublic
+        );
       }
       
       this.showImportSuccess('✅ Zaimportowano pomyślnie!', elements);
@@ -1010,6 +1111,15 @@ const contentManager = {
     elements.aiSuccess.classList.add('hidden');
     elements.aiLoading.classList.add('hidden');
     
+    // Pokaż/ukryj opcję "Udostępnij publicznie" (tylko dla adminów)
+    const isAdmin = state.currentUser && state.currentUser.role === 'admin';
+    if (isAdmin && elements.aiPublicOption) {
+      elements.aiPublicOption.classList.remove('hidden');
+      elements.aiMakePublic.checked = false; // Domyślnie odznaczone
+    } else if (elements.aiPublicOption) {
+      elements.aiPublicOption.classList.add('hidden');
+    }
+    
     // Ustaw aktywny przycisk typu
     this.updateAITypeButtons(elements);
     
@@ -1124,19 +1234,23 @@ const contentManager = {
         throw new Error('Wygenerowane dane są nieprawidłowe: ' + errors.join(', '));
       }
       
+      // Pobierz wartość checkboxa "Udostępnij publicznie"
+      const isPublic = elements.aiMakePublic && elements.aiMakePublic.checked;
+      
       // Zapisz do Supabase i pobierz ID nowo utworzonej treści
       let savedItem;
       if (contentType === 'quiz') {
-        savedItem = await dataService.saveQuiz(generatedData);
+        savedItem = await dataService.saveQuiz(generatedData, isPublic);
       } else if (contentType === 'workout') {
-        savedItem = await dataService.saveWorkout(generatedData);
+        savedItem = await dataService.saveWorkout(generatedData, isPublic);
       } else if (contentType === 'listening') {
         savedItem = await dataService.createListeningSet(
           generatedData.title,
           generatedData.description,
           generatedData.lang1_code,
           generatedData.lang2_code,
-          generatedData.content
+          generatedData.content,
+          isPublic
         );
       }
       
@@ -1721,29 +1835,83 @@ const contentManager = {
       // Skopiuj do schowka
       await navigator.clipboard.writeText(link);
       
-      // Pokaż powiadomienie
-      const notification = document.createElement('div');
-      notification.className = 'fixed top-4 left-1/2 transform -translate-x-1/2 bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-fade-in';
-      notification.innerHTML = `
-        <div class="flex items-center gap-2">
-          <span>🔗</span>
-          <span>Link skopiowany do schowka!</span>
-        </div>
-      `;
-      document.body.appendChild(notification);
-      
-      // Usuń po 3 sekundach
-      setTimeout(() => {
-        notification.style.opacity = '0';
-        notification.style.transition = 'opacity 0.3s';
-        setTimeout(() => notification.remove(), 300);
-      }, 3000);
+      // Pokaż powiadomienie sukcesu
+      if (window.uiManager && window.uiManager.showNotification) {
+        window.uiManager.showNotification('Link skopiowany do schowka!', '🔗', 'success');
+      }
       
       console.log(`📋 Link skopiowany: ${link}`);
       
     } catch (error) {
       console.error('Błąd kopiowania linku:', error);
-      alert('Nie udało się skopiować linku. Spróbuj ponownie.');
+      // Pokaż powiadomienie błędu
+      if (window.uiManager && window.uiManager.showNotification) {
+        window.uiManager.showNotification('Nie udało się skopiować linku', '❌', 'error');
+      } else {
+        alert('Nie udało się skopiować linku. Spróbuj ponownie.');
+      }
+    }
+  },
+  
+  /**
+   * Zmienia status publiczny/prywatny treści (tylko dla adminów)
+   * @param {string} id - UUID treści
+   * @param {boolean} newIsPublic - Nowy status publiczny
+   * @param {string} title - Tytuł treści
+   * @param {Object} state - Stan aplikacji
+   * @param {Object} elements - Elementy DOM
+   * @param {Object} uiManager - Manager UI
+   * @param {Object} sessionManager - Manager sesji
+   */
+  async togglePublicStatus(id, newIsPublic, title, state, elements, uiManager, sessionManager) {
+    try {
+      // Pobierz typ z currentTab, obsługując wszystkie typy treści
+      const type = state.currentTab.replace(/s$/, ''); // 'quizzes' -> 'quiz', 'workouts' -> 'workout', 'listening' -> 'listening'
+      
+      // Użyj konfiguracji z app.js jeśli dostępna
+      if (window.contentTypeConfig && window.contentTypeConfig[type]) {
+        await window.contentTypeConfig[type].dataServiceUpdateStatusFn(id, newIsPublic);
+      } else {
+        // Fallback na starą logikę (dla kompatybilności wstecznej)
+        if (type === 'quiz') {
+          await dataService.updateQuizPublicStatus(id, newIsPublic);
+        } else if (type === 'workout') {
+          await dataService.updateWorkoutPublicStatus(id, newIsPublic);
+        } else if (type === 'listening') {
+          await dataService.updateListeningSetPublicStatus(id, newIsPublic);
+        } else {
+          throw new Error(`Nieznany typ treści: ${type}`);
+        }
+      }
+      
+      // Pokaż powiadomienie sukcesu
+      const icon = newIsPublic ? '🌍' : '🔒';
+      const message = newIsPublic ? 'Opublikowano dla wszystkich!' : 'Zmieniono na prywatny';
+      
+      if (window.uiManager && window.uiManager.showNotification) {
+        window.uiManager.showNotification(message, icon, 'purple');
+      }
+      
+      // Odśwież listę
+      await this.loadData(state, elements, uiManager);
+      this.renderCards(state, elements, uiManager, sessionManager);
+      
+    } catch (error) {
+      console.error('Błąd zmiany statusu publicznego:', error);
+      
+      let errorMessage = 'Nie udało się zmienić statusu';
+      if (error.message && error.message.includes('row-level security')) {
+        errorMessage = 'Brak uprawnień. Tylko admini mogą zmieniać status publiczny.';
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
+      // Pokaż powiadomienie błędu
+      if (window.uiManager && window.uiManager.showNotification) {
+        window.uiManager.showNotification(errorMessage, '❌', 'error');
+      } else {
+        alert(errorMessage);
+      }
     }
   }
 };
