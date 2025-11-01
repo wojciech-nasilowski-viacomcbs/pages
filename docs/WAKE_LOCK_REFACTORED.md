@@ -4,6 +4,18 @@
 
 Aplikacja eTrener używa **jednego centralnego modułu** `wakeLockManager` do zarządzania blokadą ekranu dla wszystkich aktywności. System oparty jest na **referencjach** - blokada jest aktywna dopóki przynajmniej jedna aktywność jej potrzebuje.
 
+### 🛡️ Wielowarstwowa ochrona (Android fix)
+
+System używa **3 warstw ochrony** przed wygaszaniem ekranu:
+1. **Wake Lock API** - standardowe API przeglądarki
+2. **Dummy video** - ukryte wideo jako fallback (szczególnie dla Androida z TTS)
+3. **Keepalive** - regularne "pingi" co 10 sekund + automatyczna reaktywacja
+
+**Problem:** Na Androidzie z Web Speech API (TTS) ekran może się wygaszać mimo Wake Lock.  
+**Rozwiązanie:** Wielowarstwowa ochrona zapewnia że ekran pozostaje włączony nawet gdy system próbuje zwolnić blokadę.
+
+📖 **Szczegóły:** Zobacz `docs/WAKE_LOCK_ANDROID_FIX.md`
+
 ## ✨ Zalety zunifikowanego rozwiązania
 
 ### ✅ Przed refaktoryzacją (duplikacja)
