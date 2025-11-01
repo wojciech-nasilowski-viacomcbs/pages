@@ -105,15 +105,26 @@ When creating new documentation:
 ### After Making Changes
 1. Update JSDoc comments if function signatures change
 2. Update relevant documentation in `/docs/` if behavior changes
-3. Run tests: `npm test`
+3. **ALWAYS write tests** for new functionality: `npm test`
 4. Regenerate manifest if data files changed: `node generate-manifest.js`
 
 ### Creating New Features
 1. Create implementation plan in `/docs/IMPLEMENTATION_PLAN_[FEATURE].md`
 2. Update `js/types.js` with new type definitions
 3. Implement feature with proper JSDoc annotations
-4. Add tests in `__tests__/`
+4. **WRITE TESTS FIRST or alongside implementation** in `__tests__/`
 5. Update main documentation in `/docs/`
+
+### Testing Philosophy
+- **Test-Driven Development (TDD)**: Write tests before or during implementation
+- **Test Coverage**: Aim for high coverage of business logic
+- **Test Types**:
+  - Unit tests for individual functions
+  - Integration tests for feature workflows
+  - Edge case testing for robustness
+- **Test Location**: All tests go in `__tests__/` directory
+- **Test Naming**: `feature-name.test.js` or `component-name.test.js`
+- **Run Tests**: `npm test` before committing changes
 
 ## 📚 Key Documentation Files
 
