@@ -29,7 +29,7 @@ js/config.js
 
 # Dependencies
 node_modules/
-package-lock.json
+# Note: package-lock.json should be committed for CI/CD consistency
 
 # Test reports and coverage
 coverage/
