@@ -131,7 +131,7 @@ npm test -- --testPathIgnorePatterns=integration
 
 **Testy integration:**
 ```bash
-npm test -- --testPathPattern=integration
+npm test -- --testPathPatterns=integration
 ```
 
 #### 3. **coverage**

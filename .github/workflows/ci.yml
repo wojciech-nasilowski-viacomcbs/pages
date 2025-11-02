@@ -64,7 +64,7 @@ jobs:
           if [ "${{ matrix.test-type }}" = "unit" ]; then
             npm test -- --testPathIgnorePatterns=integration
           else
-            npm test -- --testPathPattern=integration
+            npm test -- --testPathPatterns=integration
           fi
 
   coverage:
