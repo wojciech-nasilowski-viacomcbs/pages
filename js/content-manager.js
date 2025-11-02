@@ -94,7 +94,20 @@
       `;
         return;
       }
-      const items = state.currentTab === 'quizzes' ? state.quizzes : state.workouts;
+
+      // Określ które elementy pokazać na podstawie aktywnej zakładki
+      // Tylko quizzes i workouts używają ekranu głównego z kartami
+      let items = [];
+      if (state.currentTab === 'quizzes') {
+        items = state.quizzes;
+      } else if (state.currentTab === 'workouts') {
+        items = state.workouts;
+      } else {
+        // Dla innych zakładek (listening, knowledge-base, more) nie renderuj kart
+        // Te zakładki mają własne ekrany
+        elements.contentCards.innerHTML = '';
+        return;
+      }
 
       if (items.length === 0) {
         elements.contentCards.innerHTML = `

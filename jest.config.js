@@ -8,7 +8,8 @@ module.exports = {
     '!js/modules-shim.js'
   ],
   coverageReporters: ['html', 'text', 'lcov'],
-  testMatch: ['**/__tests__/**/*.js', '**/?(*.)+(spec|test).js'],
+  testMatch: ['**/__tests__/**/*.test.js', '**/?(*.)+(spec|test).js'],
+  testPathIgnorePatterns: ['/node_modules/', '/__tests__/helpers/', '/__tests__/fixtures/'],
   reporters: [
     'default',
     [

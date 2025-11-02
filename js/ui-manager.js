@@ -23,11 +23,41 @@
       // Pokaż wybrany ekran
       switch (screenName) {
         case 'main':
-          elements.mainScreen.classList.remove('hidden');
-          state.currentView = 'main';
-          if (contentManager) {
-            contentManager.renderCards(state, elements, this, sessionManager);
+          // WAŻNE: 'main' może oznaczać różne ekrany w zależności od currentTab
+          // - quizzes/workouts → ekran z kartami (mainScreen)
+          // - knowledge-base → ekran bazy wiedzy
+          // - listening → ekran listy zestawów
+          // - more → ekran więcej opcji
+
+          if (state.currentTab === 'knowledge-base') {
+            // Pokaż ekran bazy wiedzy (lista artykułów)
+            elements.knowledgeBaseScreen.classList.remove('hidden');
+            state.currentView = 'knowledge-base';
+            if (contentManager && contentManager.loadKnowledgeBaseArticles) {
+              contentManager.loadKnowledgeBaseArticles(sessionManager);
+            }
+          } else if (state.currentTab === 'listening') {
+            // Pokaż ekran listy zestawów słuchania
+            elements.listeningScreen.classList.remove('hidden');
+            state.currentView = 'listening';
+            if (window.showListeningList && typeof window.showListeningList === 'function') {
+              window.showListeningList();
+            }
+          } else if (state.currentTab === 'more') {
+            // Pokaż ekran więcej opcji
+            elements.moreScreen.classList.remove('hidden');
+            state.currentView = 'more';
+          } else {
+            // Dla quizzes i workouts - pokaż ekran z kartami
+            elements.mainScreen.classList.remove('hidden');
+            state.currentView = 'main';
+            if (contentManager) {
+              contentManager.renderCards(state, elements, this, sessionManager);
+            }
           }
+
+          // Aktualizuj wizualnie aktywną zakładkę w tab barze (bez zmiany state.currentTab)
+          this.updateActiveTab(state, elements);
           break;
         case 'quiz':
           elements.quizScreen.classList.remove('hidden');
@@ -125,6 +155,35 @@
         // Domyślnie ukryj dla nieznanych ekranów
         tabBar.classList.add('hidden');
       }
+    },
+
+    /**
+     * Aktualizuje wizualnie aktywną zakładkę w tab barze (bez zmiany logiki)
+     * Używane gdy wracamy do ekranu głównego z przycisku "home"
+     */
+    updateActiveTab(state, elements) {
+      // Usuń klasę 'active' ze wszystkich tabów
+      [
+        elements.tabQuizzes,
+        elements.tabWorkouts,
+        elements.tabListening,
+        elements.tabKnowledgeBase,
+        elements.tabImport,
+        elements.tabAIGenerator,
+        elements.tabMore
+      ].forEach(btn => btn?.classList.remove('active'));
+
+      // Dodaj klasę 'active' do aktywnego taba (na podstawie state.currentTab)
+      const activeTabButton = {
+        quizzes: elements.tabQuizzes,
+        workouts: elements.tabWorkouts,
+        listening: elements.tabListening,
+        'knowledge-base': elements.tabKnowledgeBase,
+        import: elements.tabImport,
+        'ai-generator': elements.tabAIGenerator,
+        more: elements.tabMore
+      }[state.currentTab];
+      activeTabButton?.classList.add('active');
     },
 
     /**
