@@ -206,19 +206,18 @@
       elements.buttonText.textContent = 'URUCHOM STOPER';
       elements.buttonIcon.innerHTML = icons.timer;
 
-      // Dla odpoczynku: automatycznie uruchom timer i zmień UI przycisku "Pomiń"
-      if (isRest) {
-        // Automatycznie uruchom timer odpoczynku (tylko jeśli nie działa już)
-        if (!workoutState.timerInterval) {
-          setTimeout(() => {
-            // Sprawdź ponownie czy timer nie został już uruchomiony
-            if (!workoutState.timerInterval) {
-              startTimer();
-            }
-          }, 100);
-        }
+      // Automatycznie uruchom timer dla wszystkich ćwiczeń czasowych (tylko jeśli nie działa już)
+      if (!workoutState.timerInterval) {
+        setTimeout(() => {
+          // Sprawdź ponownie czy timer nie został już uruchomiony
+          if (!workoutState.timerInterval) {
+            startTimer();
+          }
+        }, 100);
+      }
 
-        // Zmień przycisk "Pomiń" na bardziej widoczny dla odpoczynku
+      // Dla odpoczynku: zmień UI przycisku "Pomiń" na bardziej widoczny
+      if (isRest) {
         updateSkipButtonForRest(true);
       } else {
         // Przywróć normalny wygląd przycisku "Pomiń"
