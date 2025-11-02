@@ -205,6 +205,24 @@ Zamień `[username]` i `[repo]` na swoje wartości.
 
 ## Troubleshooting
 
+### ❌ "Dependencies lock file is not found"
+
+**Przyczyna:** `package-lock.json` nie jest commitowany do repozytorium
+
+**Rozwiązanie:**
+```bash
+# Usuń package-lock.json z .gitignore
+# Dodaj plik do repozytorium
+git add package-lock.json
+git commit -m "chore: add package-lock.json for CI/CD consistency"
+git push
+```
+
+**Dlaczego to ważne:**
+- `npm ci` wymaga `package-lock.json` (szybsza i deterministyczna instalacja)
+- Zapewnia identyczne wersje zależności na CI i lokalnie
+- GitHub Actions cache działa tylko z lock file
+
 ### ❌ Testy failują na CI, ale działają lokalnie
 
 **Przyczyna:** Różnice w środowisku (Node.js, zależności)
@@ -241,6 +259,24 @@ jobs:
     ls -la coverage/
     ls -la test-report.html
 ```
+
+### ❌ "Deprecated version of actions/upload-artifact"
+
+**Przyczyna:** Używasz starej wersji `actions/upload-artifact@v3`
+
+**Rozwiązanie:**
+```yaml
+# Zaktualizuj do v4
+- uses: actions/upload-artifact@v4  # było: @v3
+  with:
+    name: my-artifact
+    path: path/to/files
+```
+
+**Zmiany w v4:**
+- Lepsza wydajność i kompresja
+- Automatyczne deduplikowanie plików
+- Ulepszona obsługa dużych plików
 
 ### ❌ ESLint failuje na CI
 
@@ -302,7 +338,7 @@ strategy:
 ### 4. **Artifacts Retention**
 
 ```yaml
-- uses: actions/upload-artifact@v3
+- uses: actions/upload-artifact@v4
   with:
     retention-days: 30  # Nie trzymaj wiecznie
 ```
