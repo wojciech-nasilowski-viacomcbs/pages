@@ -1,22 +1,21 @@
 // ============================================
 // AI PROMPTS - Łatwo edytowalne szablony
 // ============================================
-// 
+//
 // Ten plik zawiera szablony promptów dla generatora AI.
 // Możesz je łatwo modyfikować bez dotykania reszty kodu.
 //
 // Użycie: {USER_PROMPT} zostanie zastąpione opisem użytkownika
 // ============================================
 
-(function() {
-'use strict';
+(function () {
+  'use strict';
 
-const AI_PROMPTS = {
-  
-  /**
-   * Prompt dla generowania quizów
-   */
-  quiz: `Jesteś ekspertem w tworzeniu quizów edukacyjnych.
+  const AI_PROMPTS = {
+    /**
+     * Prompt dla generowania quizów
+     */
+    quiz: `Jesteś ekspertem w tworzeniu quizów edukacyjnych.
 
 ZADANIE: Wygeneruj quiz w formacie JSON na podstawie opisu użytkownika.
 
@@ -149,10 +148,10 @@ KRYTYCZNE WYMAGANIA JSON:
 4. correctAnswer w "listening" = string
 5. Zwróć TYLKO czysty JSON, bez markdown (\`\`\`json), komentarzy czy dodatkowego tekstu.`,
 
-  /**
-   * Prompt dla generowania treningów
-   */
-  workout: `Jesteś ekspertem w tworzeniu planów treningowych.
+    /**
+     * Prompt dla generowania treningów
+     */
+    workout: `Jesteś ekspertem w tworzeniu planów treningowych.
 
 ZADANIE: Wygeneruj trening w formacie JSON na podstawie opisu użytkownika.
 
@@ -314,10 +313,10 @@ WAŻNE:
 1. NIE dodawaj numeru do tytułu - zostanie dodany automatycznie
 2. Zwróć TYLKO czysty JSON, bez markdown (\`\`\`json), komentarzy czy dodatkowego tekstu.`,
 
-  /**
-   * Prompt dla generowania zestawów do nauki ze słuchu (Listening)
-   */
-  listening: `Jesteś ekspertem w nauce języków obcych.
+    /**
+     * Prompt dla generowania zestawów do nauki ze słuchu (Listening)
+     */
+    listening: `Jesteś ekspertem w nauce języków obcych.
 
 ZADANIE: Wygeneruj zestaw par językowych do nauki ze słuchu w formacie JSON.
 
@@ -458,12 +457,10 @@ KRYTYCZNE WYMAGANIA:
 2. Użyj DOKŁADNIE tych kluczy w content: "{LANG1_KEY}" i "{LANG2_KEY}"
 3. Wszystkie pary muszą mieć oba klucze (np. {"pl": "...", "es": "..."})
 4. Zwróć TYLKO czysty JSON, bez markdown (\`\`\`json), komentarzy czy dodatkowego tekstu.`
-};
+  };
 
-// Eksportuj globalnie
-window.AI_PROMPTS = AI_PROMPTS;
+  // Eksportuj globalnie
+  window.AI_PROMPTS = AI_PROMPTS;
 
-console.log('✅ AI Prompts loaded');
-
+  console.log('✅ AI Prompts loaded');
 })(); // End of IIFE
-

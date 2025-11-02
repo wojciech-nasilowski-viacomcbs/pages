@@ -4,7 +4,7 @@
 
 describe('Utility Functions', () => {
   describe('Array Shuffling', () => {
-    const shuffleArray = (array) => {
+    const shuffleArray = array => {
       const shuffled = [...array];
       for (let i = shuffled.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -16,14 +16,14 @@ describe('Utility Functions', () => {
     it('should return array of same length', () => {
       const original = [1, 2, 3, 4, 5];
       const shuffled = shuffleArray(original);
-      
+
       expect(shuffled.length).toBe(original.length);
     });
 
     it('should contain all original elements', () => {
       const original = [1, 2, 3, 4, 5];
       const shuffled = shuffleArray(original);
-      
+
       original.forEach(item => {
         expect(shuffled).toContain(item);
       });
@@ -33,27 +33,27 @@ describe('Utility Functions', () => {
       const original = [1, 2, 3, 4, 5];
       const originalCopy = [...original];
       shuffleArray(original);
-      
+
       expect(original).toEqual(originalCopy);
     });
 
     it('should handle empty array', () => {
       const empty = [];
       const shuffled = shuffleArray(empty);
-      
+
       expect(shuffled).toEqual([]);
     });
 
     it('should handle single element array', () => {
       const single = [42];
       const shuffled = shuffleArray(single);
-      
+
       expect(shuffled).toEqual([42]);
     });
   });
 
   describe('Time Formatting', () => {
-    const formatTime = (seconds) => {
+    const formatTime = seconds => {
       const mins = Math.floor(seconds / 60);
       const secs = seconds % 60;
       return `${mins}:${secs.toString().padStart(2, '0')}`;
@@ -105,7 +105,7 @@ describe('Utility Functions', () => {
   });
 
   describe('Emoji Message Selection', () => {
-    const getEmojiMessage = (percentage) => {
+    const getEmojiMessage = percentage => {
       if (percentage === 100) return '🎉 Doskonale!';
       if (percentage >= 90) return '🌟 Świetnie!';
       if (percentage >= 70) return '👍 Dobrze!';
@@ -143,7 +143,7 @@ describe('Utility Functions', () => {
   });
 
   describe('Answer Comparison', () => {
-    const normalizeAnswer = (text) => {
+    const normalizeAnswer = text => {
       return text
         .toLowerCase()
         .normalize('NFD')
@@ -195,10 +195,10 @@ describe('Utility Functions', () => {
     it('should save and retrieve data', () => {
       const key = 'testKey';
       const value = { name: 'Test', score: 100 };
-      
+
       localStorage.setItem(key, JSON.stringify(value));
       const retrieved = JSON.parse(localStorage.getItem(key));
-      
+
       expect(retrieved).toEqual(value);
     });
 
@@ -210,7 +210,7 @@ describe('Utility Functions', () => {
     it('should remove items', () => {
       localStorage.setItem('testKey', 'testValue');
       localStorage.removeItem('testKey');
-      
+
       expect(localStorage.getItem('testKey')).toBeNull();
     });
 
@@ -218,14 +218,14 @@ describe('Utility Functions', () => {
       localStorage.setItem('key1', 'value1');
       localStorage.setItem('key2', 'value2');
       localStorage.clear();
-      
+
       expect(localStorage.getItem('key1')).toBeNull();
       expect(localStorage.getItem('key2')).toBeNull();
     });
   });
 
   describe('URL Validation', () => {
-    const isValidUrl = (string) => {
+    const isValidUrl = string => {
       try {
         new URL(string);
         return true;
@@ -254,14 +254,14 @@ describe('Utility Functions', () => {
   });
 
   describe('Deep Clone', () => {
-    const deepClone = (obj) => {
+    const deepClone = obj => {
       return JSON.parse(JSON.stringify(obj));
     };
 
     it('should clone simple objects', () => {
       const original = { name: 'Test', value: 42 };
       const cloned = deepClone(original);
-      
+
       expect(cloned).toEqual(original);
       expect(cloned).not.toBe(original);
     });
@@ -272,7 +272,7 @@ describe('Utility Functions', () => {
         scores: [10, 20, 30]
       };
       const cloned = deepClone(original);
-      
+
       expect(cloned).toEqual(original);
       expect(cloned.user).not.toBe(original.user);
       expect(cloned.scores).not.toBe(original.scores);
@@ -281,7 +281,7 @@ describe('Utility Functions', () => {
     it('should handle arrays', () => {
       const original = [1, 2, { value: 3 }];
       const cloned = deepClone(original);
-      
+
       expect(cloned).toEqual(original);
       expect(cloned).not.toBe(original);
       expect(cloned[2]).not.toBe(original[2]);
@@ -295,4 +295,3 @@ describe('Utility Functions', () => {
     });
   });
 });
-
