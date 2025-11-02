@@ -40,7 +40,22 @@
     "quizEngine": "readonly",
     "workoutEngine": "readonly",
     "listeningEngine": "readonly",
-    "knowledgeBaseEngine": "readonly"
+    "knowledgeBaseEngine": "readonly",
+    "playCorrectSound": "readonly",
+    "playIncorrectSound": "readonly",
+    "playTimerEndSound": "readonly",
+    "toggleMute": "readonly",
+    "isSoundMuted": "readonly",
+    "setMuted": "readonly",
+    "speakText": "readonly",
+    "stopSpeaking": "readonly",
+    "isTTSAvailable": "readonly",
+    "getAvailableVoices": "readonly",
+    "initAudio": "readonly",
+    "resetMistakes": "readonly",
+    "getCurrentUser": "readonly",
+    "isLoggedIn": "readonly",
+    "getSession": "readonly"
   }
 }
 

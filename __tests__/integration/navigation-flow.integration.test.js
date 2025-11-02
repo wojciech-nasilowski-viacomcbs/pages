@@ -22,10 +22,15 @@
  */
 
 const { initializeTestApp } = require('../helpers/app-test-harness');
-const { clickElement, getActiveTab, getCurrentScreen, waitFor } = require('../helpers/dom-helpers');
+const {
+  clickElement: _clickElement,
+  getActiveTab: _getActiveTab,
+  getCurrentScreen,
+  waitFor: _waitFor
+} = require('../helpers/dom-helpers');
 const {
   assertTabIsActive,
-  assertScreenIsVisible,
+  assertScreenIsVisible: _assertScreenIsVisible,
   assertCardsContain,
   assertCardsDoNotContain,
   assertStateTab,
@@ -594,7 +599,7 @@ describe('Navigation Flow - Integration Test', () => {
         app.contentManager,
         app.sessionManager
       );
-      const renderCallsBefore = app.contentManager.renderCards.mock?.calls?.length || 0;
+      const _renderCallsBefore = app.contentManager.renderCards.mock?.calls?.length || 0;
 
       // WHEN: User clicks Workouts again
       app.uiManager.switchTab(
