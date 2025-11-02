@@ -11,7 +11,7 @@ describe('Data Validation', () => {
         language: 'pl-PL',
         questions: []
       };
-      
+
       expect(validQuiz).toHaveProperty('title');
       expect(validQuiz).toHaveProperty('description');
       expect(validQuiz).toHaveProperty('language');
@@ -27,7 +27,7 @@ describe('Data Validation', () => {
         correctAnswer: 1,
         explanation: 'Basic math'
       };
-      
+
       expect(question.type).toBe('multiple-choice');
       expect(Array.isArray(question.options)).toBe(true);
       expect(question.options.length).toBeGreaterThan(0);
@@ -43,7 +43,7 @@ describe('Data Validation', () => {
         isCorrect: true,
         explanation: 'The sky appears blue due to light scattering'
       };
-      
+
       expect(question.type).toBe('true-false');
       expect(typeof question.isCorrect).toBe('boolean');
       expect(question).toHaveProperty('question');
@@ -57,7 +57,7 @@ describe('Data Validation', () => {
         correctAnswer: 'Paris',
         explanation: 'Paris is the capital city of France'
       };
-      
+
       expect(question.type).toBe('fill-in-the-blank');
       expect(typeof question.correctAnswer).toBe('string');
       expect(question.correctAnswer.length).toBeGreaterThan(0);
@@ -72,7 +72,7 @@ describe('Data Validation', () => {
           { item: 'Spain', match: 'Madrid' }
         ]
       };
-      
+
       expect(question.type).toBe('matching');
       expect(Array.isArray(question.pairs)).toBe(true);
       expect(question.pairs.length).toBeGreaterThan(0);
@@ -92,7 +92,7 @@ describe('Data Validation', () => {
         correctAnswer: 'Hello world',
         acceptableAnswers: ['hello world', 'helloworld']
       };
-      
+
       expect(question.type).toBe('listening');
       expect(typeof question.text).toBe('string');
       expect(typeof question.language).toBe('string');
@@ -110,7 +110,7 @@ describe('Data Validation', () => {
         description: 'Test description',
         phases: []
       };
-      
+
       expect(validWorkout).toHaveProperty('title');
       expect(validWorkout).toHaveProperty('description');
       expect(validWorkout).toHaveProperty('phases');
@@ -122,7 +122,7 @@ describe('Data Validation', () => {
         name: 'Warm-up',
         exercises: []
       };
-      
+
       expect(phase).toHaveProperty('name');
       expect(phase).toHaveProperty('exercises');
       expect(Array.isArray(phase.exercises)).toBe(true);
@@ -135,7 +135,7 @@ describe('Data Validation', () => {
         type: 'time',
         duration: 30
       };
-      
+
       expect(exercise.type).toBe('time');
       expect(typeof exercise.duration).toBe('number');
       expect(exercise.duration).toBeGreaterThan(0);
@@ -150,7 +150,7 @@ describe('Data Validation', () => {
         type: 'reps',
         reps: 20
       };
-      
+
       expect(exercise.type).toBe('reps');
       expect(typeof exercise.reps).toBe('number');
       expect(exercise.reps).toBeGreaterThan(0);
@@ -158,7 +158,7 @@ describe('Data Validation', () => {
   });
 
   describe('Text Normalization', () => {
-    const normalize = (text) => {
+    const normalize = text => {
       return text
         .toLowerCase()
         .normalize('NFD')
@@ -184,7 +184,7 @@ describe('Data Validation', () => {
 
     it('should handle Polish characters', () => {
       // Note: 'ł' doesn't normalize with NFD, needs special handling
-      const normalizePolish = (text) => {
+      const normalizePolish = text => {
         return text
           .toLowerCase()
           .normalize('NFD')
@@ -192,7 +192,7 @@ describe('Data Validation', () => {
           .replace(/ł/g, 'l')
           .trim();
       };
-      
+
       expect(normalizePolish('ąćęłńóśźż')).toBe('acelnoszz');
       expect(normalizePolish('ĄĆĘŁŃÓŚŹŻ')).toBe('acelnoszz');
     });
@@ -206,7 +206,7 @@ describe('Data Validation', () => {
   describe('JSON Validation', () => {
     it('should parse valid JSON', () => {
       const validJson = '{"title": "Test", "description": "Description"}';
-      
+
       expect(() => JSON.parse(validJson)).not.toThrow();
       const parsed = JSON.parse(validJson);
       expect(parsed).toHaveProperty('title');
@@ -215,13 +215,13 @@ describe('Data Validation', () => {
 
     it('should reject invalid JSON', () => {
       const invalidJson = '{title: "Test", description: "Description"}'; // Missing quotes
-      
+
       expect(() => JSON.parse(invalidJson)).toThrow();
     });
 
     it('should handle empty objects', () => {
       const emptyJson = '{}';
-      
+
       expect(() => JSON.parse(emptyJson)).not.toThrow();
       const parsed = JSON.parse(emptyJson);
       expect(Object.keys(parsed).length).toBe(0);
@@ -229,7 +229,7 @@ describe('Data Validation', () => {
 
     it('should handle arrays', () => {
       const arrayJson = '[1, 2, 3]';
-      
+
       expect(() => JSON.parse(arrayJson)).not.toThrow();
       const parsed = JSON.parse(arrayJson);
       expect(Array.isArray(parsed)).toBe(true);
@@ -253,7 +253,7 @@ describe('Data Validation', () => {
 
     it('should validate language code format', () => {
       const languageCodePattern = /^[a-z]{2}-[A-Z]{2}$/;
-      
+
       validLanguageCodes.forEach(code => {
         expect(code).toMatch(languageCodePattern);
       });
@@ -262,11 +262,10 @@ describe('Data Validation', () => {
     it('should reject invalid language codes', () => {
       const invalidCodes = ['pl', 'en', 'PL-pl', 'en-us', 'english'];
       const languageCodePattern = /^[a-z]{2}-[A-Z]{2}$/;
-      
+
       invalidCodes.forEach(code => {
         expect(code).not.toMatch(languageCodePattern);
       });
     });
   });
 });
-

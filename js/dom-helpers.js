@@ -15,13 +15,13 @@
  * @param {Object} [props.dataset] - Data attributes
  * @param {...(string|Node|null|undefined)} children - Child elements or text nodes
  * @returns {HTMLElement} The created element
- * 
+ *
  * @example
- * const button = h('button', 
+ * const button = h('button',
  *   { className: 'btn btn-primary', onclick: () => alert('Clicked!') },
  *   'Click me'
  * );
- * 
+ *
  * @example
  * const card = h('div', { className: 'card' },
  *   h('h2', {}, 'Title'),
@@ -30,28 +30,28 @@
  */
 export const h = (tag, props = {}, ...children) => {
   const el = document.createElement(tag);
-  
+
   // Handle special properties
   if (props) {
     const { style, dataset, className, ...restProps } = props;
-    
+
     // Set className separately (since 'class' is reserved)
     if (className) {
       el.className = className;
     }
-    
+
     // Apply inline styles
     if (style && typeof style === 'object') {
       Object.assign(el.style, style);
     }
-    
+
     // Apply data attributes
     if (dataset && typeof dataset === 'object') {
       Object.entries(dataset).forEach(([key, value]) => {
         el.dataset[key] = value;
       });
     }
-    
+
     // Apply remaining properties
     Object.entries(restProps).forEach(([key, value]) => {
       if (key.startsWith('on') && typeof value === 'function') {
@@ -63,7 +63,7 @@ export const h = (tag, props = {}, ...children) => {
       }
     });
   }
-  
+
   // Append children
   children.forEach(child => {
     if (child !== null && child !== undefined) {
@@ -74,7 +74,7 @@ export const h = (tag, props = {}, ...children) => {
       }
     }
   });
-  
+
   return el;
 };
 
@@ -82,17 +82,17 @@ export const h = (tag, props = {}, ...children) => {
  * Creates a text node
  * @param {string|number} text - Text content
  * @returns {Text} Text node
- * 
+ *
  * @example
  * const textNode = text('Hello World');
  */
-export const text = (text) => document.createTextNode(String(text));
+export const text = text => document.createTextNode(String(text));
 
 /**
  * Creates a document fragment from multiple elements
  * @param {...(Node|string)} children - Child elements
  * @returns {DocumentFragment} Document fragment
- * 
+ *
  * @example
  * const fragment = fragment(
  *   h('div', {}, 'First'),
@@ -115,11 +115,11 @@ export const fragment = (...children) => {
  * Removes all children from an element
  * @param {HTMLElement} element - Element to clear
  * @returns {HTMLElement} The cleared element (for chaining)
- * 
+ *
  * @example
  * clear(document.getElementById('container'));
  */
-export const clear = (element) => {
+export const clear = element => {
   while (element.firstChild) {
     element.removeChild(element.firstChild);
   }
@@ -131,9 +131,9 @@ export const clear = (element) => {
  * @param {HTMLElement} element - Parent element
  * @param {...(Node|string)} children - New children
  * @returns {HTMLElement} The parent element (for chaining)
- * 
+ *
  * @example
- * replace(container, 
+ * replace(container,
  *   h('h1', {}, 'New Title'),
  *   h('p', {}, 'New content')
  * );
@@ -155,7 +155,7 @@ export const replace = (element, ...children) => {
  * @param {HTMLElement} element - Target element
  * @param {...string} classes - Class names to add
  * @returns {HTMLElement} The element (for chaining)
- * 
+ *
  * @example
  * addClass(button, 'active', 'highlighted');
  */
@@ -169,7 +169,7 @@ export const addClass = (element, ...classes) => {
  * @param {HTMLElement} element - Target element
  * @param {...string} classes - Class names to remove
  * @returns {HTMLElement} The element (for chaining)
- * 
+ *
  * @example
  * removeClass(button, 'active', 'highlighted');
  */
@@ -183,7 +183,7 @@ export const removeClass = (element, ...classes) => {
  * @param {HTMLElement} element - Target element
  * @param {...string} classes - Class names to toggle
  * @returns {HTMLElement} The element (for chaining)
- * 
+ *
  * @example
  * toggleClass(button, 'active');
  */
@@ -197,7 +197,7 @@ export const toggleClass = (element, ...classes) => {
  * @param {HTMLElement} element - Target element
  * @param {Object.<string, string>} attributes - Attributes to set
  * @returns {HTMLElement} The element (for chaining)
- * 
+ *
  * @example
  * setAttrs(img, { src: 'image.jpg', alt: 'Description' });
  */
@@ -213,7 +213,7 @@ export const setAttrs = (element, attributes) => {
  * @param {string} selector - CSS selector
  * @param {Document|HTMLElement} [parent=document] - Parent element to search within
  * @returns {HTMLElement|null} Found element or null
- * 
+ *
  * @example
  * const button = qs('.btn-primary');
  * const nested = qs('.item', container);
@@ -225,7 +225,7 @@ export const qs = (selector, parent = document) => parent.querySelector(selector
  * @param {string} selector - CSS selector
  * @param {Document|HTMLElement} [parent=document] - Parent element to search within
  * @returns {NodeListOf<HTMLElement>} NodeList of found elements
- * 
+ *
  * @example
  * const buttons = qsa('.btn');
  * qsa('.item', container).forEach(item => console.log(item));
@@ -236,11 +236,11 @@ export const qsa = (selector, parent = document) => parent.querySelectorAll(sele
  * Gets element by ID (shorthand)
  * @param {string} id - Element ID
  * @returns {HTMLElement|null} Found element or null
- * 
+ *
  * @example
  * const header = byId('main-header');
  */
-export const byId = (id) => document.getElementById(id);
+export const byId = id => document.getElementById(id);
 
 /**
  * Adds event listener with optional delegation
@@ -249,11 +249,11 @@ export const byId = (id) => document.getElementById(id);
  * @param {string|Function} selectorOrHandler - CSS selector for delegation or handler function
  * @param {Function} [handler] - Handler function (if using delegation)
  * @returns {Function} Function to remove the listener
- * 
+ *
  * @example
  * // Direct listener
  * on(button, 'click', () => console.log('clicked'));
- * 
+ *
  * @example
  * // Delegated listener
  * on(document, 'click', '.btn', (e) => console.log('Button clicked', e.target));
@@ -265,7 +265,7 @@ export const on = (element, event, selectorOrHandler, handler) => {
     return () => element.removeEventListener(event, selectorOrHandler);
   } else {
     // Delegated listener
-    const delegatedHandler = (e) => {
+    const delegatedHandler = e => {
       if (e.target.matches(selectorOrHandler)) {
         handler(e);
       }
@@ -279,11 +279,11 @@ export const on = (element, event, selectorOrHandler, handler) => {
  * Shows an element (removes 'hidden' class)
  * @param {HTMLElement} element - Element to show
  * @returns {HTMLElement} The element (for chaining)
- * 
+ *
  * @example
  * show(modal);
  */
-export const show = (element) => {
+export const show = element => {
   element.classList.remove('hidden');
   return element;
 };
@@ -292,11 +292,11 @@ export const show = (element) => {
  * Hides an element (adds 'hidden' class)
  * @param {HTMLElement} element - Element to hide
  * @returns {HTMLElement} The element (for chaining)
- * 
+ *
  * @example
  * hide(modal);
  */
-export const hide = (element) => {
+export const hide = element => {
   element.classList.add('hidden');
   return element;
 };
@@ -306,7 +306,7 @@ export const hide = (element) => {
  * @param {HTMLElement} element - Element to toggle
  * @param {boolean} [force] - Force show (true) or hide (false)
  * @returns {HTMLElement} The element (for chaining)
- * 
+ *
  * @example
  * toggle(modal); // Toggle visibility
  * toggle(modal, true); // Force show
@@ -325,7 +325,7 @@ export const toggle = (element, force) => {
  * @param {string} [options.type='button'] - Button type
  * @param {boolean} [options.disabled=false] - Disabled state
  * @returns {HTMLButtonElement} Button element
- * 
+ *
  * @example
  * const btn = button('Save', {
  *   className: 'btn-primary',
@@ -334,12 +334,16 @@ export const toggle = (element, force) => {
  */
 export const button = (text, options = {}) => {
   const { className = '', onClick, type = 'button', disabled = false } = options;
-  return h('button', {
-    className: `px-4 py-2 rounded ${className}`,
-    type,
-    disabled,
-    onclick: onClick
-  }, text);
+  return h(
+    'button',
+    {
+      className: `px-4 py-2 rounded ${className}`,
+      type,
+      disabled,
+      onclick: onClick
+    },
+    text
+  );
 };
 
 /**
@@ -351,7 +355,7 @@ export const button = (text, options = {}) => {
  * @param {string} [options.className] - Additional CSS classes
  * @param {Function} [options.onInput] - Input handler
  * @returns {HTMLInputElement} Input element
- * 
+ *
  * @example
  * const input = inputEl({
  *   type: 'email',
@@ -360,14 +364,8 @@ export const button = (text, options = {}) => {
  * });
  */
 export const inputEl = (options = {}) => {
-  const { 
-    type = 'text', 
-    placeholder = '', 
-    value = '', 
-    className = '',
-    onInput 
-  } = options;
-  
+  const { type = 'text', placeholder = '', value = '', className = '', onInput } = options;
+
   return h('input', {
     type,
     placeholder,
@@ -381,7 +379,7 @@ export const inputEl = (options = {}) => {
  * Creates a loading spinner element
  * @param {string} [size='md'] - Size: 'sm', 'md', 'lg'
  * @returns {HTMLElement} Spinner element
- * 
+ *
  * @example
  * const spinner = loading('lg');
  * container.appendChild(spinner);
@@ -392,7 +390,7 @@ export const loading = (size = 'md') => {
     md: 'w-8 h-8',
     lg: 'w-12 h-12'
   };
-  
+
   return h('div', {
     className: `animate-spin rounded-full border-b-2 border-blue-500 ${sizeClasses[size]}`
   });
@@ -403,18 +401,10 @@ export const loading = (size = 'md') => {
  * @param {string} icon - Icon character or emoji
  * @param {string} [className=''] - Additional CSS classes
  * @returns {HTMLElement} Icon element
- * 
+ *
  * @example
  * const icon = iconEl('🎯', 'text-2xl');
  */
 export const iconEl = (icon, className = '') => {
   return h('span', { className: `inline-block ${className}` }, icon);
 };
-
-
-
-
-
-
-
-
