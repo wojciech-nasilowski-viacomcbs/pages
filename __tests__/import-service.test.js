@@ -4,9 +4,9 @@
 
 import { ImportService } from '../js/services/import-service.js';
 
-// Mock data-service
+// Mock data-service (default export)
 jest.mock('../js/data-service.js', () => ({
-  dataService: {
+  default: {
     saveQuiz: jest.fn(data => Promise.resolve({ id: 'quiz-123', ...data })),
     saveWorkout: jest.fn(data => Promise.resolve({ id: 'workout-123', ...data })),
     createListeningSet: jest.fn(() => Promise.resolve({ id: 'listening-123' }))
