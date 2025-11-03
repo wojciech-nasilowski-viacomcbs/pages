@@ -93,6 +93,23 @@
      * Obsługa kliknięcia przycisku Home
      */
     handleHomeButtonClick(state, elements, uiManager, contentManager) {
+      // BUGFIX: Sprawdź czy jakiś modal jest otwarty i zamknij go
+      const openModals = [
+        elements.aiGeneratorModal,
+        elements.importModal,
+        elements.loginModal,
+        elements.registerModal,
+        elements.resetPasswordModal,
+        elements.newPasswordModal,
+        elements.deleteModal
+      ].filter(modal => modal && !modal.classList.contains('hidden'));
+
+      if (openModals.length > 0) {
+        // Zamknij wszystkie otwarte modale
+        openModals.forEach(modal => modal.classList.add('hidden'));
+        return;
+      }
+
       // Jeśli jesteśmy na stronie głównej, nic nie rób
       if (state.currentView === 'main') {
         return;
