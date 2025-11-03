@@ -4,7 +4,8 @@
  * This allows gradual migration from IIFE to ES6 modules
  */
 
-import { createStore } from './state-manager.js';
+import { createStore } from './state/store.js';
+import { appState } from './state/app-state.js';
 import uiState from './ui-state.js';
 import * as audio from './audio.js';
 import { supabaseClient, getCurrentUser, isLoggedIn, getSession } from './supabase-client.js';
@@ -15,6 +16,7 @@ import wakeLockManager from './wake-lock.js';
 
 // Export to global scope for backward compatibility
 window.createStore = createStore;
+window.appState = appState;
 window.uiState = uiState;
 
 // Supabase client exports
