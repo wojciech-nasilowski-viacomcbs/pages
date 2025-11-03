@@ -993,9 +993,34 @@
   }
 
   /**
+   * Wykrywa czy to urządzenie mobilne (Android/iOS)
+   */
+  function isMobileDevice() {
+    const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+    // Sprawdź Android
+    if (/android/i.test(userAgent)) {
+      return true;
+    }
+    // Sprawdź iOS
+    if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
+      return true;
+    }
+    // Sprawdź touch support (dodatkowa heurystyka)
+    const hasTouchScreen = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+    const isSmallScreen = window.innerWidth <= 768;
+    return hasTouchScreen && isSmallScreen;
+  }
+
+  /**
    * Konfiguracja event listeners dla wskazówki o wygaszaniu ekranu
    */
   function setupScreenTipListeners() {
+    // Ukryj wskazówkę na desktopie (nie dotyczy)
+    if (!isMobileDevice() && elements.screenTimeoutTip) {
+      elements.screenTimeoutTip.classList.add('hidden');
+      return;
+    }
+
     // Sprawdź czy użytkownik już ukrył wskazówkę
     const tipDismissed = localStorage.getItem('screenTipDismissed');
     if (tipDismissed === 'true' && elements.screenTimeoutTip) {
