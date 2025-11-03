@@ -4,7 +4,7 @@
  * @module ui-state
  */
 
-import { createStore } from './state/store.js';
+import { createStore } from '../state/store.js';
 
 /**
  * Typy ekranów w aplikacji

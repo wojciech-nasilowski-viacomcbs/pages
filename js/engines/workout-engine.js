@@ -5,7 +5,7 @@
  */
 
 import { BaseEngine } from './base-engine.js';
-import { playTimerEndSound } from '../audio.js';
+import { playTimerEndSound } from '../utils/audio.js';
 
 /**
  * Silnik treningów
@@ -65,6 +65,9 @@ export class WorkoutEngine extends BaseEngine {
 
     // Setup Wake Lock
     this._setupWakeLock();
+
+    // Ukryj wskazówkę o wygaszaniu ekranu na desktop
+    this._setupScreenTimeoutTip();
 
     this.isInitialized = true;
     this.log('Initialized successfully');
@@ -354,13 +357,22 @@ export class WorkoutEngine extends BaseEngine {
     if (exercise.type === 'time') {
       this.workoutState.timeLeft = exercise.duration;
       this._updateTimerDisplay();
+      this.elements.timer?.classList.remove('hidden'); // Pokaż timer
       this._showButton('start-timer', 'Rozpocznij', this.icons.timer);
     } else {
+      this.elements.timer?.classList.add('hidden'); // Ukryj timer
       this._showButton('complete', 'Gotowe', this.icons.check);
     }
 
-    // Pokaż przycisk Skip
+    // Pokaż przycisk Skip z odpowiednim tekstem
     this.elements.skipButton.classList.remove('hidden');
+
+    // Zmień tekst przycisku Skip w zależności od typu ćwiczenia
+    if (exercise.name && exercise.name.toLowerCase().includes('odpoczynek')) {
+      this.elements.skipButton.textContent = 'Pomiń odpoczynek';
+    } else {
+      this.elements.skipButton.textContent = 'Pomiń ćwiczenie';
+    }
   }
 
   /**
@@ -572,10 +584,53 @@ export class WorkoutEngine extends BaseEngine {
       }
     }
   }
+
+  /**
+   * Setup screen timeout tip (hide on desktop)
+   * @private
+   */
+  _setupScreenTimeoutTip() {
+    const screenTip = document.getElementById('workout-screen-timeout-tip');
+
+    if (!screenTip) {
+      return;
+    }
+
+    // Ukryj wskazówkę na desktopie (nie dotyczy)
+    if (!this._isMobileDevice()) {
+      screenTip.classList.add('hidden');
+      return;
+    }
+
+    // Sprawdź czy użytkownik już ukrył wskazówkę
+    if (localStorage.getItem('workoutScreenTipDismissed') === 'true') {
+      screenTip.classList.add('hidden');
+      return;
+    }
+
+    // Przycisk "Rozumiem, nie pokazuj więcej"
+    const dismissBtn = document.getElementById('dismiss-workout-screen-tip');
+    dismissBtn?.addEventListener('click', () => {
+      screenTip.classList.add('hidden');
+      localStorage.setItem('workoutScreenTipDismissed', 'true');
+    });
+  }
+
+  /**
+   * Sprawdza czy urządzenie jest mobilne
+   * @private
+   * @returns {boolean}
+   */
+  _isMobileDevice() {
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+      navigator.userAgent
+    );
+  }
 }
 
 // ========== BACKWARD COMPATIBILITY FACADE ==========
-// TODO-REFACTOR-CLEANUP: Usunąć w FAZIE 5, Krok 17
+// TODO-PHASE-6: Facade functions dla IIFE modules (app.js, content-manager.js)
+// Zostanie usunięte po konwersji tych plików do ES6 modules
 
 let workoutEngineInstance = null;
 
@@ -603,12 +658,6 @@ export function startWorkout(workoutData, filename) {
   } else {
     console.error('[WORKOUT] Engine not initialized');
   }
-}
-
-// TODO-REFACTOR-CLEANUP: Eksport do window (backward compatibility)
-if (typeof window !== 'undefined') {
-  window.initWorkoutEngine = initWorkoutEngine;
-  window.startWorkout = startWorkout;
 }
 
 console.log('✅ WorkoutEngine (ES6 Class) loaded');

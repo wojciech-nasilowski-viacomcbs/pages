@@ -27,7 +27,7 @@ describe('Workout Sets Expansion', () => {
     `;
 
     // Load workout-engine.js (which defines expandExerciseSets)
-    require('../js/workout-engine.js');
+    require('../js/engines/workout-engine.js');
 
     // Extract the expandExerciseSets function from the module
     // Since workout-engine.js uses IIFE, we need to access it via window if exported

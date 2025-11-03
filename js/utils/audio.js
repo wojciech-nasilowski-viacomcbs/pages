@@ -283,4 +283,12 @@ export async function initAudio() {
   }
 }
 
+// TODO-PHASE-6: Backward compatibility dla quiz-engine.js (IIFE)
+if (typeof window !== 'undefined') {
+  window.speakText = speakText;
+  window.playCorrectSound = playCorrectSound;
+  window.playIncorrectSound = playIncorrectSound;
+  window.playTimerEndSound = playTimerEndSound;
+}
+
 console.log('✅ Audio module initialized');

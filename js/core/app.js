@@ -45,6 +45,8 @@
       tabName: 'listening',
       featureFlagCheck: () => featureFlags.isListeningEnabled(),
       loadAndStartFn: id => {
+        // Przełącz na ekran listening i załaduj zestaw
+        uiManager.showScreen('listening', state, elements, contentManager, sessionManager);
         if (window.listeningEngine && window.listeningEngine.loadAndStartListening) {
           return window.listeningEngine.loadAndStartListening(id);
         }
@@ -262,6 +264,42 @@
         // Sprawdź czy funkcja jest włączona
         if (!config.featureFlagCheck()) {
           throw new Error(`Moduł '${type}' jest wyłączony`);
+        }
+
+        // Ustaw odpowiednią zakładkę w dolnym menu (jeśli typ ma tabName)
+        if (config.tabName) {
+          state.currentTab = config.tabName;
+          if (window.uiState) {
+            window.uiState.switchTab(config.tabName);
+          }
+          // Zapisz w localStorage
+          try {
+            localStorage.setItem('lastActiveTab', config.tabName);
+          } catch (e) {
+            console.warn('Nie można zapisać zakładki w localStorage:', e);
+          }
+
+          // Aktualizuj wizualny stan przycisków zakładek
+          [
+            elements.tabQuizzes,
+            elements.tabWorkouts,
+            elements.tabListening,
+            elements.tabKnowledgeBase,
+            elements.tabImport,
+            elements.tabAIGenerator,
+            elements.tabMore
+          ].forEach(btn => btn?.classList.remove('active'));
+
+          const activeTabButton = {
+            quizzes: elements.tabQuizzes,
+            workouts: elements.tabWorkouts,
+            listening: elements.tabListening,
+            'knowledge-base': elements.tabKnowledgeBase,
+            import: elements.tabImport,
+            'ai-generator': elements.tabAIGenerator,
+            more: elements.tabMore
+          }[config.tabName];
+          activeTabButton?.classList.add('active');
         }
 
         // Załaduj i uruchom treść (użyj slug dla artykułów, id dla reszty)

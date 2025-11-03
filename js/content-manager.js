@@ -242,8 +242,8 @@
           const id = btn.dataset.id;
           const title = btn.dataset.title;
 
-          // Pobierz typ z currentTab, obsługując wszystkie typy treści
-          const type = state.currentTab.replace(/s$/, ''); // 'quizzes' -> 'quiz', 'workouts' -> 'workout', 'listening' -> 'listening'
+          // Pobierz typ z data-type (dodany przez CardRenderer) lub z currentTab jako fallback
+          const type = btn.dataset.type || this._getTypeFromTab(state.currentTab);
 
           // Zablokuj przycisk na czas operacji
           btn.disabled = true;
@@ -426,14 +426,18 @@
     async exportContent(id, state, _elements) {
       try {
         let data, filename;
+        const type = this._getTypeFromTab(state.currentTab);
 
         // Pobierz pełne dane z Supabase
-        if (state.currentTab === 'quizzes') {
+        if (type === 'quiz') {
           data = await dataService.fetchQuizById(id);
           filename = `quiz-${this.sanitizeFilename(data.title)}.json`;
-        } else {
+        } else if (type === 'workout') {
           data = await dataService.fetchWorkoutById(id);
           filename = `workout-${this.sanitizeFilename(data.title)}.json`;
+        } else if (type === 'listening') {
+          data = await dataService.getListeningSet(id);
+          filename = `listening-${this.sanitizeFilename(data.title)}.json`;
         }
 
         // Usuń metadane Supabase (id, user_id, created_at, is_sample)
@@ -442,12 +446,16 @@
           description: data.description
         };
 
-        if (state.currentTab === 'quizzes') {
+        if (type === 'quiz') {
           cleanData.questions = data.questions;
-        } else {
+        } else if (type === 'workout') {
           // Dla treningów: dodaj emoji (lub domyślną 💪 jeśli brak)
           cleanData.emoji = data.emoji || '💪';
           cleanData.phases = data.phases;
+        } else if (type === 'listening') {
+          // Dla listening: dodaj emoji i content
+          cleanData.emoji = data.emoji || '🎧';
+          cleanData.content = data.content;
         }
 
         // Konwertuj do JSON
@@ -1068,6 +1076,20 @@
      */
     confirmDelete(id, title, elements) {
       this.itemToDelete = id;
+
+      // Sprawdź czy elementy istnieją
+      if (!elements || !elements.deleteItemTitle || !elements.deleteModal) {
+        // Fallback: użyj window.confirm
+        const confirmed = window.confirm(`Czy na pewno chcesz usunąć "${title}"?`);
+        if (confirmed) {
+          // Wywołaj handleDelete bezpośrednio
+          const state = window.getAppState ? window.getAppState() : {};
+          const uiManager = window.uiManager;
+          this.handleDelete(state, elements || {}, uiManager);
+        }
+        return;
+      }
+
       elements.deleteItemTitle.textContent = title;
       elements.deleteModal.classList.remove('hidden');
     },
@@ -1077,7 +1099,9 @@
      */
     closeDeleteModal(elements) {
       this.itemToDelete = null;
-      elements.deleteModal.classList.add('hidden');
+      if (elements && elements.deleteModal) {
+        elements.deleteModal.classList.add('hidden');
+      }
     },
 
     /**
@@ -1087,18 +1111,37 @@
       if (!this.itemToDelete) return;
 
       try {
-        if (state.currentTab === 'quizzes') {
+        const type = this._getTypeFromTab(state.currentTab);
+
+        if (type === 'quiz') {
           await dataService.deleteQuiz(this.itemToDelete);
-        } else {
+        } else if (type === 'workout') {
           await dataService.deleteWorkout(this.itemToDelete);
+        } else if (type === 'listening') {
+          await dataService.deleteListeningSet(this.itemToDelete);
         }
 
         // Odśwież dane
-        await this.loadData(state, elements, uiManager);
-        this.renderCards(state, elements, uiManager, window.sessionManager);
+        if (type === 'listening') {
+          // Dla listening - odśwież listę przez engine
+          if (window.listeningEngine && window.listeningEngine.showListeningList) {
+            window.listeningEngine.showListeningList();
+          }
+        } else {
+          // Dla quiz i workout - odśwież przez content manager
+          await this.loadData(state, elements, uiManager);
+          this.renderCards(state, elements, uiManager, window.sessionManager);
+        }
 
-        // Zamknij modal
-        this.closeDeleteModal(elements);
+        // Zamknij modal (jeśli istnieje)
+        if (elements && elements.deleteModal) {
+          this.closeDeleteModal(elements);
+        }
+
+        // Pokaż powiadomienie sukcesu
+        if (window.uiManager && window.uiManager.showNotification) {
+          window.uiManager.showNotification('Usunięto pomyślnie', '✅', 'success');
+        }
       } catch (error) {
         console.error('Błąd podczas usuwania:', error);
         window.alert('Błąd podczas usuwania: ' + error.message);
@@ -1957,8 +2000,8 @@
      */
     async togglePublicStatus(id, newIsPublic, title, state, elements, uiManager, sessionManager) {
       try {
-        // Pobierz typ z currentTab, obsługując wszystkie typy treści
-        const type = state.currentTab.replace(/s$/, ''); // 'quizzes' -> 'quiz', 'workouts' -> 'workout', 'listening' -> 'listening'
+        // Pobierz typ z currentTab
+        const type = this._getTypeFromTab(state.currentTab);
 
         // Użyj konfiguracji z app.js jeśli dostępna
         if (window.contentTypeConfig && window.contentTypeConfig[type]) {
@@ -1985,8 +2028,16 @@
         }
 
         // Odśwież listę
-        await this.loadData(state, elements, uiManager);
-        this.renderCards(state, elements, uiManager, sessionManager);
+        if (type === 'listening') {
+          // Dla listening - odśwież listę przez engine
+          if (window.listeningEngine && window.listeningEngine.showListeningList) {
+            window.listeningEngine.showListeningList();
+          }
+        } else {
+          // Dla quiz i workout - odśwież przez content manager
+          await this.loadData(state, elements, uiManager);
+          this.renderCards(state, elements, uiManager, sessionManager);
+        }
       } catch (error) {
         console.error('Błąd zmiany statusu publicznego:', error);
 
@@ -2004,6 +2055,21 @@
           window.alert(errorMessage);
         }
       }
+    },
+
+    /**
+     * Konwertuje nazwę zakładki na typ treści
+     * @param {string} tabName - Nazwa zakładki ('quizzes', 'workouts', 'listening')
+     * @returns {string} - Typ treści ('quiz', 'workout', 'listening')
+     * @private
+     */
+    _getTypeFromTab(tabName) {
+      const mapping = {
+        quizzes: 'quiz',
+        workouts: 'workout',
+        listening: 'listening'
+      };
+      return mapping[tabName] || tabName;
     }
   };
 

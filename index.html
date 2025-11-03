@@ -636,6 +636,9 @@
                 <!-- Szczegóły ćwiczenia -->
                 <p id="workout-exercise-details" class="text-xl text-gray-300 font-medium mb-6"></p>
 
+                <!-- Timer (dla ćwiczeń czasowych) -->
+                <div id="workout-timer" class="text-6xl font-bold text-center text-blue-400 mb-6 hidden"></div>
+
                 <!-- Główne elementy sterujące -->
                 <div class="space-y-4">
                     <!-- Główny przycisk -->
@@ -1605,29 +1608,31 @@
     </nav>
 
     <!-- Skrypty JS -->
-    <script type="module" src="js/audio.js"></script>
-    <script src="js/config.js"></script>
-    <script type="module" src="js/feature-flags.js"></script>
-    <script type="module" src="js/supabase-client.js"></script>
-    <script type="module" src="js/auth-service.js"></script>
-    <script type="module" src="js/data-service.js"></script>
+    <!-- FAZA 3: Nowa struktura katalogów - pliki przeniesione do podkatalogów -->
+    <script type="module" src="js/utils/audio.js"></script>
+    <script src="js/core/config.js"></script>
+    <script type="module" src="js/data/feature-flags.js"></script>
+    <script type="module" src="js/data/supabase-client.js"></script>
+    <script type="module" src="js/data/auth-service.js"></script>
+    <script type="module" src="js/data/data-service.js"></script>
     
     <!-- State Management (v2.1 - reactive state) -->
-    <script type="module" src="js/wake-lock.js"></script>
+    <!-- FAZA 5.1: ui-state.js scalony z app-state.js -->
+    <script type="module" src="js/utils/wake-lock.js"></script>
     <script type="module" src="js/state/store.js"></script>
     <script type="module" src="js/state/app-state.js"></script>
-    <script type="module" src="js/ui-state.js"></script>
-    <script type="module" src="js/modules-shim.js"></script>
     
     <!-- Managers (v2.0 refactored) -->
-    <script src="js/ui-manager.js"></script>
-    <script src="js/session-manager.js"></script>
-    <script src="js/ai-prompts.js"></script>
+    <script src="js/ui/ui-manager.js"></script>
+    <script type="module" src="js/ui/session-manager.js"></script>
+    <script src="js/data/ai-prompts.js"></script>
     <script src="js/content-manager.js"></script>
     
-    <!-- FAZA 3.2-3.4: All main engines migrated to ES6 classes! 🎉 (loaded via main.js) -->
+    <!-- FAZA 3.2-3.4: All main engines migrated to ES6 classes! 🎉 -->
+    <!-- FAZA 5.2: Engines loaded via bridge for IIFE compatibility -->
+    <script type="module" src="js/engines-bridge.js"></script>
     <script src="js/knowledge-base-engine.js"></script>
-    <script defer src="js/app.js"></script>
+    <script defer src="js/core/app.js"></script>
 
 </body>
 </html>
