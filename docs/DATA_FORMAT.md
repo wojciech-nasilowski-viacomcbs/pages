@@ -693,16 +693,16 @@ System TTS (Text-to-Speech) wykorzystuje Web Speech API dostępne w przeglądarc
 
 ---
 
-## Nauka ze Słuchu (Nowa Funkcjonalność)
+## Nauka ze Słuchu (Listening Sets)
 
-### Lokalizacja
+### 📍 Lokalizacja
 Dane dla tej funkcjonalności są przechowywane w bazie danych **Supabase**, w tabeli `listening_sets`. Nie są one ładowane z plików JSON, jak quizy czy treningi.
 
-### Struktura Obiektu w Bazie Danych
+### 📊 Struktura Obiektu w Bazie Danych
 
 Każdy wiersz w tabeli `listening_sets` reprezentuje jeden zestaw do nauki. Kolumna `content` w tej tabeli przechowuje dane w formacie JSONB. Poniżej opisano strukturę tego obiektu.
 
-### Struktura Główna
+### 🏗️ Struktura Główna
 
 ```json
 {
@@ -716,47 +716,281 @@ Każdy wiersz w tabeli `listening_sets` reprezentuje jeden zestaw do nauki. Kolu
 }
 ```
 
-### Pola Główne
+### 📋 Pola Główne
 
 | Pole | Typ | Wymagane | Opis |
 |---|---|---|---|
 | `title` | string | ✅ | Nazwa zestawu wyświetlana na liście |
 | `description` | string | ✅ | Krótki opis, widoczny pod tytułem |
-| `lang1_code` | string | ✅ | Kod języka dla pierwszej części pary (np. "pl-PL") |
-| `lang2_code` | string | ✅ | Kod języka dla drugiej części pary (np. "es-ES") |
-| `content` | array | ✅ | Tablica obiektów z parami językowymi (min. 1) |
+| `lang1_code` | string | ✅ | Kod języka BCP 47 dla pierwszej części pary (np. "pl-PL", "en-US") |
+| `lang2_code` | string | ✅ | Kod języka BCP 47 dla drugiej części pary (np. "es-ES", "de-DE") |
+| `content` | array | ✅ | Tablica obiektów z parami językowymi (min. 1, zalecane 15-40) |
+
+### 🌍 Kody Języków (BCP 47)
+
+Używaj pełnych kodów BCP 47 dla `lang1_code` i `lang2_code`:
+
+| Język | Kod BCP 47 | Klucz w content |
+|-------|-----------|-----------------|
+| Polski | `pl-PL` | `pl` |
+| Angielski (US) | `en-US` | `en` |
+| Angielski (UK) | `en-GB` | `en` |
+| Hiszpański (Hiszpania) | `es-ES` | `es` |
+| Hiszpański (Meksyk) | `es-MX` | `es` |
+| Niemiecki | `de-DE` | `de` |
+| Francuski | `fr-FR` | `fr` |
+| Włoski | `it-IT` | `it` |
+| Portugalski (Brazylia) | `pt-BR` | `pt` |
+| Portugalski (Portugalia) | `pt-PT` | `pt` |
+| Rosyjski | `ru-RU` | `ru` |
+| Japoński | `ja-JP` | `ja` |
+| Chiński (Mandaryński) | `zh-CN` | `zh` |
+| Koreański | `ko-KR` | `ko` |
+
+**Uwaga:** Klucze w `content` są skróconymi wersjami (2 litery), podczas gdy `lang1_code`/`lang2_code` używają pełnych kodów BCP 47.
 
 ---
 
-### Pary Językowe
+### 🔗 Pary Językowe
 
 Tablica `content` zawiera obiekty, gdzie klucze dynamicznie odpowiadają skrótom języków (np. "pl", "es", "en").
 
+#### Przykład Podstawowy:
 ```json
 [
   {
-    "pl": "--- CZASOWNIK: ESTAR ---",
-    "es": "--- VERBO: ESTAR ---"
+    "pl": "Dzień dobry",
+    "es": "Buenos días"
+  },
+  {
+    "pl": "Dziękuję",
+    "es": "Gracias"
+  },
+  {
+    "pl": "Przepraszam",
+    "es": "Lo siento"
+  }
+]
+```
+
+#### Przykład z Separatorami (Grupowanie Tematyczne):
+```json
+[
+  {
+    "pl": "--- CZASOWNIK: ESTAR (Być - stany, położenie) ---",
+    "es": "--- VERBO: ESTAR (Presente) ---"
   },
   {
     "pl": "(Ja) jestem",
     "es": "(Yo) estoy"
   },
   {
+    "pl": "(Ty) jesteś",
+    "es": "(Tú) estás"
+  },
+  {
+    "pl": "(On/Ona) jest",
+    "es": "(Él/Ella) está"
+  },
+  {
     "pl": "Jestem zmęczony.",
     "es": "Estoy cansado."
+  },
+  {
+    "pl": "Książka jest na stole.",
+    "es": "El libro está en la mesa."
+  },
+  {
+    "pl": "--- CZASOWNIK: IR (Iść) ---",
+    "es": "--- VERBO: IR (Presente) ---"
+  },
+  {
+    "pl": "(Ja) idę",
+    "es": "(Yo) voy"
+  },
+  {
+    "pl": "(Ty) idziesz",
+    "es": "(Tú) vas"
+  },
+  {
+    "pl": "Idę do szkoły.",
+    "es": "Voy a la escuela."
   }
 ]
 ```
 
 **Pola w parach:**
-- Klucze (np. `"pl"`, `"es"`) powinny być prostymi, dwuliterowymi kodami języków.
-- Wartości to tekst (string), który ma być wyświetlony i odczytany przez syntezator mowy.
-- **Separatory**: Teksty w formacie `--- OPIS ---` są traktowane jako nagłówki sekcji, anonsowane głosowo z dłuższą przerwą.
+- **Klucze** (np. `"pl"`, `"es"`): Dwuliterowe kody języków odpowiadające `lang1_code`/`lang2_code`
+- **Wartości**: Tekst (string), który ma być wyświetlony i odczytany przez syntezator mowy (TTS)
+- **Separatory**: Teksty w formacie `--- OPIS ---` są traktowane jako nagłówki sekcji
+  - Anonsowane głosowo z dłuższą przerwą (4s)
+  - Używaj TYLKO gdy ma to sens tematyczny (różne czasowniki, kategorie słówek)
+  - Separator jest wykrywany gdy wartość zaczyna się i kończy na `---`
 
 ---
 
-## Funkcje Odtwarzacza
+### 🎮 Funkcje Odtwarzacza
+
+#### Kontrolki Podstawowe:
+- **▶️ Play/Pauza**: Uruchamia i zatrzymuje odtwarzanie
+- **⏮️ Poprzednia**: Przechodzi do poprzedniej pary
+- **⏭️ Następna**: Przechodzi do następnej pary
+
+#### Opcje Zaawansowane:
+- **🔁 Zapętlanie**: Włącz/wyłącz odtwarzanie listy w nieskończonej pętli
+- **🔄 Zmiana Kolejności Języków**: Przełącza kolejność odtwarzania (np. `PL → ES` na `ES → PL`)
+- **🔄 Restart**: Rozpocznij od początku zestawu
+
+#### Logika Odtwarzania:
+- **Sekwencja domyślna**: 
+  1. Język 1 (odczytanie przez TTS)
+  2. Pauza 1s
+  3. Język 2 (odczytanie przez TTS)
+  4. Pauza 3s
+  5. Następna para
+- **Separatory**: Po odtworzeniu nagłówka sekcji następuje pauza 4s
+- **Zapętlanie**: Po ostatniej parze wraca do pierwszej (jeśli włączone)
+
+#### Wskazówki dla Użytkownika:
+- **Zapobieganie wygaszaniu ekranu**: System wyświetla wskazówkę jak ustawić telefon aby ekran nie gasł podczas nauki
+- **Postęp**: Pasek postępu pokazuje aktualną pozycję w zestawie (np. "5 / 20")
+
+---
+
+### 📝 Pełny Przykład: Hiszpański A1
+
+```json
+{
+  "title": "Hiszpański A1: Czasowniki ESTAR i IR",
+  "description": "Podstawowe czasowniki w czasie teraźniejszym z przykładami użycia",
+  "lang1_code": "pl-PL",
+  "lang2_code": "es-ES",
+  "content": [
+    {
+      "pl": "--- CZASOWNIK: ESTAR (Być - stany, położenie) ---",
+      "es": "--- VERBO: ESTAR (Presente) ---"
+    },
+    {
+      "pl": "(Ja) jestem",
+      "es": "(Yo) estoy"
+    },
+    {
+      "pl": "(Ty) jesteś",
+      "es": "(Tú) estás"
+    },
+    {
+      "pl": "(On/Ona) jest",
+      "es": "(Él/Ella) está"
+    },
+    {
+      "pl": "(My) jesteśmy",
+      "es": "(Nosotros) estamos"
+    },
+    {
+      "pl": "(Wy) jesteście",
+      "es": "(Vosotros) estáis"
+    },
+    {
+      "pl": "(Oni/One) są",
+      "es": "(Ellos/Ellas) están"
+    },
+    {
+      "pl": "Jestem zmęczony.",
+      "es": "Estoy cansado."
+    },
+    {
+      "pl": "Jesteśmy w domu.",
+      "es": "Estamos en casa."
+    },
+    {
+      "pl": "Książka jest na stole.",
+      "es": "El libro está en la mesa."
+    },
+    {
+      "pl": "--- CZASOWNIK: IR (Iść) ---",
+      "es": "--- VERBO: IR (Presente) ---"
+    },
+    {
+      "pl": "(Ja) idę",
+      "es": "(Yo) voy"
+    },
+    {
+      "pl": "(Ty) idziesz",
+      "es": "(Tú) vas"
+    },
+    {
+      "pl": "(On/Ona) idzie",
+      "es": "(Él/Ella) va"
+    },
+    {
+      "pl": "Idę do szkoły.",
+      "es": "Voy a la escuela."
+    },
+    {
+      "pl": "Idziemy do kina.",
+      "es": "Vamos al cine."
+    },
+    {
+      "pl": "Czy idziesz do pracy?",
+      "es": "¿Vas al trabajo?"
+    }
+  ]
+}
+```
+
+### 💡 Wskazówki dla Tworzenia Zestawów
+
+1. **Rozmiar**: 15-40 par to optymalny zakres (nie za krótko, nie za długo)
+2. **Progresja**: Układaj pary od prostych do trudniejszych
+3. **Kontekst**: Dodawaj kontekst w nawiasach gdy potrzebny, np. "(Ja) jestem", "(w restauracji)"
+4. **Czasowniki**: Pokaż różne osoby (ja, ty, on/ona, my, wy, oni)
+5. **Przykłady**: Dla słówek dodaj przykłady użycia w zdaniach
+6. **Separatory**: Używaj rozsądnie - grupuj logiczne sekcje (np. różne czasowniki, kategorie)
+7. **Naturalność**: Używaj naturalnego języka, tak jak mówią native speakerzy
+
+### ⚠️ Częste Błędy
+
+❌ **Źle** - Brak pełnych kodów BCP 47:
+```json
+{
+  "lang1_code": "pl",
+  "lang2_code": "es"
+}
+```
+
+✅ **Dobrze** - Pełne kody BCP 47:
+```json
+{
+  "lang1_code": "pl-PL",
+  "lang2_code": "es-ES"
+}
+```
+
+❌ **Źle** - Klucze nie pasują do języków:
+```json
+{
+  "lang1_code": "pl-PL",
+  "lang2_code": "es-ES",
+  "content": [
+    {"en": "Hello", "de": "Hallo"}  // Źle! Powinno być pl i es
+  ]
+}
+```
+
+✅ **Dobrze** - Klucze pasują do języków:
+```json
+{
+  "lang1_code": "pl-PL",
+  "lang2_code": "es-ES",
+  "content": [
+    {"pl": "Cześć", "es": "Hola"}  // Dobrze!
+  ]
+}
+```
+
+---
+
+## Funkcje Odtwarzacza (Szczegóły Techniczne)
 
 ### Kontrola
 - **Play/Pauza**: Uruchamia i zatrzymuje odtwarzanie.
