@@ -37,11 +37,11 @@ import './ui/card-renderer.js';
 // - js/content-manager.js
 
 // ========== ENGINES ==========
-// FAZA 3.2: Quiz Engine migrated to ES6 class
+// FAZA 3.2-3.3: Quiz & Workout Engines migrated to ES6 classes
 import './engines/quiz-engine.js';
+import './engines/workout-engine.js';
 
-// TODO-REFACTOR-CLEANUP: These are still IIFE, will be converted in Phase 3.3-3.4
-// - js/workout-engine.js (FAZA 3.3)
+// TODO-REFACTOR-CLEANUP: These are still IIFE, will be converted in Phase 3.4
 // - js/listening-engine.js (FAZA 3.4)
 // - js/knowledge-base-engine.js (later)
 
