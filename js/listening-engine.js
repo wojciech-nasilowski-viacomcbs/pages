@@ -1236,12 +1236,15 @@
     }
   }
 
+  // TODO-REFACTOR-CLEANUP: Backward compatibility (FAZA 3, Krok 12)
+  // Te eksporty zostaną zastąpione przez ES6 class export
   // Eksportuj funkcje publiczne
-  window.initListeningEngine = init;
-  window.showListeningList = showListeningList;
+  window.initListeningEngine = init; // TODO-REFACTOR-CLEANUP
+  window.showListeningList = showListeningList; // TODO-REFACTOR-CLEANUP
   window.listeningEngine = {
+    // TODO-REFACTOR-CLEANUP
     isPlaying: () => playerState.isPlaying,
     getCurrentSet: () => playerState.currentSet,
     loadAndStartListening: loadAndStartListening
   };
-})();
+})(); // End of IIFE - TODO-REFACTOR-CLEANUP: Convert to ES6 class in FAZA 3

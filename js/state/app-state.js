@@ -99,17 +99,19 @@ export function getAppState() {
 }
 
 // ========== BACKWARD COMPATIBILITY (TEMPORARY!) ==========
+// TODO-REFACTOR-CLEANUP: Backward compatibility shim (FAZA 5, Krok 17)
 // Eksport do window (do usunięcia w Kroku 17)
+// Po zakończeniu refaktoringu wszystkie moduły będą używać ES6 imports
 if (typeof window !== 'undefined') {
-  window.appState = appState;
-  window.setCurrentUser = setCurrentUser;
-  window.setUserRole = setUserRole;
-  window.setCurrentScreen = setCurrentScreen;
-  window.setCurrentTab = setCurrentTab;
-  window.setActivity = setActivity;
-  window.setTabBarVisibility = setTabBarVisibility;
-  window.setListeningPlayerActive = setListeningPlayerActive;
-  window.getAppState = getAppState;
+  window.appState = appState; // TODO-REFACTOR-CLEANUP
+  window.setCurrentUser = setCurrentUser; // TODO-REFACTOR-CLEANUP
+  window.setUserRole = setUserRole; // TODO-REFACTOR-CLEANUP
+  window.setCurrentScreen = setCurrentScreen; // TODO-REFACTOR-CLEANUP
+  window.setCurrentTab = setCurrentTab; // TODO-REFACTOR-CLEANUP
+  window.setActivity = setActivity; // TODO-REFACTOR-CLEANUP
+  window.setTabBarVisibility = setTabBarVisibility; // TODO-REFACTOR-CLEANUP
+  window.setListeningPlayerActive = setListeningPlayerActive; // TODO-REFACTOR-CLEANUP
+  window.getAppState = getAppState; // TODO-REFACTOR-CLEANUP
 }
 
 console.log('✅ App state initialized');
