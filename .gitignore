@@ -36,3 +36,6 @@ coverage/
 test-report.html
 *.lcov
 
+# Build output (Vite)
+dist/
+
