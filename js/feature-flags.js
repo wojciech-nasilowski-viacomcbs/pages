@@ -144,6 +144,20 @@ export default {
   isInTabBar
 };
 
+// Eksport do window (dla backward compatibility)
+window.featureFlags = {
+  isQuizzesEnabled,
+  isWorkoutsEnabled,
+  isListeningEnabled,
+  isKnowledgeBaseEnabled,
+  isFileImportEnabled,
+  isAIGeneratorEnabled,
+  getEnabledTabs,
+  getActiveCoreTabs,
+  needsMoreTab,
+  isInTabBar
+};
+
 const env = isProduction() ? 'PRODUCTION' : 'DEVELOPMENT';
 console.log(`✅ Feature flags initialized (${env} mode)`);
 if (isProduction()) {
