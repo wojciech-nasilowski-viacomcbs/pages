@@ -36,13 +36,14 @@ import './ui/card-renderer.js';
 // - js/ai-prompts.js
 // - js/content-manager.js
 
-// ========== ENGINES (IIFE - will be refactored in Phase 3) ==========
-// These are loaded via <script> tags because they use window.* API
-// TODO-REFACTOR-CLEANUP: Convert to classes in Phase 3
-// - js/quiz-engine.js
-// - js/workout-engine.js
-// - js/listening-engine.js
-// - js/knowledge-base-engine.js
+// ========== ENGINES ==========
+// FAZA 3.2: Quiz Engine migrated to ES6 class
+import './engines/quiz-engine.js';
+
+// TODO-REFACTOR-CLEANUP: These are still IIFE, will be converted in Phase 3.3-3.4
+// - js/workout-engine.js (FAZA 3.3)
+// - js/listening-engine.js (FAZA 3.4)
+// - js/knowledge-base-engine.js (later)
 
 // ========== APP INITIALIZATION (IIFE) ==========
 // TODO-REFACTOR-CLEANUP: Convert to ES6 module in Phase 4
