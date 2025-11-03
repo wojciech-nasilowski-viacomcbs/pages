@@ -2323,7 +2323,115 @@ Ten plan jest **syntezą dwóch niezależnych analiz architektonicznych**. Łąc
 
 ---
 
-**Document Version**: 2.1 (UPDATED)  
+## 🧪 PROCEDURA TESTOWANIA PO KAŻDYM KROKU
+
+### Automatyczne Testy
+Po każdym kroku refaktoringu **OBOWIĄZKOWO** uruchom:
+
+```bash
+npm test
+```
+
+**Wymagane minimum**: 95% testów passing (obecnie: 317/321 = 98.8%)
+
+### Manualne Testowanie w Przeglądarce
+
+#### 1. Uruchom Dev Server
+```bash
+# Opcja A: Python (zalecane)
+python3 -m http.server 8000
+
+# Opcja B: Node.js
+npx http-server -p 8000
+```
+
+#### 2. Otwórz Konsolę Deweloperską
+- Chrome/Edge: `F12` lub `Ctrl+Shift+I`
+- Firefox: `F12` lub `Ctrl+Shift+K`
+- Safari: `Cmd+Option+I`
+
+#### 3. Sprawdź Błędy w Konsoli
+**✅ Oczekiwany output (brak błędów):**
+```
+✅ Feature flags initialized (DEVELOPMENT mode)
+✅ Supabase client initialized
+✅ Auth service initialized
+✅ Data service initialized
+✅ Wake Lock Manager initialized
+✅ State manager initialized
+✅ App state initialized
+✅ UI State manager initialized
+✅ ES6 Modules shim loaded
+✅ UI manager initialized
+✅ Session manager initialized
+✅ Content manager initialized
+✅ Quiz engine initialized
+✅ Workout engine initialized
+✅ Knowledge Base engine initialized
+✅ Audio module initialized
+🚀 Inicjalizacja aplikacji v2.0...
+```
+
+**❌ Błędy do naprawienia natychmiast:**
+- `404 (File not found)` - brakujący plik lub zły import
+- `ReferenceError: X is not defined` - brak eksportu do window lub zła kolejność ładowania
+- `TypeError: Cannot read properties of undefined` - niezainicjalizowany moduł
+- `SyntaxError` - błąd składni (prawdopodobnie w nowym kodzie)
+
+#### 4. Testuj Kluczowe Funkcje (Smoke Tests)
+
+**A. Autentykacja:**
+- [ ] Logowanie działa
+- [ ] Wylogowanie działa
+- [ ] Sesja jest zachowana po odświeżeniu
+
+**B. Nawigacja:**
+- [ ] Przełączanie zakładek (Workouts, Quizzes, Listening, Knowledge Base, More)
+- [ ] Przycisk Home działa
+- [ ] Deep links działają (`?quiz=123`, `?workout=456`)
+
+**C. CRUD Operations:**
+- [ ] Ładowanie listy treści
+- [ ] Uruchomienie quizu/treningu/listening
+- [ ] Usunięcie treści (Delete)
+- [ ] Eksport treści (Export JSON)
+- [ ] Udostępnienie linku (Share)
+- [ ] Toggle Public/Private (admin)
+
+**D. Import/AI Generator:**
+- [ ] Import JSON działa
+- [ ] AI Generator działa (jeśli skonfigurowany)
+- [ ] Walidacja błędnych danych
+
+**E. Engines:**
+- [ ] Quiz: pytania, odpowiedzi, wynik końcowy
+- [ ] Workout: timer, fazy, dźwięki
+- [ ] Listening: odtwarzanie, pauza, nawigacja
+- [ ] Knowledge Base: wyświetlanie, edycja (admin)
+
+#### 5. Sprawdź Network Tab
+- [ ] Brak 404 na pliki `.js`
+- [ ] Brak duplikowanych requestów
+- [ ] Supabase API działa (jeśli zalogowany)
+
+#### 6. Sprawdź Performance
+- [ ] Ładowanie < 3s (localhost)
+- [ ] Brak memory leaks (użyj Performance Monitor)
+- [ ] Smooth animations (60 FPS)
+
+### Checklist Po Każdym Kroku
+
+- [ ] `npm test` - wszystkie testy passing
+- [ ] Konsola bez błędów
+- [ ] Smoke tests przechodzą
+- [ ] Commit z opisem zmian
+- [ ] Update TODO list
+
+**Jeśli cokolwiek nie działa - STOP i napraw przed przejściem dalej!**
+
+---
+
+**Document Version**: 2.2 (UPDATED - dodano procedurę testowania)  
 **Created**: 2025-11-01  
 **Last Updated**: 2025-11-03  
 **Authors**: Zespół Architektury  
