@@ -3,7 +3,10 @@
   "version": "2.0.0",
   "description": "eTrener - Interaktywna platforma edukacyjna z quizami, treningami i nauką języków",
   "scripts": {
-    "build": "node scripts/generate-config.js",
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "build:config": "node scripts/generate-config.js",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
@@ -36,6 +39,7 @@
     "jest-html-reporter": "^4.3.0",
     "jsdom": "^27.0.1",
     "lint-staged": "^15.2.2",
-    "prettier": "^3.2.5"
+    "prettier": "^3.2.5",
+    "vite": "^7.1.12"
   }
 }
