@@ -5,7 +5,7 @@
  */
 
 import { validationService } from './validation-service.js';
-import dataService from '../data-service.js'; // default export
+import dataService from '../data/data-service.js'; // default export
 
 /**
  * Serwis importu treści

@@ -5,7 +5,7 @@
  */
 
 import { BaseEngine } from './base-engine.js';
-import { playCorrectSound, playIncorrectSound } from '../audio.js';
+import { playCorrectSound, playIncorrectSound } from '../utils/audio.js';
 
 /**
  * Silnik quizów
@@ -47,14 +47,14 @@ export class QuizEngine extends BaseEngine {
   init() {
     this.log('Initializing...');
 
+    // Pobierz elementy DOM
+    this._initDOMElements();
+
     // Sprawdź czy elementy DOM istnieją
     if (!this.elements.quizOptions) {
       this.error('Required DOM elements not found');
       return;
     }
-
-    // Pobierz dodatkowe elementy DOM
-    this._initDOMElements();
 
     // Dodaj event listenery
     this._attachEventListeners();
@@ -352,6 +352,9 @@ export class QuizEngine extends BaseEngine {
       case 'fill-in-blank':
         this._renderFillInBlank(question);
         break;
+      case 'matching':
+        this._renderMatching(question);
+        break;
       case 'listening':
         this._renderListening(question);
         break;
@@ -369,7 +372,7 @@ export class QuizEngine extends BaseEngine {
     question.options.forEach((option, index) => {
       const button = document.createElement('button');
       button.className =
-        'quiz-option w-full p-4 text-left bg-white dark:bg-gray-800 rounded-lg hover:bg-blue-50 dark:hover:bg-gray-700 transition';
+        'quiz-option w-full p-4 text-left bg-gray-800 text-gray-100 rounded-lg hover:bg-gray-700 transition border-2 border-gray-700';
       button.textContent = option;
       button.dataset.index = index;
       button.addEventListener('click', () => this._handleAnswer(index));
@@ -378,47 +381,20 @@ export class QuizEngine extends BaseEngine {
   }
 
   /**
-   * Renderuje pytanie multiple-choice
+   * Renderuje pytanie multiple-choice (wybór JEDNEJ poprawnej odpowiedzi)
    * @private
    * @param {Object} question - Pytanie
    */
   _renderMultipleChoice(question) {
-    const selectedAnswers = new Set();
-
     question.options.forEach((option, index) => {
-      const label = document.createElement('label');
-      label.className =
-        'quiz-option flex items-center p-4 bg-white dark:bg-gray-800 rounded-lg hover:bg-blue-50 dark:hover:bg-gray-700 transition cursor-pointer';
-
-      const checkbox = document.createElement('input');
-      checkbox.type = 'checkbox';
-      checkbox.className = 'mr-3 w-5 h-5';
-      checkbox.dataset.index = index;
-      checkbox.addEventListener('change', e => {
-        if (e.target.checked) {
-          selectedAnswers.add(index);
-        } else {
-          selectedAnswers.delete(index);
-        }
-      });
-
-      const span = document.createElement('span');
-      span.textContent = option;
-
-      label.appendChild(checkbox);
-      label.appendChild(span);
-      this.elements.answersContainer.appendChild(label);
+      const button = document.createElement('button');
+      button.className =
+        'quiz-option w-full p-4 text-left bg-gray-800 text-gray-100 rounded-lg hover:bg-gray-700 transition border-2 border-gray-700';
+      button.textContent = option;
+      button.dataset.index = index;
+      button.addEventListener('click', () => this._handleAnswer(index));
+      this.elements.answersContainer.appendChild(button);
     });
-
-    // Przycisk Submit
-    const submitBtn = document.createElement('button');
-    submitBtn.className =
-      'w-full mt-4 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition';
-    submitBtn.textContent = 'Sprawdź odpowiedź';
-    submitBtn.addEventListener('click', () => {
-      this._handleAnswer(Array.from(selectedAnswers));
-    });
-    this.elements.answersContainer.appendChild(submitBtn);
   }
 
   /**
@@ -431,7 +407,7 @@ export class QuizEngine extends BaseEngine {
     options.forEach((option, index) => {
       const button = document.createElement('button');
       button.className =
-        'quiz-option w-full p-4 text-left bg-white dark:bg-gray-800 rounded-lg hover:bg-blue-50 dark:hover:bg-gray-700 transition';
+        'quiz-option w-full p-4 text-left bg-gray-800 text-gray-100 rounded-lg hover:bg-gray-700 transition border-2 border-gray-700';
       button.textContent = option;
       button.dataset.index = index;
       button.addEventListener('click', () => this._handleAnswer(index === 0));
@@ -448,7 +424,7 @@ export class QuizEngine extends BaseEngine {
     const input = document.createElement('input');
     input.type = 'text';
     input.className =
-      'w-full p-4 text-lg border-2 border-gray-300 dark:border-gray-600 rounded-lg focus:border-blue-500 dark:bg-gray-800';
+      'w-full p-4 text-lg border-2 border-gray-600 rounded-lg focus:border-blue-500 bg-gray-700 text-white placeholder-gray-400';
     input.placeholder = 'Wpisz odpowiedź...';
     input.addEventListener('keypress', e => {
       if (e.key === 'Enter') {
@@ -470,6 +446,223 @@ export class QuizEngine extends BaseEngine {
   }
 
   /**
+   * Renderuje pytanie matching (dopasowywanie)
+   * @private
+   * @param {Object} question - Pytanie
+   */
+  _renderMatching(question) {
+    // Stwórz tablicę z unikalnymi indeksami dla prawej kolumny (aby obsłużyć duplikaty)
+    const rightItemsWithIndex = question.pairs.map((p, idx) => ({
+      text: p.match,
+      originalIndex: idx
+    }));
+    // Losowa kolejność
+    rightItemsWithIndex.sort(() => Math.random() - 0.5);
+
+    // Instrukcja
+    const instruction = document.createElement('div');
+    instruction.className = 'text-sm text-gray-400 mb-4';
+    instruction.innerHTML = `
+      Kliknij element z lewej, a potem odpowiadający mu element z prawej. 
+      <span class="text-yellow-400">Kliknij ponownie na dopasowaną parę, aby ją cofnąć.</span>
+    `;
+    this.elements.answersContainer.appendChild(instruction);
+
+    // Grid container
+    const gridContainer = document.createElement('div');
+    gridContainer.className = 'grid grid-cols-2 gap-4';
+
+    // Lewa kolumna
+    const leftColumn = document.createElement('div');
+    leftColumn.className = 'space-y-2';
+    question.pairs.forEach((pair, index) => {
+      const button = document.createElement('button');
+      button.className =
+        'matching-left w-full p-3 rounded-lg bg-gray-800 hover:bg-gray-700 transition border-2 border-gray-700 text-left';
+      button.dataset.index = index;
+      button.textContent = pair.item;
+      leftColumn.appendChild(button);
+    });
+
+    // Prawa kolumna
+    const rightColumn = document.createElement('div');
+    rightColumn.className = 'space-y-2';
+    rightItemsWithIndex.forEach((item, displayIndex) => {
+      const button = document.createElement('button');
+      button.className =
+        'matching-right w-full p-3 rounded-lg bg-gray-800 hover:bg-gray-700 transition border-2 border-gray-700 text-left';
+      button.dataset.rightIndex = displayIndex;
+      button.dataset.originalIndex = item.originalIndex;
+      button.textContent = item.text;
+      rightColumn.appendChild(button);
+    });
+
+    gridContainer.appendChild(leftColumn);
+    gridContainer.appendChild(rightColumn);
+    this.elements.answersContainer.appendChild(gridContainer);
+
+    // Submit button
+    const submitContainer = document.createElement('div');
+    submitContainer.className = 'mt-4 text-center';
+    const submitBtn = document.createElement('button');
+    submitBtn.id = 'matching-submit';
+    submitBtn.className =
+      'bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed';
+    submitBtn.textContent = 'Sprawdź odpowiedzi';
+    submitBtn.disabled = true;
+    submitContainer.appendChild(submitBtn);
+    this.elements.answersContainer.appendChild(submitContainer);
+
+    // State
+    let selectedLeft = null;
+    const userMatches = [];
+
+    const updateSubmitButton = () => {
+      if (userMatches.length === question.pairs.length) {
+        submitBtn.disabled = false;
+      } else {
+        submitBtn.disabled = true;
+      }
+    };
+
+    // Event listeners dla lewej kolumny
+    leftColumn.querySelectorAll('.matching-left').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const leftIndex = parseInt(btn.dataset.index);
+
+        // Sprawdź czy ten element jest już dopasowany
+        const existingMatch = userMatches.find(m => m.leftIndex === leftIndex);
+
+        if (existingMatch) {
+          // Cofnij dopasowanie
+          const matchIndex = userMatches.indexOf(existingMatch);
+          userMatches.splice(matchIndex, 1);
+
+          // Odblokuj przyciski
+          btn.classList.remove('opacity-50', 'bg-purple-700', 'border-purple-500');
+          btn.classList.add('bg-gray-800', 'hover:bg-gray-700');
+
+          const rightBtn = rightColumn.querySelector(
+            `.matching-right[data-right-index="${existingMatch.rightIndex}"]`
+          );
+          rightBtn.classList.remove('opacity-50', 'bg-purple-700', 'border-purple-500');
+          rightBtn.classList.add('bg-gray-800', 'hover:bg-gray-700');
+
+          updateSubmitButton();
+          return;
+        }
+
+        // Jeśli kliknięto ten sam element (zaznaczony, ale nie dopasowany) - odznacz go
+        if (selectedLeft === leftIndex) {
+          btn.classList.remove(
+            'border-blue-400',
+            'bg-blue-600',
+            'border-4',
+            'shadow-lg',
+            'shadow-blue-500/50'
+          );
+          selectedLeft = null;
+          return;
+        }
+
+        // Odznacz poprzedni
+        leftColumn.querySelectorAll('.matching-left').forEach(b => {
+          if (!userMatches.find(m => m.leftIndex === parseInt(b.dataset.index))) {
+            b.classList.remove(
+              'border-blue-400',
+              'bg-blue-600',
+              'border-4',
+              'shadow-lg',
+              'shadow-blue-500/50'
+            );
+          }
+        });
+
+        // Zaznacz aktualny
+        btn.classList.add(
+          'border-blue-400',
+          'bg-blue-600',
+          'border-4',
+          'shadow-lg',
+          'shadow-blue-500/50'
+        );
+        selectedLeft = leftIndex;
+      });
+    });
+
+    // Event listeners dla prawej kolumny
+    rightColumn.querySelectorAll('.matching-right').forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (selectedLeft === null) return;
+
+        const rightIndex = parseInt(btn.dataset.rightIndex);
+        const originalIndex = parseInt(btn.dataset.originalIndex);
+
+        // Sprawdź czy ten element jest już dopasowany
+        const existingMatch = userMatches.find(m => m.rightIndex === rightIndex);
+
+        if (existingMatch) {
+          // Cofnij dopasowanie
+          const matchIndex = userMatches.indexOf(existingMatch);
+          userMatches.splice(matchIndex, 1);
+
+          // Odblokuj przyciski
+          btn.classList.remove('opacity-50', 'bg-purple-700', 'border-purple-500');
+          btn.classList.add('bg-gray-800', 'hover:bg-gray-700');
+
+          const leftBtn = leftColumn.querySelector(
+            `.matching-left[data-index="${existingMatch.leftIndex}"]`
+          );
+          leftBtn.classList.remove('opacity-50', 'bg-purple-700', 'border-purple-500');
+          leftBtn.classList.add('bg-gray-800', 'hover:bg-gray-700');
+
+          updateSubmitButton();
+          return;
+        }
+
+        // Dopasuj
+        userMatches.push({
+          leftIndex: selectedLeft,
+          rightIndex: rightIndex,
+          originalIndex: originalIndex
+        });
+
+        // Zaznacz jako dopasowane
+        const leftBtn = leftColumn.querySelector(`.matching-left[data-index="${selectedLeft}"]`);
+        leftBtn.classList.remove(
+          'border-blue-400',
+          'bg-blue-600',
+          'border-4',
+          'shadow-lg',
+          'shadow-blue-500/50',
+          'hover:bg-gray-700'
+        );
+        leftBtn.classList.add('opacity-50', 'bg-purple-700', 'border-purple-500');
+
+        btn.classList.remove('hover:bg-gray-700');
+        btn.classList.add('opacity-50', 'bg-purple-700', 'border-purple-500');
+
+        selectedLeft = null;
+        updateSubmitButton();
+      });
+    });
+
+    // Submit handler
+    submitBtn.addEventListener('click', () => {
+      // Sprawdź odpowiedzi
+      let correctCount = 0;
+      userMatches.forEach(match => {
+        if (match.leftIndex === match.originalIndex) {
+          correctCount++;
+        }
+      });
+
+      const isCorrect = correctCount === question.pairs.length;
+      this._handleAnswer(isCorrect);
+    });
+  }
+
+  /**
    * Renderuje pytanie listening
    * @private
    * @param {Object} question - Pytanie
@@ -478,25 +671,74 @@ export class QuizEngine extends BaseEngine {
     // Play button
     const playBtn = document.createElement('button');
     playBtn.className =
-      'w-full mb-4 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition';
+      'w-full mb-4 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition flex items-center justify-center gap-2';
     playBtn.innerHTML = '🔊 Odtwórz nagranie';
     playBtn.addEventListener('click', () => {
       if (window.speakText) {
-        window.speakText(question.audioText, question.lang || 'pl-PL');
+        window.speakText(
+          question.audioText,
+          question.audioLang || 'en-US',
+          question.audioRate || 0.85
+        );
       }
     });
     this.elements.answersContainer.appendChild(playBtn);
 
-    // Opcje odpowiedzi
-    question.options.forEach((option, index) => {
-      const button = document.createElement('button');
-      button.className =
-        'quiz-option w-full p-4 text-left bg-white dark:bg-gray-800 rounded-lg hover:bg-blue-50 dark:hover:bg-gray-700 transition';
-      button.textContent = option;
-      button.dataset.index = index;
-      button.addEventListener('click', () => this._handleAnswer(index));
-      this.elements.answersContainer.appendChild(button);
+    // Info box
+    const infoBox = document.createElement('div');
+    infoBox.className = 'bg-blue-900/30 border border-blue-700 rounded-lg p-4 mb-4';
+    infoBox.innerHTML = `
+      <p class="text-blue-200 text-sm">
+        🎧 Posłuchaj nagrania i wpisz, co usłyszałeś/aś. Możesz odtworzyć nagranie wielokrotnie.
+      </p>
+    `;
+    this.elements.answersContainer.appendChild(infoBox);
+
+    // Input field
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.className =
+      'w-full p-4 rounded-lg bg-gray-700 text-white border-2 border-gray-600 focus:border-blue-500 focus:outline-none text-lg mb-4 placeholder-gray-400';
+    input.placeholder = 'Wpisz, co usłyszałeś/aś...';
+    input.autocomplete = 'off';
+    input.autocorrect = 'off';
+    input.autocapitalize = 'off';
+    input.spellcheck = false;
+    this.elements.answersContainer.appendChild(input);
+
+    // Submit button
+    const submitBtn = document.createElement('button');
+    submitBtn.className =
+      'w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition';
+    submitBtn.textContent = 'Sprawdź odpowiedź';
+    submitBtn.addEventListener('click', () => {
+      const userAnswer = input.value.trim();
+      if (userAnswer) {
+        this._handleAnswer(userAnswer);
+      }
     });
+    this.elements.answersContainer.appendChild(submitBtn);
+
+    // Focus input
+    input.focus();
+
+    // Enter key support
+    input.addEventListener('keypress', e => {
+      if (e.key === 'Enter') {
+        submitBtn.click();
+      }
+    });
+
+    // Automatycznie odtwórz nagranie przy pierwszym załadowaniu
+    setTimeout(() => {
+      if (window.speakText) {
+        window.speakText(
+          question.audioText,
+          question.audioLang || 'en-US',
+          question.audioRate || 0.85
+        );
+      }
+    }, 500); // Krótkie opóźnienie dla lepszego UX
   }
 
   /**
@@ -550,20 +792,9 @@ export class QuizEngine extends BaseEngine {
   _checkAnswer(question, userAnswer) {
     switch (question.type) {
       case 'single-choice':
+      case 'multiple-choice': // multiple-choice to też single choice (wybór JEDNEJ odpowiedzi)
       case 'listening':
         return userAnswer === question.correctAnswer;
-
-      case 'multiple-choice': {
-        if (!Array.isArray(userAnswer) || !Array.isArray(question.correctAnswer)) {
-          return false;
-        }
-        if (userAnswer.length !== question.correctAnswer.length) {
-          return false;
-        }
-        const sortedUser = [...userAnswer].sort();
-        const sortedCorrect = [...question.correctAnswer].sort();
-        return sortedUser.every((val, idx) => val === sortedCorrect[idx]);
-      }
 
       case 'true-false':
         return userAnswer === question.correctAnswer;
@@ -590,23 +821,43 @@ export class QuizEngine extends BaseEngine {
 
     if (isCorrect) {
       this.elements.feedback.className =
-        'p-4 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 rounded-lg';
-      this.elements.feedback.textContent = '✅ Poprawna odpowiedź!';
+        'mt-4 p-4 bg-green-900/50 border border-green-700 rounded-lg';
+
+      let feedbackHTML = '<p class="font-semibold mb-2 text-green-300">✅ Poprawna odpowiedź!</p>';
+
+      // Dodaj wyjaśnienie jeśli istnieje
+      if (question.explanation) {
+        feedbackHTML += `<p class="text-sm text-green-200">${question.explanation}</p>`;
+      }
+
+      this.elements.feedback.innerHTML = feedbackHTML;
     } else {
-      this.elements.feedback.className =
-        'p-4 bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200 rounded-lg';
+      this.elements.feedback.className = 'mt-4 p-4 bg-red-900/50 border border-red-700 rounded-lg';
+
       let correctAnswerText = '';
 
-      if (question.type === 'multiple-choice') {
-        const correctOptions = question.correctAnswer.map(i => question.options[i]);
-        correctAnswerText = correctOptions.join(', ');
-      } else if (question.type === 'single-choice' || question.type === 'listening') {
+      if (question.type === 'multiple-choice' || question.type === 'single-choice') {
+        // correctAnswer to indeks opcji
         correctAnswerText = question.options[question.correctAnswer];
+      } else if (question.type === 'listening' || question.type === 'fill-in-blank') {
+        // correctAnswer to string
+        correctAnswerText = String(question.correctAnswer);
+      } else if (question.type === 'true-false') {
+        // correctAnswer to boolean
+        correctAnswerText = question.correctAnswer ? 'Prawda' : 'Fałsz';
       } else {
         correctAnswerText = String(question.correctAnswer);
       }
 
-      this.elements.feedback.innerHTML = `❌ Niepoprawna odpowiedź!<br>Poprawna odpowiedź: <strong>${correctAnswerText}</strong>`;
+      let feedbackHTML = '<p class="font-semibold mb-2 text-red-300">❌ Niepoprawna odpowiedź</p>';
+      feedbackHTML += `<p class="text-sm text-red-200 mb-2">Poprawna odpowiedź: <strong>${correctAnswerText}</strong></p>`;
+
+      // Dodaj wyjaśnienie jeśli istnieje
+      if (question.explanation) {
+        feedbackHTML += `<p class="text-sm text-red-200">${question.explanation}</p>`;
+      }
+
+      this.elements.feedback.innerHTML = feedbackHTML;
     }
   }
 
@@ -729,7 +980,8 @@ export class QuizEngine extends BaseEngine {
 }
 
 // ========== BACKWARD COMPATIBILITY FACADE ==========
-// TODO-REFACTOR-CLEANUP: Usunąć w FAZIE 5, Krok 17
+// TODO-PHASE-6: Facade functions dla IIFE modules (app.js, content-manager.js)
+// Zostanie usunięte po konwersji tych plików do ES6 modules
 
 let quizEngineInstance = null;
 
@@ -767,13 +1019,6 @@ export function resetMistakes() {
   if (quizEngineInstance) {
     quizEngineInstance.resetMistakes();
   }
-}
-
-// TODO-REFACTOR-CLEANUP: Eksport do window (backward compatibility)
-if (typeof window !== 'undefined') {
-  window.initQuizEngine = initQuizEngine;
-  window.startQuiz = startQuiz;
-  window.resetMistakes = resetMistakes;
 }
 
 console.log('✅ QuizEngine (ES6 Class) loaded');

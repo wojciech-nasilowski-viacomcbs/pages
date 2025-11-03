@@ -90,7 +90,7 @@ describe('Home Button - Active Tab Preservation', () => {
     };
 
     // Import real ui-manager
-    require('../js/ui-manager.js');
+    require('../js/ui/ui-manager.js');
     uiManager = window.uiManager;
   });
 

@@ -134,7 +134,7 @@ describe('Navigation Integration Tests', () => {
     };
 
     // Import real ui-manager
-    require('../js/ui-manager.js');
+    require('../js/ui/ui-manager.js');
     uiManager = window.uiManager;
 
     // Clear mocks

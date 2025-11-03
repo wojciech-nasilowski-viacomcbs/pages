@@ -14,15 +14,15 @@
  */
 
 // Mock Supabase client
-jest.mock('../js/supabase-client.js', () => ({
+jest.mock('../js/data/supabase-client.js', () => ({
   supabaseClient: {
     from: jest.fn()
   },
   getCurrentUser: jest.fn()
 }));
 
-import dataService from '../js/data-service.js';
-import { supabaseClient, getCurrentUser } from '../js/supabase-client.js';
+import dataService from '../js/data/data-service.js';
+import { supabaseClient, getCurrentUser } from '../js/data/supabase-client.js';
 
 const {
   fetchQuizzes,

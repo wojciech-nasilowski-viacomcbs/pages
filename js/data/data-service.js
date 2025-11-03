@@ -724,7 +724,7 @@ export async function updateListeningSetPublicStatus(setId, isPublic) {
 }
 
 // Export default object for backward compatibility
-export default {
+const dataService = {
   fetchQuizzes,
   fetchQuizById,
   saveQuiz,
@@ -748,5 +748,12 @@ export default {
   updateWorkoutPublicStatus,
   updateListeningSetPublicStatus
 };
+
+export default dataService;
+
+// TODO-PHASE-6: Backward compatibility dla app.js (IIFE)
+if (typeof window !== 'undefined') {
+  window.dataService = dataService;
+}
 
 console.log('✅ Data service initialized');

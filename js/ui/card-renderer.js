@@ -6,27 +6,39 @@
 export class CardRenderer {
   /**
    * Renderuje kartę treści
-   * @param {Object} item - Dane treści (quiz lub workout)
+   * @param {Object} item - Dane treści (quiz, workout lub listening)
    * @param {Object} options - Opcje renderowania
-   * @param {'quiz'|'workout'} options.type - Typ treści
+   * @param {'quiz'|'workout'|'listening'} options.type - Typ treści
    * @param {boolean} options.isAdmin - Czy użytkownik jest adminem
+   * @param {string} options.onClick - Opcjonalny handler onclick
    * @returns {string} - HTML karty
    */
   renderCard(item, options = {}) {
-    const { type = 'quiz', isAdmin = false } = options;
+    const { type = 'quiz', isAdmin = false, onClick = '' } = options;
 
-    // Ikona: dla quizów zawsze 📝, dla treningów użyj emoji z danych lub domyślnie 💪
-    const icon = type === 'quiz' ? '📝' : item.emoji || '💪';
+    // Ikona: dla quizów zawsze 📝, dla treningów użyj emoji z danych lub domyślnie 💪, dla listening 🎧
+    let icon = '📝';
+    if (type === 'workout') icon = item.emoji || '💪';
+    else if (type === 'listening') icon = item.emoji || '🎧';
+    else if (type === 'quiz') icon = '📝';
 
     // Badge: Przykład (sample) lub Publiczny (is_public)
     const badge = this.renderBadge(item);
 
     // Przyciski akcji (tylko dla nie-przykładowych treści)
-    const actionButtons = !item.isSample ? this.renderActionButtons(item, isAdmin) : '';
+    const actionButtons = !item.isSample ? this.renderActionButtons(item, isAdmin, type) : '';
+
+    // Dodatkowe info dla listening (liczba par)
+    const extraInfo =
+      type === 'listening' && item.pairsCount
+        ? `<span class="text-xs bg-gray-700 px-2 py-1 rounded">${item.pairsCount} par</span>`
+        : '';
+
+    const onClickAttr = onClick ? `onclick="${onClick}"` : '';
 
     return `
       <div class="content-card bg-gray-800 p-6 rounded-xl hover:bg-gray-750 transition cursor-pointer group relative"
-           data-id="${item.id}">
+           data-id="${item.id}" ${onClickAttr}>
         ${actionButtons}
         <div class="flex justify-between items-start mb-3">
           <div class="text-4xl">${icon}</div>
@@ -35,7 +47,8 @@ export class CardRenderer {
         <h3 class="text-xl font-bold text-white mb-2 group-hover:text-blue-400 transition">
           ${this.escapeHtml(item.title)}
         </h3>
-        <p class="text-gray-400 text-sm">${this.escapeHtml(item.description || 'Brak opisu')}</p>
+        <p class="text-gray-400 text-sm mb-2">${this.escapeHtml(item.description || 'Brak opisu')}</p>
+        ${extraInfo}
       </div>
     `;
   }
@@ -59,18 +72,21 @@ export class CardRenderer {
    * Renderuje przyciski akcji (toggle public, share, export, delete)
    * @param {Object} item - Dane treści
    * @param {boolean} isAdmin - Czy użytkownik jest adminem
+   * @param {string} type - Typ treści (quiz, workout, listening)
    * @returns {string} - HTML przycisków
    * @private
    */
-  renderActionButtons(item, isAdmin) {
+  renderActionButtons(item, isAdmin, type = 'quiz') {
     // Przycisk toggle public/private (tylko dla adminów)
     const togglePublicBtn = isAdmin
       ? `
         <button class="toggle-public-btn bg-gray-700/90 md:bg-transparent text-gray-300 hover:text-purple-500 active:scale-95 md:hover:scale-110 text-2xl md:text-xl p-2 md:p-0 rounded-lg md:rounded-none min-w-[44px] min-h-[44px] md:min-w-0 md:min-h-0 flex items-center justify-center"
                 data-id="${item.id}"
+                data-type="${type}"
                 data-is-public="${item.isPublic || false}"
                 data-title="${this.escapeAttr(item.title)}"
-                title="${item.isPublic ? 'Zmień na prywatny' : 'Opublikuj dla wszystkich'}">
+                title="${item.isPublic ? 'Zmień na prywatny' : 'Opublikuj dla wszystkich'}"
+                onclick="event.stopPropagation()">
           ${item.isPublic ? '🔒' : '🌍'}
         </button>
       `
@@ -81,20 +97,26 @@ export class CardRenderer {
         ${togglePublicBtn}
         <button class="share-btn bg-gray-700/90 md:bg-transparent text-gray-300 hover:text-blue-500 active:scale-95 md:hover:scale-110 text-2xl md:text-xl p-2 md:p-0 rounded-lg md:rounded-none min-w-[44px] min-h-[44px] md:min-w-0 md:min-h-0 flex items-center justify-center"
                 data-id="${item.id}"
+                data-type="${type}"
                 data-title="${this.escapeAttr(item.title)}"
-                title="Udostępnij link">
+                title="Udostępnij link"
+                onclick="event.stopPropagation()">
           🔗
         </button>
         <button class="export-btn bg-gray-700/90 md:bg-transparent text-gray-300 hover:text-green-500 active:scale-95 md:hover:scale-110 text-2xl md:text-xl p-2 md:p-0 rounded-lg md:rounded-none min-w-[44px] min-h-[44px] md:min-w-0 md:min-h-0 flex items-center justify-center"
                 data-id="${item.id}"
+                data-type="${type}"
                 data-title="${this.escapeAttr(item.title)}"
-                title="Eksportuj JSON">
+                title="Eksportuj JSON"
+                onclick="event.stopPropagation()">
           ⬇
         </button>
         <button class="delete-btn bg-gray-700/90 md:bg-transparent text-gray-300 hover:text-red-500 active:scale-95 md:hover:scale-110 text-2xl md:text-xl p-2 md:p-0 rounded-lg md:rounded-none min-w-[44px] min-h-[44px] md:min-w-0 md:min-h-0 flex items-center justify-center"
                 data-id="${item.id}"
+                data-type="${type}"
                 data-title="${this.escapeAttr(item.title)}"
-                title="Usuń">
+                title="Usuń"
+                onclick="event.stopPropagation()">
           ×
         </button>
       </div>

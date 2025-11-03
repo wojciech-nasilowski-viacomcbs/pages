@@ -95,4 +95,12 @@ export async function getSession() {
   }
 }
 
+// TODO-PHASE-6: Backward compatibility dla app.js (IIFE)
+if (typeof window !== 'undefined') {
+  window.supabaseClient = supabaseClient;
+  window.getCurrentUser = getCurrentUser;
+  window.isLoggedIn = isLoggedIn;
+  window.getSession = getSession;
+}
+
 console.log('✅ Supabase client initialized');

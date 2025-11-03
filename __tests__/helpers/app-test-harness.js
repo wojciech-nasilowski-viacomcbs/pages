@@ -463,12 +463,12 @@ function initializeTestApp(options = {}) {
   };
 
   // Load REAL modules (not mocks!)
-  require('../../js/ui-manager.js');
-  require('../../js/session-manager.js');
-  require('../../js/auth-service.js');
+  require('../../js/ui/ui-manager.js');
+  require('../../js/ui/session-manager.js');
+  require('../../js/data/auth-service.js');
   require('../../js/content-manager.js');
-  require('../../js/quiz-engine.js');
-  require('../../js/workout-engine.js');
+  require('../../js/engines/quiz-engine.js');
+  require('../../js/engines/workout-engine.js');
 
   // Get references to real modules
   const uiManager = window.uiManager;

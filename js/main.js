@@ -5,17 +5,17 @@
  */
 
 // ========== CORE MODULES (ES6) ==========
-import './audio.js';
-import './feature-flags.js';
-import './supabase-client.js';
-import './auth-service.js';
-import './data-service.js';
+import './utils/audio.js';
+import './data/feature-flags.js';
+import './data/supabase-client.js';
+import './data/auth-service.js';
+import './data/data-service.js';
 
 // ========== STATE MANAGEMENT (ES6) ==========
-import './wake-lock.js';
+import './utils/wake-lock.js';
 import './state/store.js';
 import './state/app-state.js';
-import './ui-state.js';
+import './ui/ui-state.js';
 import './modules-shim.js';
 
 // ========== SERVICES (ES6) ==========
@@ -29,25 +29,19 @@ import './services/error-handler.js';
 import './ui/card-renderer.js';
 
 // ========== MANAGERS (IIFE - need to stay global for now) ==========
-// These are loaded via <script> tags because they use window.* API
-// TODO-REFACTOR-CLEANUP: Convert to ES6 modules in Phase 5
+// TODO-PHASE-6: These IIFE modules will be converted to ES6 in Phase 6
 // - js/ui-manager.js
 // - js/session-manager.js
 // - js/ai-prompts.js
 // - js/content-manager.js
+// - js/knowledge-base-engine.js
+// - js/app.js
 
 // ========== ENGINES ==========
-// FAZA 3.2-3.4: All main engines migrated to ES6 classes! 🎉
-import './engines/quiz-engine.js';
-import './engines/workout-engine.js';
-import './engines/listening-engine.js';
-
-// TODO-REFACTOR-CLEANUP: Knowledge Base engine (later)
-// - js/knowledge-base-engine.js
-
-// ========== APP INITIALIZATION (IIFE) ==========
-// TODO-REFACTOR-CLEANUP: Convert to ES6 module in Phase 4
-// - js/app.js
+// FAZA 5.2: Engines loaded via engines-bridge.js for IIFE compatibility
+// import './engines/quiz-engine.js';
+// import './engines/workout-engine.js';
+// import './engines/listening-engine.js';
 
 console.log('✅ Vite entry point loaded (main.js)');
 console.log('⚠️  Note: IIFE modules still loaded via <script> tags for backward compatibility');

@@ -3,7 +3,7 @@
  */
 
 // Mock the supabase-client module BEFORE importing anything
-jest.mock('../js/supabase-client.js', () => ({
+jest.mock('../js/data/supabase-client.js', () => ({
   supabaseClient: {
     auth: {
       signUp: jest.fn(),
@@ -22,8 +22,8 @@ jest.mock('../js/supabase-client.js', () => ({
 }));
 
 // Now import modules (after mocking)
-import authService from '../js/auth-service.js';
-import { supabaseClient, getCurrentUser, isLoggedIn } from '../js/supabase-client.js';
+import authService from '../js/data/auth-service.js';
+import { supabaseClient, getCurrentUser, isLoggedIn } from '../js/data/supabase-client.js';
 
 const {
   signUp,

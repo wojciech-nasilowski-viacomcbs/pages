@@ -2,7 +2,7 @@
  * @fileoverview Serwis eksportu treści do JSON (quiz, workout, listening)
  */
 
-import dataService from '../data-service.js'; // default export
+import dataService from '../data/data-service.js'; // default export
 
 export class ExportService {
   /**

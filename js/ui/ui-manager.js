@@ -10,6 +10,14 @@
      * Przełącza widoki aplikacji
      */
     showScreen(screenName, state, elements, contentManager, sessionManager) {
+      // Zatrzymaj odtwarzanie Listening jeśli opuszczamy ekran listening
+      if (state.currentView === 'listening' && screenName !== 'listening') {
+        if (window.listeningEngine && window.listeningEngine.stop) {
+          window.listeningEngine.stop();
+          console.log('🛑 Zatrzymano odtwarzanie Listening przy opuszczeniu ekranu');
+        }
+      }
+
       // Ukryj wszystkie ekrany
       elements.mainScreen.classList.add('hidden');
       elements.quizScreen.classList.add('hidden');

@@ -274,7 +274,7 @@ export async function isAdmin(user = null) {
 }
 
 // Export default object for backward compatibility
-export default {
+const authService = {
   signUp,
   signIn,
   signOut,
@@ -285,5 +285,12 @@ export default {
   getUserRole,
   isAdmin
 };
+
+export default authService;
+
+// TODO-PHASE-6: Backward compatibility dla app.js (IIFE)
+if (typeof window !== 'undefined') {
+  window.authService = authService;
+}
 
 console.log('✅ Auth service initialized');
