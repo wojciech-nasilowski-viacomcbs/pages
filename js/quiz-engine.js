@@ -1188,9 +1188,11 @@
   // EXPORTS (Global scope for non-module usage)
   // ============================================
 
-  window.initQuizEngine = initQuizEngine;
-  window.startQuiz = startQuiz;
-  window.resetMistakes = resetMistakes;
+  // TODO-REFACTOR-CLEANUP: Backward compatibility (FAZA 3, Krok 10)
+  // Te eksporty zostaną zastąpione przez ES6 class export
+  window.initQuizEngine = initQuizEngine; // TODO-REFACTOR-CLEANUP
+  window.startQuiz = startQuiz; // TODO-REFACTOR-CLEANUP
+  window.resetMistakes = resetMistakes; // TODO-REFACTOR-CLEANUP
 
   console.log('✅ Quiz engine initialized');
-})(); // End of IIFE
+})(); // End of IIFE - TODO-REFACTOR-CLEANUP: Convert to ES6 class in FAZA 3

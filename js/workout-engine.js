@@ -596,8 +596,10 @@
   // EXPORTS (Global scope for non-module usage)
   // ============================================
 
-  window.initWorkoutEngine = initWorkoutEngine;
-  window.startWorkout = startWorkout;
+  // TODO-REFACTOR-CLEANUP: Backward compatibility (FAZA 3, Krok 11)
+  // Te eksporty zostaną zastąpione przez ES6 class export
+  window.initWorkoutEngine = initWorkoutEngine; // TODO-REFACTOR-CLEANUP
+  window.startWorkout = startWorkout; // TODO-REFACTOR-CLEANUP
 
   console.log('✅ Workout engine initialized');
-})(); // End of IIFE
+})(); // End of IIFE - TODO-REFACTOR-CLEANUP: Convert to ES6 class in FAZA 3
