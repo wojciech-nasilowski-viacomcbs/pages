@@ -1,7 +1,7 @@
 // Mock modules BEFORE importing
 jest.mock('../js/services/validation-service.js');
 jest.mock('../js/data-service.js', () => ({
-  dataService: {
+  default: {
     saveQuiz: jest.fn(),
     saveWorkout: jest.fn(),
     createListeningSet: jest.fn()
@@ -10,7 +10,9 @@ jest.mock('../js/data-service.js', () => ({
 
 import { AIService } from '../js/services/ai-service.js';
 import { validationService } from '../js/services/validation-service.js';
-import { dataService } from '../js/data-service.js';
+
+// Get mocked dataService
+const dataService = jest.requireMock('../js/data-service.js').default;
 
 // Mock global fetch
 global.fetch = jest.fn();

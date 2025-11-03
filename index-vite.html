@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <!-- VITE SPIKE VERSION - Testing bundling -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>eTrener (Vite)</title>
+    <meta name="description" content="Interaktywna platforma do nauki i treningów - quizy, treningi fitness i nauka języków">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="alternate icon" href="favicon.ico">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Supabase Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <!-- Quill.js WYSIWYG Editor -->
+    <link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet">
+    <script src="https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        /* Copy all styles from original index.html */
+        @keyframes pulse-red {
+            0%, 100% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+            }
+            50% {
+                transform: scale(1.05);
+                box-shadow: 0 0 0 10px rgba(239, 68, 68, 0);
+            }
+        }
+        .pulse-red-animate {
+            animation: pulse-red 2s infinite;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .fade-in {
+            animation: fadeIn 0.3s ease-out;
+        }
+        
+        .screen {
+            display: none;
+        }
+        .screen.active {
+            display: block;
+        }
+        
+        .tab-button.active {
+            color: white;
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .content-card {
+            transition: all 0.2s ease;
+        }
+        .content-card:hover {
+            transform: translateY(-2px);
+        }
+        
+        .quiz-option, .workout-phase-card {
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        .quiz-option:hover, .workout-phase-card:hover {
+            transform: scale(1.02);
+        }
+        
+        .quiz-option.correct {
+            background: #10b981;
+            color: white;
+        }
+        .quiz-option.wrong {
+            background: #ef4444;
+            color: white;
+        }
+        
+        #workout-timer {
+            font-size: 4rem;
+            font-weight: bold;
+            font-variant-numeric: tabular-nums;
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        @media (max-width: 640px) {
+            #workout-timer {
+                font-size: 3rem;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-900 via-purple-900 to-pink-900 min-h-screen text-white">
+    
+    <!-- SPIKE BANNER -->
+    <div style="background: #ff6b00; color: white; padding: 8px; text-align: center; font-weight: bold;">
+        🚀 VITE SPIKE - Testing bundled version
+    </div>
+
+    <!-- Copy entire body from original index.html -->
+    <!-- For spike, we just need basic structure to test if modules load -->
+    
+    <div id="app" class="min-h-screen">
+        <div class="container mx-auto px-4 py-8">
+            <h1 class="text-4xl font-bold text-center mb-8">eTrener (Vite Test)</h1>
+            <div id="test-output" class="bg-white/10 p-6 rounded-lg">
+                <p class="text-lg">Loading modules...</p>
+                <ul id="module-status" class="mt-4 space-y-2"></ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- VITE ENTRY POINT -->
+    <script type="module" src="/js/main.js"></script>
+    
+    <!-- IIFE Modules (still needed for backward compatibility) -->
+    <script src="js/config.js"></script>
+    <script src="js/ui-manager.js"></script>
+    <script src="js/session-manager.js"></script>
+    <script src="js/ai-prompts.js"></script>
+    <script src="js/content-manager.js"></script>
+    <script src="js/quiz-engine.js"></script>
+    <script src="js/workout-engine.js"></script>
+    <script src="js/listening-engine.js"></script>
+    <script src="js/knowledge-base-engine.js"></script>
+    <script defer src="js/app.js"></script>
+    
+    <!-- Test Script -->
+    <script>
+        // Check if modules loaded correctly
+        setTimeout(() => {
+            const statusEl = document.getElementById('module-status');
+            const checks = [
+                { name: 'Feature Flags', test: () => window.featureFlags },
+                { name: 'Supabase Client', test: () => window.supabase },
+                { name: 'Auth Service', test: () => window.authService },
+                { name: 'Data Service', test: () => window.dataService },
+                { name: 'App State', test: () => window.appState },
+                { name: 'UI Manager', test: () => window.uiManager },
+                { name: 'Content Manager', test: () => window.contentManager },
+                { name: 'Quiz Engine', test: () => window.initQuizEngine },
+            ];
+            
+            checks.forEach(check => {
+                const li = document.createElement('li');
+                const passed = check.test();
+                li.innerHTML = `${passed ? '✅' : '❌'} ${check.name}`;
+                li.className = passed ? 'text-green-400' : 'text-red-400';
+                statusEl.appendChild(li);
+            });
+        }, 1000);
+    </script>
+
+</body>
+</html>
+

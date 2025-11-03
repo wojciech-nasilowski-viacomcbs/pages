@@ -6,12 +6,17 @@ export default defineConfig({
     outDir: 'dist',
     rollupOptions: {
       input: {
-        main: './index.html'
+        main: './index.html',
+        viteTest: './index-vite.html' // SPIKE: Test bundled version
       }
     }
   },
   server: {
     port: 3000,
-    open: true
+    open: '/index-vite.html' // SPIKE: Open test version by default
+  },
+  // Optimize dependencies
+  optimizeDeps: {
+    include: []
   }
 });

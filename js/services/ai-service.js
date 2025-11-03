@@ -4,7 +4,7 @@
  */
 
 import { validationService } from './validation-service.js';
-import { dataService } from '../data-service.js';
+import dataService from '../data-service.js'; // default export
 
 export class AIService {
   constructor() {
