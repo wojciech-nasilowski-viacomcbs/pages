@@ -199,15 +199,72 @@
       return;
     }
 
+    // Pobierz informacje o użytkowniku
+    const currentUser = window.uiState?.getState()?.currentUser;
+    const isAdmin = currentUser && currentUser.role === 'admin';
+
     const cardsHTML = sets
-      .map(
-        set => `
-    <div class="bg-gray-800 rounded-lg p-6 hover:bg-gray-700 transition cursor-pointer" 
+      .map(set => {
+        // Badge: Przykład (sample) lub Publiczny (is_public)
+        let badge = '';
+        if (set.is_sample) {
+          badge = '<span class="text-xs bg-blue-600 px-2 py-1 rounded">Przykład</span>';
+        } else if (set.is_public) {
+          badge = '<span class="text-xs bg-green-600 px-2 py-1 rounded">Publiczny</span>';
+        }
+
+        // Przyciski akcji - różne dla adminów i zwykłych użytkowników
+        let actionButtons = '';
+        if (!set.is_sample) {
+          // Przycisk toggle public/private (tylko dla adminów)
+          const togglePublicBtn = isAdmin
+            ? `
+          <button class="listening-toggle-public-btn bg-gray-700/90 md:bg-transparent text-gray-300 hover:text-purple-500 active:scale-95 md:hover:scale-110 text-2xl md:text-xl p-2 md:p-0 rounded-lg md:rounded-none min-w-[44px] min-h-[44px] md:min-w-0 md:min-h-0 flex items-center justify-center"
+                  data-id="${set.id}"
+                  data-is-public="${set.is_public || false}"
+                  data-title="${escapeHtml(set.title)}"
+                  title="${set.is_public ? 'Zmień na prywatny' : 'Opublikuj dla wszystkich'}">
+            ${set.is_public ? '🔒' : '🌍'}
+          </button>
+        `
+            : '';
+
+          actionButtons = `
+          <div class="absolute top-2 right-2 md:top-3 md:right-3 md:opacity-0 md:group-hover:opacity-100 transition-all duration-200 flex gap-2 z-10">
+            ${togglePublicBtn}
+            <button class="listening-share-btn bg-gray-700/90 md:bg-transparent text-gray-300 hover:text-blue-500 active:scale-95 md:hover:scale-110 text-2xl md:text-xl p-2 md:p-0 rounded-lg md:rounded-none min-w-[44px] min-h-[44px] md:min-w-0 md:min-h-0 flex items-center justify-center"
+                    data-id="${set.id}"
+                    data-title="${escapeHtml(set.title)}"
+                    title="Udostępnij link">
+              🔗
+            </button>
+            <button class="listening-export-btn bg-gray-700/90 md:bg-transparent text-gray-300 hover:text-green-500 active:scale-95 md:hover:scale-110 text-2xl md:text-xl p-2 md:p-0 rounded-lg md:rounded-none min-w-[44px] min-h-[44px] md:min-w-0 md:min-h-0 flex items-center justify-center"
+                    data-id="${set.id}"
+                    data-title="${escapeHtml(set.title)}"
+                    title="Eksportuj JSON">
+              ⬇
+            </button>
+            <button class="listening-delete-btn bg-gray-700/90 md:bg-transparent text-gray-300 hover:text-red-500 active:scale-95 md:hover:scale-110 text-2xl md:text-xl p-2 md:p-0 rounded-lg md:rounded-none min-w-[44px] min-h-[44px] md:min-w-0 md:min-h-0 flex items-center justify-center"
+                    data-id="${set.id}"
+                    data-title="${escapeHtml(set.title)}"
+                    title="Usuń">
+              ×
+            </button>
+          </div>
+        `;
+        }
+
+        return `
+    <div class="bg-gray-800 rounded-lg p-6 hover:bg-gray-700 transition cursor-pointer group relative" 
          data-set-id="${set.id}">
+      ${actionButtons}
       <div class="flex items-start gap-3">
         <span class="text-3xl">🎧</span>
         <div class="flex-1">
-          <h3 class="text-lg font-semibold text-white mb-1">${escapeHtml(set.title)}</h3>
+          <div class="flex items-start justify-between gap-2 mb-1">
+            <h3 class="text-lg font-semibold text-white">${escapeHtml(set.title)}</h3>
+            ${badge}
+          </div>
           <p class="text-sm text-gray-400 mb-2">${escapeHtml(set.description || '')}</p>
           <div class="flex gap-2 text-xs text-gray-500">
             <span>🗣️ ${set.lang1_code} → ${set.lang2_code}</span>
@@ -217,20 +274,104 @@
         </div>
       </div>
     </div>
-  `
-      )
+  `;
+      })
       .join('');
 
     elements.listeningListCards.innerHTML = cardsHTML;
 
-    // Dodaj event listeners do kart
+    // Dodaj event listeners do przycisków akcji NAJPIERW
+    document.querySelectorAll('.listening-toggle-public-btn').forEach(btn => {
+      btn.addEventListener('click', async e => {
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+
+        if (btn.disabled) return false;
+
+        const id = btn.dataset.id;
+        const isPublic = btn.dataset.isPublic === 'true';
+
+        btn.disabled = true;
+        btn.style.opacity = '0.5';
+        btn.innerHTML = '⏳';
+
+        try {
+          await toggleListeningPublicStatus(id, !isPublic, btn.dataset.title);
+        } finally {
+          btn.disabled = false;
+          btn.style.opacity = '1';
+        }
+
+        return false;
+      });
+    });
+
+    document.querySelectorAll('.listening-share-btn').forEach(btn => {
+      btn.addEventListener('click', async e => {
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+
+        if (btn.disabled) return false;
+
+        const id = btn.dataset.id;
+        const title = btn.dataset.title;
+
+        btn.disabled = true;
+        btn.style.opacity = '0.5';
+
+        try {
+          await shareListeningSet(id, title);
+        } finally {
+          btn.disabled = false;
+          btn.style.opacity = '1';
+        }
+
+        return false;
+      });
+    });
+
+    document.querySelectorAll('.listening-export-btn').forEach(btn => {
+      btn.addEventListener('click', e => {
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+        const id = btn.dataset.id;
+        exportListeningSet(id, sets);
+        return false;
+      });
+    });
+
+    document.querySelectorAll('.listening-delete-btn').forEach(btn => {
+      btn.addEventListener('click', e => {
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+        const id = btn.dataset.id;
+        const title = btn.dataset.title;
+        confirmDeleteListeningSet(id, title);
+        return false;
+      });
+    });
+
+    // Dodaj event listeners do kart (kliknięcie otwiera odtwarzacz)
     document.querySelectorAll('[data-set-id]').forEach(card => {
-      card.addEventListener('click', async () => {
-        // Dodano async
+      card.addEventListener('click', async e => {
+        // Jeśli kliknięto w przyciski akcji, ignoruj
+        if (
+          e.target.closest('.listening-toggle-public-btn') ||
+          e.target.closest('.listening-share-btn') ||
+          e.target.closest('.listening-export-btn') ||
+          e.target.closest('.listening-delete-btn')
+        ) {
+          return;
+        }
+
         const setId = card.dataset.setId;
         const set = sets.find(s => s.id === setId);
         if (set) {
-          await openPlayer(set); // Dodano await
+          await openPlayer(set);
         }
       });
     });
@@ -931,6 +1072,142 @@
       }
 
       throw error;
+    }
+  }
+
+  /**
+   * Toggle public status dla zestawu listening
+   */
+  async function toggleListeningPublicStatus(id, isPublic, title) {
+    try {
+      await window.dataService.updateListeningSetPublicStatus(id, isPublic);
+
+      // Pokaż powiadomienie
+      const message = isPublic
+        ? `✅ "${title}" jest teraz publiczny`
+        : `🔒 "${title}" jest teraz prywatny`;
+
+      if (window.showToast) {
+        window.showToast(message, 'success');
+      } else {
+        alert(message);
+      }
+
+      // Odśwież listę
+      await loadListeningSets();
+    } catch (error) {
+      console.error('Błąd zmiany statusu publicznego:', error);
+      alert('Błąd: ' + error.message);
+    }
+  }
+
+  /**
+   * Udostępnij link do zestawu listening
+   */
+  async function shareListeningSet(id, title) {
+    const url = `${window.location.origin}${window.location.pathname}?listening=${id}`;
+
+    try {
+      await navigator.clipboard.writeText(url);
+
+      if (window.showToast) {
+        window.showToast(`🔗 Link skopiowany: "${title}"`, 'success');
+      } else {
+        alert(`Link skopiowany do schowka:\n${url}`);
+      }
+    } catch (error) {
+      console.error('Błąd kopiowania linku:', error);
+      // Fallback - pokaż link w prompt
+      prompt('Skopiuj link:', url);
+    }
+  }
+
+  /**
+   * Eksportuj zestaw listening do JSON
+   */
+  function exportListeningSet(id, sets) {
+    const set = sets.find(s => s.id === id);
+    if (!set) {
+      alert('Nie znaleziono zestawu');
+      return;
+    }
+
+    // Przygotuj dane do eksportu (bez pól bazy danych)
+    const exportData = {
+      title: set.title,
+      description: set.description || '',
+      lang1_code: set.lang1_code,
+      lang2_code: set.lang2_code,
+      content: set.content
+    };
+
+    // Utwórz blob i pobierz
+    const blob = new Blob([JSON.stringify(exportData, null, 2)], {
+      type: 'application/json'
+    });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${set.title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_listening.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    if (window.showToast) {
+      window.showToast(`⬇ Eksportowano: "${set.title}"`, 'success');
+    }
+  }
+
+  /**
+   * Potwierdź usunięcie zestawu listening
+   */
+  function confirmDeleteListeningSet(id, title) {
+    // Użyj istniejącego modala delete z content-manager
+    const deleteModal = document.getElementById('delete-modal');
+    const deleteTitle = document.getElementById('delete-title');
+    const deleteConfirm = document.getElementById('delete-confirm');
+
+    if (!deleteModal || !deleteTitle || !deleteConfirm) {
+      // Fallback - użyj confirm
+      if (confirm(`Czy na pewno chcesz usunąć zestaw "${title}"?`)) {
+        deleteListeningSet(id);
+      }
+      return;
+    }
+
+    deleteTitle.textContent = title;
+    deleteModal.classList.remove('hidden');
+
+    // Usuń stare listenery
+    const newConfirmBtn = deleteConfirm.cloneNode(true);
+    deleteConfirm.parentNode.replaceChild(newConfirmBtn, deleteConfirm);
+
+    // Dodaj nowy listener
+    newConfirmBtn.addEventListener('click', async () => {
+      await deleteListeningSet(id);
+      deleteModal.classList.add('hidden');
+    });
+  }
+
+  /**
+   * Usuń zestaw listening
+   */
+  async function deleteListeningSet(id) {
+    try {
+      await window.dataService.deleteListeningSet(id);
+
+      if (window.showToast) {
+        window.showToast('✅ Zestaw usunięty', 'success');
+      } else {
+        alert('Zestaw usunięty');
+      }
+
+      // Odśwież listę
+      await loadListeningSets();
+    } catch (error) {
+      console.error('Błąd podczas usuwania:', error);
+      alert('Błąd podczas usuwania: ' + error.message);
     }
   }
 
