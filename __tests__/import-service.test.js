@@ -2,135 +2,96 @@
  * @fileoverview Testy dla import-service.js
  */
 
-// Create mock functions BEFORE jest.mock()
-const mockSaveQuiz = jest.fn();
-const mockSaveWorkout = jest.fn();
-const mockCreateListeningSet = jest.fn();
-
-// Mock data-service (default export)
-jest.mock('../js/data/data-service.js', () => ({
-  default: {
-    saveQuiz: (...args) => mockSaveQuiz(...args),
-    saveWorkout: (...args) => mockSaveWorkout(...args),
-    createListeningSet: (...args) => mockCreateListeningSet(...args)
+// Mock Supabase client PRZED jakimikolwiek importami
+jest.mock('../js/data/supabase-client.js', () => ({
+  supabase: {
+    from: jest.fn(),
+    auth: {
+      getSession: jest.fn(),
+      signUp: jest.fn(),
+      signInWithPassword: jest.fn(),
+      signOut: jest.fn()
+    }
   }
 }));
 
 import { ImportService } from '../js/services/import-service.js';
+import { validationService } from '../js/services/validation-service.js';
+import dataService from '../js/data/data-service.js';
 
-// TODO-REFACTOR-CLEANUP: Fix mocking issues with data-service.js default export
-describe.skip('ImportService', () => {
-  let service;
+// Mock dependencies
+jest.mock('../js/services/validation-service.js');
+// Ręczne mockowanie dataService, aby uniknąć problemów z default export
+dataService.saveQuiz = jest.fn();
+dataService.saveWorkout = jest.fn();
+dataService.createListeningSet = jest.fn();
+
+describe('ImportService', () => {
+  let importService;
 
   beforeEach(() => {
-    service = new ImportService();
+    importService = new ImportService();
     jest.clearAllMocks();
-
-    // Setup default mock implementations
-    mockSaveQuiz.mockImplementation(data => Promise.resolve({ id: 'quiz-123', ...data }));
-    mockSaveWorkout.mockImplementation(data => Promise.resolve({ id: 'workout-123', ...data }));
-    mockCreateListeningSet.mockImplementation(() => Promise.resolve({ id: 'listening-123' }));
+    validationService.validate.mockReturnValue([]);
   });
 
   describe('importFromJSON', () => {
     test('imports valid quiz JSON', async () => {
-      const quizJSON = JSON.stringify({
-        title: 'Test Quiz',
-        description: 'Test description',
-        questions: [
-          {
-            question: 'Q1?',
-            type: 'multiple-choice',
-            options: ['A', 'B'],
-            correctAnswer: 0
-          }
-        ]
-      });
+      dataService.saveQuiz.mockResolvedValue({ id: 'quiz-123', title: 'Test Quiz' });
+      const quizJSON = JSON.stringify({ title: 'Test Quiz', questions: [] });
 
-      const result = await service.importFromJSON(quizJSON, 'quiz', false);
+      const result = await importService.importFromJSON(quizJSON, 'quiz', false);
       expect(result.id).toBe('quiz-123');
       expect(result.title).toBe('Test Quiz');
     });
 
     test('throws error for invalid JSON', async () => {
-      await expect(service.importFromJSON('invalid json', 'quiz')).rejects.toThrow(
+      await expect(importService.importFromJSON('invalid json', 'quiz')).rejects.toThrow(
         'Nieprawidłowy JSON'
       );
     });
 
     test('throws error for validation failures', async () => {
-      const invalidQuiz = JSON.stringify({
-        title: 'Test',
-        description: 'Test',
-        questions: [] // Empty questions - validation error
-      });
+      const invalidQuiz = JSON.stringify({ title: 'Invalid' });
+      validationService.validate.mockReturnValue(['Błąd 1', 'Błąd 2']);
 
-      await expect(service.importFromJSON(invalidQuiz, 'quiz')).rejects.toThrow('Błędy walidacji');
+      await expect(importService.importFromJSON(invalidQuiz, 'quiz')).rejects.toThrow(
+        'Błędy walidacji'
+      );
     });
   });
 
   describe('convertLegacyFormat', () => {
     test('converts questionText to question', () => {
       const oldFormat = {
-        title: 'Test',
-        description: 'Test',
-        questions: [
-          {
-            questionText: 'Old format question',
-            type: 'multiple-choice',
-            options: ['A', 'B'],
-            correctAnswer: 0
-          }
-        ]
+        questions: [{ questionText: 'Old format question' }]
       };
-
-      const converted = service.convertLegacyFormat(oldFormat, 'quiz');
+      const converted = importService.convertLegacyFormat(oldFormat, 'quiz');
       expect(converted.questions[0].question).toBe('Old format question');
       expect(converted.questions[0].questionText).toBeUndefined();
     });
 
     test('converts fill-in-the-blank to fill-in-blank', () => {
       const oldFormat = {
-        title: 'Test',
-        description: 'Test',
-        questions: [
-          {
-            question: 'Q1',
-            type: 'fill-in-the-blank',
-            correctAnswer: 'answer'
-          }
-        ]
+        questions: [{ type: 'fill-in-the-blank' }]
       };
-
-      const converted = service.convertLegacyFormat(oldFormat, 'quiz');
+      const converted = importService.convertLegacyFormat(oldFormat, 'quiz');
       expect(converted.questions[0].type).toBe('fill-in-blank');
     });
 
     test('converts isCorrect to correctAnswer for true-false', () => {
       const oldFormat = {
-        title: 'Test',
-        description: 'Test',
-        questions: [
-          {
-            question: 'Q1',
-            type: 'true-false',
-            isCorrect: true
-          }
-        ]
+        questions: [{ type: 'true-false', isCorrect: true }]
       };
-
-      const converted = service.convertLegacyFormat(oldFormat, 'quiz');
+      const converted = importService.convertLegacyFormat(oldFormat, 'quiz');
       expect(converted.questions[0].correctAnswer).toBe(true);
       expect(converted.questions[0].isCorrect).toBeUndefined();
     });
 
     test('converts object options to string array', () => {
       const oldFormat = {
-        title: 'Test',
-        description: 'Test',
         questions: [
           {
-            question: 'Q1',
             type: 'multiple-choice',
             options: [
               { text: 'Option A', isCorrect: false },
@@ -139,49 +100,37 @@ describe.skip('ImportService', () => {
           }
         ]
       };
-
-      const converted = service.convertLegacyFormat(oldFormat, 'quiz');
+      const converted = importService.convertLegacyFormat(oldFormat, 'quiz');
       expect(converted.questions[0].options).toEqual(['Option A', 'Option B']);
       expect(converted.questions[0].correctAnswer).toBe(1);
     });
 
     test('preserves audioText and audioLang for listening questions', () => {
       const data = {
-        title: 'Test',
-        description: 'Test',
         questions: [
           {
-            question: 'Q1',
             type: 'listening',
             audioText: 'Hello',
-            audioLang: 'en-US',
-            correctAnswer: 'Hello'
+            audioLang: 'en-US'
           }
         ]
       };
-
-      const converted = service.convertLegacyFormat(data, 'quiz');
+      const converted = importService.convertLegacyFormat(data, 'quiz');
       expect(converted.questions[0].audioText).toBe('Hello');
       expect(converted.questions[0].audioLang).toBe('en-US');
     });
 
     test('removes audioText and audioLang for non-listening questions', () => {
       const data = {
-        title: 'Test',
-        description: 'Test',
         questions: [
           {
-            question: 'Q1',
             type: 'multiple-choice',
-            options: ['A', 'B'],
-            correctAnswer: 0,
-            audioText: 'Should be removed',
+            audioText: 'Hello',
             audioLang: 'en-US'
           }
         ]
       };
-
-      const converted = service.convertLegacyFormat(data, 'quiz');
+      const converted = importService.convertLegacyFormat(data, 'quiz');
       expect(converted.questions[0].audioText).toBeUndefined();
       expect(converted.questions[0].audioLang).toBeUndefined();
     });
@@ -189,68 +138,46 @@ describe.skip('ImportService', () => {
 
   describe('import', () => {
     test('imports quiz with public flag', async () => {
-      const { dataService } = require('../js/data/data-service.js');
+      const quiz = { title: 'Test Quiz' };
+      dataService.saveQuiz.mockResolvedValue({ id: 'quiz-123', ...quiz });
 
-      const quiz = {
-        title: 'Public Quiz',
-        description: 'Test',
-        questions: [
-          {
-            question: 'Q1',
-            type: 'multiple-choice',
-            options: ['A', 'B'],
-            correctAnswer: 0
-          }
-        ]
-      };
-
-      await service.import(quiz, 'quiz', true);
+      await importService.import(quiz, 'quiz', true);
       expect(dataService.saveQuiz).toHaveBeenCalledWith(quiz, true);
     });
 
     test('imports workout', async () => {
-      const { dataService } = require('../js/data/data-service.js');
+      const workout = { title: 'Test Workout' };
+      dataService.saveWorkout.mockResolvedValue({ id: 'workout-456', ...workout });
 
-      const workout = {
-        title: 'Test Workout',
-        description: 'Test',
-        emoji: '💪',
-        phases: [
-          {
-            name: 'Phase 1',
-            exercises: [{ name: 'Push-ups', type: 'reps', reps: 10 }]
-          }
-        ]
-      };
-
-      await service.import(workout, 'workout', false);
+      await importService.import(workout, 'workout', false);
       expect(dataService.saveWorkout).toHaveBeenCalledWith(workout, false);
     });
 
     test('imports listening set', async () => {
-      const { dataService } = require('../js/data/data-service.js');
-
       const listening = {
         title: 'Test Listening',
         description: 'Test',
         lang1_code: 'pl-PL',
         lang2_code: 'en-US',
-        content: [{ pl: 'Cześć', en: 'Hello' }]
+        content: []
       };
+      dataService.createListeningSet.mockResolvedValue({ id: 'listening-789', ...listening });
 
-      await service.import(listening, 'listening', false);
+      await importService.import(listening, 'listening', false);
       expect(dataService.createListeningSet).toHaveBeenCalledWith(
         'Test Listening',
         'Test',
         'pl-PL',
         'en-US',
-        [{ pl: 'Cześć', en: 'Hello' }],
+        [],
         false
       );
     });
 
     test('throws error for unknown type', async () => {
-      await expect(service.import({}, 'unknown')).rejects.toThrow('Unknown content type');
+      await expect(importService.import({}, 'unknown', false)).rejects.toThrow(
+        'Unknown type: unknown'
+      );
     });
   });
 });
