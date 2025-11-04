@@ -691,84 +691,71 @@
       elements.importError.classList.add('hidden');
       elements.importSuccess.classList.add('hidden');
 
-      let jsonData;
+      const importService = window.importService;
+      if (!importService) {
+        this.showImportError('Błąd: Serwis importu jest niedostępny.', elements);
+        return;
+      }
+
+      let data;
+      const isPublic = elements.importMakePublic && elements.importMakePublic.checked;
+      const type = this.currentImportType;
 
       try {
-        // Pobierz JSON
         if (this.currentImportTab === 'file') {
           if (!this.selectedFile) {
             this.showImportError('Wybierz plik JSON', elements);
             return;
           }
-
-          const text = await this.selectedFile.text();
-          jsonData = JSON.parse(text);
+          data = await importService.importFromFile(this.selectedFile, type, isPublic);
         } else {
           const text = elements.jsonInput.value.trim();
           if (!text) {
             this.showImportError('Wklej JSON', elements);
             return;
           }
-
-          jsonData = JSON.parse(text);
-        }
-      } catch (error) {
-        this.showImportError('Nieprawidłowy format JSON: ' + error.message, elements);
-        return;
-      }
-
-      // Konwertuj stary format (v1) na nowy (v2)
-      jsonData = this.convertLegacyFormat(jsonData, this.currentImportType);
-
-      // Waliduj JSON
-      let errors = [];
-      if (this.currentImportType === 'quiz') {
-        errors = this.validateQuizJSON(jsonData);
-      } else if (this.currentImportType === 'workout') {
-        errors = this.validateWorkoutJSON(jsonData);
-      } else if (this.currentImportType === 'listening') {
-        errors = this.validateListeningJSON(jsonData);
-      } else {
-        errors = ['Nieznany typ zawartości'];
-      }
-
-      if (errors.length > 0) {
-        this.showImportError('Błędy walidacji:\n• ' + errors.join('\n• '), elements);
-        return;
-      }
-
-      // Pobierz wartość checkboxa "Udostępnij publicznie"
-      const isPublic = elements.importMakePublic && elements.importMakePublic.checked;
-
-      // Zapisz do Supabase
-      try {
-        if (this.currentImportType === 'quiz') {
-          await dataService.saveQuiz(jsonData, isPublic);
-        } else if (this.currentImportType === 'workout') {
-          await dataService.saveWorkout(jsonData, isPublic);
-        } else if (this.currentImportType === 'listening') {
-          await dataService.createListeningSet(
-            jsonData.title,
-            jsonData.description,
-            jsonData.lang1_code,
-            jsonData.lang2_code,
-            jsonData.content,
-            isPublic
-          );
+          data = await importService.importFromJSON(text, type, isPublic);
         }
 
-        this.showImportSuccess('✅ Zaimportowano pomyślnie!', elements);
+        this.showImportSuccess('✅ Zaimportowano pomyślnie! Uruchamiam...', elements);
 
         // Odśwież dane
         await this.loadData(state, elements, uiManager);
         this.renderCards(state, elements, uiManager, window.sessionManager);
 
-        // Zamknij modal po 1.5s
-        setTimeout(() => {
-          this.closeImportModal(elements);
-        }, 1500);
+        // Zamknij modal i przekieruj
+        this.closeImportModal(elements);
+
+        if (data && data.id) {
+          if (type === 'quiz') {
+            await this.loadAndStartQuiz(
+              data.id,
+              state,
+              elements,
+              window.sessionManager,
+              uiManager,
+              true // skipSessionCheck
+            );
+          } else if (type === 'workout') {
+            await this.loadAndStartWorkout(
+              data.id,
+              state,
+              elements,
+              uiManager,
+              window.sessionManager
+            );
+          } else if (type === 'listening') {
+            if (
+              window.listeningEngine &&
+              typeof window.listeningEngine.loadAndStartListening === 'function'
+            ) {
+              await window.listeningEngine.loadAndStartListening(data.id);
+            }
+          }
+        }
       } catch (error) {
-        this.showImportError('Błąd podczas zapisywania: ' + error.message, elements);
+        this.showImportError(error.message, elements);
+        console.error('Błąd importu:', error);
       }
     },
 
