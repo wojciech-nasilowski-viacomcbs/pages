@@ -342,6 +342,10 @@ export class WorkoutEngine extends BaseEngine {
     const phase = this.workoutState.data.phases[this.workoutState.currentPhaseIndex];
     const exercise = phase.exercises[this.workoutState.currentExerciseIndex];
 
+    // Reset stanu timera przed pokazaniem nowego ćwiczenia
+    this._stopTimer();
+    this.workoutState.isPaused = false;
+
     // Update UI
     this.elements.phase.textContent = `Faza ${this.workoutState.currentPhaseIndex + 1}: ${phase.name}`;
     this.elements.exerciseName.textContent = exercise.name;
@@ -353,12 +357,22 @@ export class WorkoutEngine extends BaseEngine {
       // TODO: Implementacja pokazywania obrazu/video
     }
 
+    // Sprawdź czy to odpoczynek
+    const isRest = exercise.name && exercise.name.toLowerCase().includes('odpoczynek');
+
     // Setup przycisku w zależności od typu ćwiczenia
     if (exercise.type === 'time') {
       this.workoutState.timeLeft = exercise.duration;
       this._updateTimerDisplay();
       this.elements.timer?.classList.remove('hidden'); // Pokaż timer
-      this._showButton('start-timer', 'Rozpocznij', this.icons.timer);
+
+      // Odpoczynek startuje automatycznie, ćwiczenia czekają na przycisk
+      if (isRest) {
+        this._startTimer();
+        this._showButton('pause-timer', 'Pauza', this.icons.timer);
+      } else {
+        this._showButton('start-timer', 'Rozpocznij', this.icons.timer);
+      }
     } else {
       this.elements.timer?.classList.add('hidden'); // Ukryj timer
       this._showButton('complete', 'Gotowe', this.icons.check);
@@ -368,7 +382,7 @@ export class WorkoutEngine extends BaseEngine {
     this.elements.skipButton.classList.remove('hidden');
 
     // Zmień tekst przycisku Skip w zależności od typu ćwiczenia
-    if (exercise.name && exercise.name.toLowerCase().includes('odpoczynek')) {
+    if (isRest) {
       this.elements.skipButton.textContent = 'Pomiń odpoczynek';
     } else {
       this.elements.skipButton.textContent = 'Pomiń ćwiczenie';
