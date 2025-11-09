@@ -426,6 +426,7 @@ export class WorkoutEngine extends BaseEngine {
         break;
 
       case 'complete':
+        playTimerEndSound(); // Odtwórz dźwięk zakończenia ćwiczenia
         this._handleNext();
         break;
 
