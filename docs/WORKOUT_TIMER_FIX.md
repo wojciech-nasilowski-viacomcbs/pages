@@ -162,6 +162,32 @@ _showExercise() {
 - ✅ **Naprawiono losowość** - każde ćwiczenie zaczyna się w czystym stanie
 - ⚠️ Istniejące błędy lintera (Wake Lock API, nieużywany parametr) - nie związane z tą zmianą
 
+## Dodatkowa naprawa: Dźwięk zakończenia ćwiczenia
+
+### 🐛 Problem
+Dźwięk "bip-bip" (`playTimerEndSound()`) był odtwarzany **tylko** dla ćwiczeń z timerem (type: "time"), gdy timer automatycznie doszedł do zera.
+
+**Dla ćwiczeń na powtórzenia** (type: "reps"), gdy użytkownik klikał "Gotowe", **dźwięk nie był odtwarzany**.
+
+### ✅ Rozwiązanie
+Dodano odtwarzanie dźwięku w akcji `'complete'` (linia 429):
+
+```javascript
+case 'complete':
+  playTimerEndSound(); // ✅ Odtwórz dźwięk zakończenia ćwiczenia
+  this._handleNext();
+  break;
+```
+
+### 🎵 Teraz dźwięk jest odtwarzany:
+- ✅ Po zakończeniu timera dla ćwiczeń na czas (automatycznie)
+- ✅ Po zakończeniu timera dla odpoczynku (automatycznie)
+- ✅ Po kliknięciu "Gotowe" dla ćwiczeń na powtórzenia (ręcznie)
+
+**Rezultat**: Spójne doświadczenie użytkownika - każde zakończenie ćwiczenia sygnalizowane dźwiękiem! 🔊
+
+---
+
 ## Data
 2025-11-09
 
