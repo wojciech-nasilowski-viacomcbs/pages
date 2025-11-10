@@ -188,6 +188,50 @@ case 'complete':
 
 ---
 
+## Dodatkowa naprawa: Walidacja duration i zabezpieczenie przed zawieszeniem
+
+### 🐛 Problem
+Timer mógł się zawiesić podczas odpoczynku jeśli:
+- `exercise.duration` było `undefined`, `null`, `0` lub ujemne
+- Timer był uruchamiany z nieprawidłową wartością `timeLeft`
+
+### ✅ Rozwiązanie
+
+#### 1. Walidacja w `_showExercise()` (linie 365-371):
+```javascript
+// Walidacja duration
+if (!exercise.duration || exercise.duration <= 0) {
+  this.error('Invalid exercise duration:', exercise.duration, 'for exercise:', exercise.name);
+  this.workoutState.timeLeft = 30; // Fallback na 30 sekund
+} else {
+  this.workoutState.timeLeft = exercise.duration;
+}
+```
+
+#### 2. Walidacja w `_startTimer()` (linie 452-456):
+```javascript
+// Walidacja: nie startuj timera jeśli czas jest nieprawidłowy
+if (!this.workoutState.timeLeft || this.workoutState.timeLeft <= 0) {
+  this.warn('Cannot start timer: invalid timeLeft value:', this.workoutState.timeLeft);
+  return; // Przerwij uruchamianie timera
+}
+```
+
+#### 3. Dodano logowanie dla debugowania (linia 458):
+```javascript
+this.log('Starting timer with', this.workoutState.timeLeft, 'seconds');
+```
+
+### 🛡️ Zabezpieczenia:
+- ✅ Timer nie uruchomi się z nieprawidłową wartością
+- ✅ Fallback na 30 sekund jeśli `duration` jest błędne
+- ✅ Logowanie w konsoli ułatwia debugowanie
+- ✅ Zapobiega nieskończonej pętli przy `timeLeft <= 0`
+
+**Rezultat**: Timer jest teraz odporny na błędne dane i nie zawiesi się! 🛡️
+
+---
+
 ## Data
 2025-11-09
 
