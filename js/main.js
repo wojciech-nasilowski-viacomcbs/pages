@@ -16,7 +16,7 @@ import './utils/wake-lock.js';
 import './state/store.js';
 import './state/app-state.js';
 import './ui/ui-state.js';
-import './modules-shim.js';
+import './engines-bridge.js';
 
 // ========== SERVICES (ES6) ==========
 import './services/validation-service.js';
