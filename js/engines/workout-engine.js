@@ -362,7 +362,14 @@ export class WorkoutEngine extends BaseEngine {
 
     // Setup przycisku w zależności od typu ćwiczenia
     if (exercise.type === 'time') {
-      this.workoutState.timeLeft = exercise.duration;
+      // Walidacja duration
+      if (!exercise.duration || exercise.duration <= 0) {
+        this.error('Invalid exercise duration:', exercise.duration, 'for exercise:', exercise.name);
+        this.workoutState.timeLeft = 30; // Fallback na 30 sekund
+      } else {
+        this.workoutState.timeLeft = exercise.duration;
+      }
+
       this._updateTimerDisplay();
       this.elements.timer?.classList.remove('hidden'); // Pokaż timer
 
@@ -441,6 +448,14 @@ export class WorkoutEngine extends BaseEngine {
    */
   _startTimer() {
     this._stopTimer(); // Zatrzymaj poprzedni jeśli był
+
+    // Walidacja: nie startuj timera jeśli czas jest nieprawidłowy
+    if (!this.workoutState.timeLeft || this.workoutState.timeLeft <= 0) {
+      this.warn('Cannot start timer: invalid timeLeft value:', this.workoutState.timeLeft);
+      return;
+    }
+
+    this.log('Starting timer with', this.workoutState.timeLeft, 'seconds');
 
     this.workoutState.timerInterval = setInterval(() => {
       this.workoutState.timeLeft--;
