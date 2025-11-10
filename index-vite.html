@@ -130,17 +130,14 @@
     <!-- VITE ENTRY POINT -->
     <script type="module" src="/js/main.js"></script>
     
-    <!-- IIFE Modules (still needed for backward compatibility) -->
-    <script src="js/config.js"></script>
-    <script src="js/ui-manager.js"></script>
-    <script src="js/session-manager.js"></script>
-    <script src="js/ai-prompts.js"></script>
-    <script src="js/content-manager.js"></script>
-    <script src="js/quiz-engine.js"></script>
-    <script src="js/workout-engine.js"></script>
-    <script src="js/listening-engine.js"></script>
-    <script src="js/knowledge-base-engine.js"></script>
-    <script defer src="js/app.js"></script>
+    <!-- IIFE Modules (loaded after ES6 modules for backward compatibility) -->
+    <script type="module" src="js/core/config.js"></script>
+    <script type="module" src="js/ui/ui-manager.js"></script>
+    <script type="module" src="js/ui/session-manager.js"></script>
+    <script type="module" src="js/data/ai-prompts.js"></script>
+    <script type="module" src="js/content-manager.js"></script>
+    <script type="module" src="js/knowledge-base-engine.js"></script>
+    <script type="module" defer src="js/core/app.js"></script>
     
     <!-- Test Script -->
     <script>

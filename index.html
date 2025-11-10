@@ -1610,7 +1610,7 @@
     <!-- Skrypty JS -->
     <!-- FAZA 3: Nowa struktura katalogów - pliki przeniesione do podkatalogów -->
     <script type="module" src="js/utils/audio.js"></script>
-    <script src="js/core/config.js"></script>
+    <script type="module" src="js/core/config.js"></script>
     <script type="module" src="js/data/feature-flags.js"></script>
     <script type="module" src="js/data/supabase-client.js"></script>
     <script type="module" src="js/data/auth-service.js"></script>
@@ -1623,16 +1623,16 @@
     <script type="module" src="js/state/app-state.js"></script>
     
     <!-- Managers (v2.0 refactored) -->
-    <script src="js/ui/ui-manager.js"></script>
+    <script type="module" src="js/ui/ui-manager.js"></script>
     <script type="module" src="js/ui/session-manager.js"></script>
-    <script src="js/data/ai-prompts.js"></script>
-    <script src="js/content-manager.js"></script>
+    <script type="module" src="js/data/ai-prompts.js"></script>
+    <script type="module" src="js/content-manager.js"></script>
     
     <!-- FAZA 3.2-3.4: All main engines migrated to ES6 classes! 🎉 -->
     <!-- FAZA 5.2: Engines loaded via bridge for IIFE compatibility -->
     <script type="module" src="js/engines-bridge.js"></script>
-    <script src="js/knowledge-base-engine.js"></script>
-    <script defer src="js/core/app.js"></script>
+    <script type="module" src="js/knowledge-base-engine.js"></script>
+    <script type="module" defer src="js/core/app.js"></script>
 
 </body>
 </html>
