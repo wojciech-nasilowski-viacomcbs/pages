@@ -148,3 +148,8 @@ export class ErrorHandler {
 
 // Singleton
 export const errorHandler = new ErrorHandler();
+
+// Eksportuj do window dla kompatybilności z IIFE modułami
+window.errorHandler = errorHandler;
+
+console.log('✅ Error handler initialized');

@@ -105,3 +105,8 @@ export class ExportService {
 
 // Singleton
 export const exportService = new ExportService();
+
+// Eksportuj do window dla kompatybilności z IIFE modułami
+window.exportService = exportService;
+
+console.log('✅ Export service initialized');

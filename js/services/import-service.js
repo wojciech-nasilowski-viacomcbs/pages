@@ -154,4 +154,7 @@ export class ImportService {
 // Singleton instance
 export const importService = new ImportService();
 
+// Eksportuj do window dla kompatybilności z IIFE modułami
+window.importService = importService;
+
 console.log('✅ Import service initialized');

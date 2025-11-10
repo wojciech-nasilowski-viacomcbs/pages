@@ -277,4 +277,7 @@ export class ValidationService {
 // Singleton instance
 export const validationService = new ValidationService();
 
+// Eksportuj do window dla kompatybilności z IIFE modułami
+window.validationService = validationService;
+
 console.log('✅ Validation service initialized');
