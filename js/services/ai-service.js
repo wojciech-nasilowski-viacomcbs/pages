@@ -282,3 +282,8 @@ export class AIService {
 
 // Singleton
 export const aiService = new AIService();
+
+// Eksportuj do window dla kompatybilności z IIFE modułami
+window.aiService = aiService;
+
+console.log('✅ AI service initialized');
