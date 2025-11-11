@@ -204,6 +204,13 @@ export function speakText(text, lang = 'en-US', rate = 0.85) {
     utterance.pitch = 1.0;
     utterance.volume = 1.0;
 
+    // Znajdź najlepszy głos dla języka
+    const voices = speechSynthesis.getVoices();
+    const preferredVoice = findBestVoiceForLanguage(voices, lang);
+    if (preferredVoice) {
+      utterance.voice = preferredVoice;
+    }
+
     // Obsługa błędów
     utterance.onerror = event => {
       console.warn('Błąd TTS:', event.error);
@@ -213,6 +220,29 @@ export function speakText(text, lang = 'en-US', rate = 0.85) {
   } catch (error) {
     console.warn('Nie udało się odtworzyć tekstu:', error);
   }
+}
+
+/**
+ * Finds the best voice for a given language
+ * @param {SpeechSynthesisVoice[]} voices - Available voices
+ * @param {string} lang - Language code (e.g., 'es-ES', 'pl-PL')
+ * @returns {SpeechSynthesisVoice|null} Best matching voice or null
+ * @private
+ */
+function findBestVoiceForLanguage(voices, lang) {
+  if (!voices || voices.length === 0) return null;
+
+  // Priorytet 1: Dokładne dopasowanie języka i regionu (np. es-ES)
+  let voice = voices.find(v => v.lang === lang);
+  if (voice) return voice;
+
+  // Priorytet 2: Dopasowanie tylko języka (np. es dla es-ES)
+  const langPrefix = lang.split('-')[0];
+  voice = voices.find(v => v.lang.startsWith(langPrefix));
+  if (voice) return voice;
+
+  // Priorytet 3: Pierwszy dostępny głos
+  return voices[0];
 }
 
 /**
