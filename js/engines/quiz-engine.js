@@ -775,11 +775,68 @@ export class QuizEngine extends BaseEngine {
       }
     }
 
+    // Podświetl odpowiedzi (dla pytań z przyciskami)
+    this._highlightAnswers(question, userAnswer, isCorrect);
+
     // Pokaż feedback
     this._showFeedback(isCorrect, question);
 
     // Pokaż next button
     this.elements.nextButton.classList.remove('hidden');
+  }
+
+  /**
+   * Podświetla odpowiedzi po udzieleniu odpowiedzi
+   * @private
+   * @param {Object} question - Pytanie
+   * @param {*} userAnswer - Odpowiedź użytkownika
+   * @param {boolean} isCorrect - Czy odpowiedź była poprawna
+   */
+  _highlightAnswers(question, userAnswer, isCorrect) {
+    // Podświetlenie działa tylko dla pytań z przyciskami (single-choice, multiple-choice, true-false)
+    if (!['single-choice', 'multiple-choice', 'true-false'].includes(question.type)) {
+      return;
+    }
+
+    const buttons = this.elements.answersContainer.querySelectorAll('.quiz-option');
+    const correctIndex = question.correctAnswer;
+
+    buttons.forEach((btn, index) => {
+      btn.disabled = true;
+
+      // Dla true-false: userAnswer to boolean, więc porównujemy inaczej
+      if (question.type === 'true-false') {
+        const btnAnswer = index === 0; // 0 = Prawda, 1 = Fałsz
+        const correctAnswer = question.correctAnswer;
+
+        if (btnAnswer === correctAnswer) {
+          // Poprawna odpowiedź - zawsze zielona
+          btn.classList.add('bg-green-600', 'border-green-400');
+          btn.classList.remove('bg-gray-800', 'bg-gray-700', 'hover:bg-gray-700');
+        } else if (btnAnswer === userAnswer) {
+          // Wybrana niepoprawna odpowiedź - czerwona
+          btn.classList.add('bg-red-600', 'border-red-400');
+          btn.classList.remove('bg-gray-800', 'bg-gray-700', 'hover:bg-gray-700');
+        } else {
+          // Pozostałe - przyciemnione
+          btn.classList.add('opacity-50');
+        }
+      } else {
+        // Dla single-choice i multiple-choice: userAnswer to index
+        if (index === correctIndex) {
+          // Poprawna odpowiedź - zawsze zielona
+          btn.classList.add('bg-green-600', 'border-green-400');
+          btn.classList.remove('bg-gray-800', 'bg-gray-700', 'hover:bg-gray-700');
+        } else if (index === userAnswer) {
+          // Wybrana niepoprawna odpowiedź - czerwona
+          btn.classList.add('bg-red-600', 'border-red-400');
+          btn.classList.remove('bg-gray-800', 'bg-gray-700', 'hover:bg-gray-700');
+        } else {
+          // Pozostałe - przyciemnione
+          btn.classList.add('opacity-50');
+        }
+      }
+    });
   }
 
   /**
