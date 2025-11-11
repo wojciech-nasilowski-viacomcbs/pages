@@ -1,0 +1,8 @@
+FORCE REBUILD - 2024-11-11 20:00:00
+This file forces Vercel to rebuild the project.
+Changes:
+- Fixed quiz session continuation (save/load progress)
+- Improved TTS with Google voice priority
+- Added text normalization for better pronunciation
+- Fixed matching quiz validation bug
+
