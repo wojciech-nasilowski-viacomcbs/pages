@@ -282,8 +282,12 @@ export class QuizEngine extends BaseEngine {
     let questions = [...this.quizState.data.questions];
 
     // Filtruj pytania słuchowe jeśli zaznaczono
-    if (skipListening) {
+    // WAŻNE: NIE filtruj w trybie poprawy błędów - użytkownik musi powtórzyć wszystkie błędne pytania
+    if (skipListening && !this.quizState.isMistakesOnlyMode) {
       questions = questions.filter(q => q.type !== 'listening');
+      this.log(
+        `Filtered out ${this.quizState.data.questions.length - questions.length} listening questions`
+      );
     }
 
     // Losuj kolejność jeśli zaznaczono
@@ -295,6 +299,7 @@ export class QuizEngine extends BaseEngine {
       }
       this.quizState.questionOrder = indices;
       questions = indices.map(i => questions[i]);
+      this.log('Questions randomized');
     }
 
     // Zapisz przygotowane pytania
@@ -336,7 +341,8 @@ export class QuizEngine extends BaseEngine {
   _renderQuestion(question) {
     // Wyczyść poprzednie odpowiedzi
     this.elements.answersContainer.innerHTML = '';
-    this.elements.question.textContent = question.question;
+    // Obsłuż oba pola: questionText (stary format) i question (nowy format)
+    this.elements.question.textContent = question.questionText || question.question;
 
     // Deleguj do odpowiedniej metody renderowania
     switch (question.type) {
@@ -774,10 +780,8 @@ export class QuizEngine extends BaseEngine {
       playCorrectSound();
     } else {
       playIncorrectSound();
-      // Dodaj do błędów (jeśli nie jesteśmy już w trybie błędów)
-      if (!this.quizState.isMistakesOnlyMode) {
-        this.quizState.mistakeQuestions.push(question);
-      }
+      // Zapisz błędne pytanie (sprawdź czy już nie jest na liście)
+      this._recordMistake(question);
     }
 
     // Podświetl odpowiedzi (dla pytań z przyciskami)
@@ -1132,11 +1136,37 @@ export class QuizEngine extends BaseEngine {
   }
 
   /**
-   * Handler: Retry button
+   * Handler: Retry button (rozpocznij quiz od początku)
    * @private
    */
   _handleRetry() {
-    this.restart();
+    const filename = this.quizState.filename;
+
+    if (!filename) {
+      this.error('Cannot retry - no filename');
+      return;
+    }
+
+    // Wczytaj oryginalne dane quizu ponownie (na wypadek gdyby były zmodyfikowane)
+    fetch(`data/quizzes/${filename}`)
+      .then(response => response.json())
+      .then(quizData => {
+        // Reset błędów - nowy quiz od początku
+        this.quizState.mistakeQuestions = [];
+        this.quizState.originalQuestions = null;
+        this.quizState.isMistakesOnlyMode = false;
+
+        // Rozpocznij quiz od początku (pokaże opcje)
+        this.start(quizData, filename);
+
+        // Przejdź do ekranu quizu
+        if (this.showScreenFn && this.appState) {
+          this.showScreenFn('quiz', this.appState, this.elements);
+        }
+      })
+      .catch(error => {
+        this.error('Error loading quiz:', error);
+      });
   }
 
   /**
@@ -1170,12 +1200,27 @@ export class QuizEngine extends BaseEngine {
   }
 
   /**
-   * Handler: Restart confirm
+   * Handler: Restart confirm (restart podczas quizu)
    * @private
    */
   _handleRestartConfirm() {
     this.elements.restartDialog?.classList.add('hidden');
-    this.restart();
+
+    // Użyj oryginalnych pytań jeśli są dostępne (tryb mistakes-only)
+    // W przeciwnym razie użyj obecnych danych
+    const quizData = this.quizState.originalQuestions
+      ? { ...this.quizState.data, questions: this.quizState.originalQuestions }
+      : this.quizState.data;
+
+    const filename = this.quizState.filename;
+
+    // Reset błędów - nowy quiz od początku
+    this.quizState.mistakeQuestions = [];
+    this.quizState.originalQuestions = null;
+    this.quizState.isMistakesOnlyMode = false;
+
+    // Rozpocznij quiz od początku (pokaże opcje)
+    this.start(quizData, filename);
   }
 
   /**
@@ -1208,6 +1253,28 @@ export class QuizEngine extends BaseEngine {
    */
   _getCurrentQuestions() {
     return this.quizState.data?.questions || [];
+  }
+
+  /**
+   * Zapisuje błędne pytanie (sprawdza duplikaty)
+   * @private
+   * @param {Object} question - Pytanie do zapisania
+   */
+  _recordMistake(question) {
+    // Pobierz tekst pytania (obsłuż oba pola: question i questionText)
+    const currentQuestionText = question.question || question.questionText;
+
+    // Sprawdź czy to pytanie już nie jest na liście (porównanie po treści pytania)
+    const alreadyRecorded = this.quizState.mistakeQuestions.some(q => {
+      const qText = q.question || q.questionText;
+      return qText === currentQuestionText;
+    });
+
+    // Dodaj tylko jeśli nie ma jeszcze na liście
+    if (!alreadyRecorded) {
+      this.quizState.mistakeQuestions.push(question);
+      this.log(`Mistake recorded: "${currentQuestionText.substring(0, 50)}..."`);
+    }
   }
 }
 
