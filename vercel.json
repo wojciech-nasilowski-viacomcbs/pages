@@ -1,12 +1,11 @@
 {
-  "buildCommand": "bash scripts/vercel-build.sh",
+  "buildCommand": "echo '✅ Using files from Git - no build step needed'",
   "outputDirectory": ".",
   "framework": null,
   "crons": [],
   "build": {
     "env": {
-      "VERCEL_FORCE_NO_BUILD_CACHE": "1",
-      "BUILD_TIMESTAMP": "1731348000"
+      "VERCEL_FORCE_NO_BUILD_CACHE": "1"
     }
   },
   "headers": [

@@ -1,8 +1,12 @@
-FORCE REBUILD - 2024-11-11 20:00:00
+FORCE REBUILD - 2024-11-11 20:45:00
 This file forces Vercel to rebuild the project.
+
+CRITICAL FIX: Disabled vercel-build.sh script that was overwriting Git changes!
+
 Changes:
 - Fixed quiz session continuation (save/load progress)
-- Improved TTS with Google voice priority
+- Improved TTS with Google voice priority  
 - Added text normalization for better pronunciation
 - Fixed matching quiz validation bug
+- Disabled build script that was overwriting files
 
