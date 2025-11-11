@@ -240,6 +240,7 @@ export class QuizEngine extends BaseEngine {
   _showQuizOptions() {
     this.elements.quizTitle.textContent = this.quizState.data.title;
     this.elements.quizOptions.classList.remove('hidden');
+    this.elements.quizHeader.classList.add('hidden');
     this.elements.quizQuestionContainer.classList.add('hidden');
   }
 
@@ -268,6 +269,7 @@ export class QuizEngine extends BaseEngine {
 
     // Ukryj opcje, pokaż pytania
     this.elements.quizOptions.classList.add('hidden');
+    this.elements.quizHeader.classList.remove('hidden');
     this.elements.quizQuestionContainer.classList.remove('hidden');
 
     this._showQuestion();
@@ -1322,4 +1324,4 @@ export function resetMistakes() {
 }
 
 console.log('✅ QuizEngine (ES6 Class) loaded');
-// BUILD: 1762868366
+// BUILD: 1762868732
