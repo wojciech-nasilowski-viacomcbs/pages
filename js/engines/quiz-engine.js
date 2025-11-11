@@ -1324,4 +1324,4 @@ export function resetMistakes() {
 }
 
 console.log('✅ QuizEngine (ES6 Class) loaded');
-// BUILD: 1762869023
+// BUILD: 1762869404
