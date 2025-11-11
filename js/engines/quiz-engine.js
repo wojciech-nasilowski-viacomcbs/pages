@@ -1428,4 +1428,4 @@ export function resetMistakes() {
 }
 
 console.log('✅ QuizEngine (ES6 Class) loaded');
-// BUILD: 1731348000
+// BUILD: 1731349500 - FINAL FIX

@@ -383,4 +383,4 @@ if (typeof window !== 'undefined') {
 }
 
 console.log('✅ Audio module initialized');
-// BUILD: 1731348000 - Improved TTS with Google voice priority
+// BUILD: 1731349500 - FINAL FIX
