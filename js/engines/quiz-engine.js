@@ -69,7 +69,7 @@ export class QuizEngine extends BaseEngine {
    * @override
    * @param {Object} quizData - Dane quizu
    * @param {string} filename - Nazwa pliku quizu
-   * @param {Object} [options={}] - Opcje (mistakesOnly, randomize, skipListening)
+   * @param {Object} [options={}] - Opcje (mistakesOnly, randomize, skipListening, continueFromSaved)
    */
   start(quizData, filename, options = {}) {
     this.ensureInitialized();
@@ -91,6 +91,15 @@ export class QuizEngine extends BaseEngine {
     };
 
     this._setCurrentData(quizData, filename);
+
+    // Sprawdź czy kontynuować z zapisanego postępu
+    if (options.continueFromSaved) {
+      const progress = this._loadProgress();
+      if (progress) {
+        this._continueFromProgress(progress, options);
+        return;
+      }
+    }
 
     // Pokaż opcje quizu lub rozpocznij od razu
     if (options.mistakesOnly) {
@@ -1106,6 +1115,7 @@ export class QuizEngine extends BaseEngine {
    */
   _handleNextQuestion() {
     this.quizState.currentQuestionIndex++;
+    this._saveProgress(); // Zapisz postęp po każdym pytaniu
     this._showQuestion();
   }
 
@@ -1135,6 +1145,9 @@ export class QuizEngine extends BaseEngine {
     }
 
     this.log(`Quiz completed: ${score}/${totalQuestions} (${percentage}%)`);
+
+    // Wyczyść zapisany postęp - quiz zakończony
+    localStorage.removeItem('currentSession');
 
     // Przejdź do ekranu podsumowania
     if (this.showScreenFn && this.appState) {
@@ -1283,6 +1296,91 @@ export class QuizEngine extends BaseEngine {
       this.log(`Mistake recorded: "${currentQuestionText.substring(0, 50)}..."`);
     }
   }
+
+  /**
+   * Zapisuje postęp quizu do localStorage
+   * @private
+   */
+  _saveProgress() {
+    if (!this.quizState.filename) return;
+
+    const progress = {
+      type: 'quiz',
+      id: this.quizState.filename,
+      filename: this.quizState.filename,
+      currentQuestionIndex: this.quizState.currentQuestionIndex,
+      score: this.quizState.score,
+      answers: this.quizState.answers,
+      questionOrder: this.quizState.questionOrder,
+      mistakeQuestions: this.quizState.mistakeQuestions,
+      isMistakesOnlyMode: this.quizState.isMistakesOnlyMode,
+      timestamp: Date.now()
+    };
+
+    try {
+      localStorage.setItem('currentSession', JSON.stringify(progress));
+      this.log('Progress saved');
+    } catch (error) {
+      this.error('Failed to save progress:', error);
+    }
+  }
+
+  /**
+   * Wczytuje zapisany postęp quizu
+   * @private
+   * @returns {Object|null} Zapisany postęp lub null
+   */
+  _loadProgress() {
+    try {
+      const saved = localStorage.getItem('currentSession');
+      if (!saved) return null;
+
+      const progress = JSON.parse(saved);
+
+      // Sprawdź czy to ten sam quiz
+      if (progress.type === 'quiz' && progress.filename === this.quizState.filename) {
+        this.log('Progress loaded');
+        return progress;
+      }
+
+      return null;
+    } catch (error) {
+      this.error('Failed to load progress:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Kontynuuje quiz z zapisanego postępu
+   * @private
+   * @param {Object} progress - Zapisany postęp
+   * @param {Object} options - Opcje quizu
+   */
+  _continueFromProgress(progress, options) {
+    this.log('Continuing from saved progress');
+
+    // Przywróć stan
+    this.quizState.currentQuestionIndex = progress.currentQuestionIndex || 0;
+    this.quizState.score = progress.score || 0;
+    this.quizState.answers = progress.answers || [];
+    this.quizState.questionOrder = progress.questionOrder || null;
+    this.quizState.mistakeQuestions = progress.mistakeQuestions || [];
+    this.quizState.isMistakesOnlyMode = progress.isMistakesOnlyMode || false;
+
+    // Przygotuj pytania (z zapisaną kolejnością jeśli była)
+    if (this.quizState.questionOrder) {
+      const questions = this.quizState.questionOrder.map(i => this.quizState.data.questions[i]);
+      this.quizState.data.questions = questions;
+    }
+
+    // Ukryj opcje, pokaż pytania
+    this.elements.quizOptions.classList.add('hidden');
+    this.elements.quizHeader.classList.remove('hidden');
+    this.elements.quizQuestionContainer.classList.remove('hidden');
+
+    // Pokaż obecne pytanie
+    this._showQuestion();
+  }
 }
 
 // ========== BACKWARD COMPATIBILITY FACADE ==========
@@ -1309,10 +1407,12 @@ export function initQuizEngine(showScreen, state) {
  * @param {Object} quizData - Dane quizu
  * @param {string} filename - Nazwa pliku
  * @param {boolean} [mistakesOnly=false] - Czy tylko błędy
+ * @param {Object} [additionalOptions={}] - Dodatkowe opcje (continueFromSaved, randomize, skipListening)
  */
-export function startQuiz(quizData, filename, mistakesOnly = false) {
+export function startQuiz(quizData, filename, mistakesOnly = false, additionalOptions = {}) {
   if (quizEngineInstance) {
-    quizEngineInstance.start(quizData, filename, { mistakesOnly });
+    const options = { mistakesOnly, ...additionalOptions };
+    quizEngineInstance.start(quizData, filename, options);
   } else {
     console.error('[QUIZ] Engine not initialized');
   }

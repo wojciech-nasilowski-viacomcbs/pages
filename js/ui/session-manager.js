@@ -67,7 +67,16 @@ export const sessionManager = {
 
     const session = this.savedSession;
     if (session.type === 'quiz') {
-      contentManager.loadAndStartQuiz(session.id, state, elements, null, uiManager, true); // skipSessionCheck = true
+      // Przekaż opcję continueFromSaved do quiz-engine
+      contentManager.loadAndStartQuiz(
+        session.id,
+        state,
+        elements,
+        null,
+        uiManager,
+        true, // skipSessionCheck = true
+        { continueFromSaved: true } // Nowa opcja
+      );
     } else if (session.type === 'workout') {
       contentManager.loadAndStartWorkout(session.id, state, elements, uiManager, this);
     }

@@ -375,7 +375,8 @@
       elements,
       sessionManager,
       uiManager,
-      skipSessionCheck = false
+      skipSessionCheck = false,
+      quizOptions = {}
     ) {
       // Sprawdź czy jest zapisana sesja
       if (!skipSessionCheck && sessionManager) {
@@ -391,7 +392,8 @@
         const quizData = await dataService.fetchQuizById(quizId);
 
         if (window.startQuiz && typeof window.startQuiz === 'function') {
-          window.startQuiz(quizData, quizId);
+          // Przekaż opcje do quiz-engine (np. continueFromSaved)
+          window.startQuiz(quizData, quizId, quizOptions.mistakesOnly || false, quizOptions);
         }
         uiManager.showScreen('quiz', state, elements, this, sessionManager);
       } catch (error) {
