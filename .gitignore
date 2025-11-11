@@ -39,3 +39,4 @@ test-report.html
 # Build output (Vite)
 dist/
 
+.vercel
