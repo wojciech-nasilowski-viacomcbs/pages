@@ -931,6 +931,21 @@ export class QuizEngine extends BaseEngine {
   }
 
   /**
+   * Normalizuje string - usuwa akcenty, wielkość liter, znaki interpunkcyjne
+   * @private
+   * @param {string} str - String do normalizacji
+   * @returns {string}
+   */
+  _normalizeString(str) {
+    return String(str)
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '') // Usuń akcenty
+      .replace(/[^\w\s]/g, '') // Usuń znaki interpunkcyjne
+      .trim();
+  }
+
+  /**
    * Sprawdza czy odpowiedź jest poprawna
    * @private
    * @param {Object} question - Pytanie
@@ -941,16 +956,49 @@ export class QuizEngine extends BaseEngine {
     switch (question.type) {
       case 'single-choice':
       case 'multiple-choice': // multiple-choice to też single choice (wybór JEDNEJ odpowiedzi)
-      case 'listening':
         return userAnswer === question.correctAnswer;
 
       case 'true-false':
         return userAnswer === question.correctAnswer;
 
+      case 'listening': {
+        // Normalizuj odpowiedzi (bez wielkości liter, akcentów i interpunkcji)
+        const normalizedUser = this._normalizeString(userAnswer);
+        const normalizedCorrect = this._normalizeString(question.correctAnswer);
+
+        // Sprawdź dokładne dopasowanie
+        if (normalizedUser === normalizedCorrect) {
+          return true;
+        }
+
+        // Sprawdź alternatywne odpowiedzi (jeśli istnieją)
+        if (question.acceptableAnswers && Array.isArray(question.acceptableAnswers)) {
+          return question.acceptableAnswers.some(
+            alt => this._normalizeString(alt) === normalizedUser
+          );
+        }
+
+        return false;
+      }
+
       case 'fill-in-blank': {
-        const userLower = String(userAnswer).toLowerCase().trim();
-        const correctLower = String(question.correctAnswer).toLowerCase().trim();
-        return userLower === correctLower;
+        // Normalizuj odpowiedzi (bez wielkości liter, akcentów i interpunkcji)
+        const normalizedUser = this._normalizeString(userAnswer);
+        const normalizedCorrect = this._normalizeString(question.correctAnswer);
+
+        // Sprawdź dokładne dopasowanie
+        if (normalizedUser === normalizedCorrect) {
+          return true;
+        }
+
+        // Sprawdź alternatywne odpowiedzi (jeśli istnieją)
+        if (question.acceptableAnswers && Array.isArray(question.acceptableAnswers)) {
+          return question.acceptableAnswers.some(
+            alt => this._normalizeString(alt) === normalizedUser
+          );
+        }
+
+        return false;
       }
 
       default:
