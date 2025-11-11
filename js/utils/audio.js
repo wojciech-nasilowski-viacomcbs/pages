@@ -178,7 +178,30 @@ export function setMuted(muted) {
 // ============================================
 
 /**
+ * Normalizuje tekst dla TTS - zapobiega czytaniu wielkich liter jako skrótów
+ * Przykład: "ESTAR" → "Estar" (zamiast "E-S-T-A-R")
+ * @param {string} text - Tekst do normalizacji
+ * @returns {string} Znormalizowany tekst
+ * @private
+ */
+function normalizeTextForTTS(text) {
+  // Zamień wszystkie wielkie litery na lowercase z kapitalizacją
+  // To zapobiega czytaniu ESTAR jako E-S-T-A-R
+
+  // Najpierw zamień cały tekst na lowercase
+  let normalized = text.toLowerCase();
+
+  // Kapitalizuj pierwszą literę
+  if (normalized.length > 0) {
+    normalized = normalized.charAt(0).toUpperCase() + normalized.slice(1);
+  }
+
+  return normalized;
+}
+
+/**
  * Speaks text using Web Speech API text-to-speech
+ * IMPROVED: Normalizuje tekst przed odtworzeniem dla lepszej wymowy
  * @param {string} text - Text to speak
  * @param {string} [lang='en-US'] - Language code (e.g., 'en-US', 'es-ES', 'pl-PL')
  * @param {number} [rate=0.85] - Speech rate (0.1 - 10, default 0.85 for learning)
@@ -198,7 +221,10 @@ export function speakText(text, lang = 'en-US', rate = 0.85) {
     // Zatrzymaj poprzednie odtwarzanie
     stopSpeaking();
 
-    const utterance = new SpeechSynthesisUtterance(text);
+    // WAŻNE: Normalizuj tekst - zapobiega czytaniu wielkich liter jako skrótów
+    const normalizedText = normalizeTextForTTS(text);
+
+    const utterance = new SpeechSynthesisUtterance(normalizedText);
     utterance.lang = lang;
     utterance.rate = rate;
     utterance.pitch = 1.0;
@@ -209,6 +235,9 @@ export function speakText(text, lang = 'en-US', rate = 0.85) {
     const preferredVoice = findBestVoiceForLanguage(voices, lang);
     if (preferredVoice) {
       utterance.voice = preferredVoice;
+      console.log(`🔊 TTS using voice: ${preferredVoice.name} (${preferredVoice.lang})`);
+    } else {
+      console.warn(`⚠️ No voice found for language: ${lang}`);
     }
 
     // Obsługa błędów
@@ -224,24 +253,56 @@ export function speakText(text, lang = 'en-US', rate = 0.85) {
 
 /**
  * Finds the best voice for a given language
+ * IMPROVED: Priorytetowo wybiera głosy Google (najwyższa jakość)
  * @param {SpeechSynthesisVoice[]} voices - Available voices
- * @param {string} lang - Language code (e.g., 'es-ES', 'pl-PL')
+ * @param {string} langCode - Language code (e.g., 'es-ES', 'pl-PL')
  * @returns {SpeechSynthesisVoice|null} Best matching voice or null
  * @private
  */
-function findBestVoiceForLanguage(voices, lang) {
+function findBestVoiceForLanguage(voices, langCode) {
   if (!voices || voices.length === 0) return null;
 
-  // Priorytet 1: Dokładne dopasowanie języka i regionu (np. es-ES)
-  let voice = voices.find(v => v.lang === lang);
+  // Wyciągnij kod języka (np. 'pl' z 'pl-PL')
+  const lang = langCode.split('-')[0].toLowerCase();
+  const country = langCode.split('-')[1]?.toLowerCase();
+
+  // PRIORYTET: Google głosy są najlepszej jakości i nie ucinają początku
+
+  // Priorytet 1: Google głos z dokładnym kodem języka
+  let voice = voices.find(
+    v => v.name.toLowerCase().includes('google') && v.lang.toLowerCase() === langCode.toLowerCase()
+  );
   if (voice) return voice;
 
-  // Priorytet 2: Dopasowanie tylko języka (np. es dla es-ES)
-  const langPrefix = lang.split('-')[0];
-  voice = voices.find(v => v.lang.startsWith(langPrefix));
+  // Priorytet 2: Google głos z tym samym językiem
+  voice = voices.find(
+    v => v.name.toLowerCase().includes('google') && v.lang.toLowerCase().startsWith(lang)
+  );
   if (voice) return voice;
 
-  // Priorytet 3: Pierwszy dostępny głos
+  // Priorytet 3: Głos z dokładnym kodem języka i kraju
+  voice = voices.find(v => v.lang.toLowerCase() === langCode.toLowerCase());
+  if (voice) return voice;
+
+  // Priorytet 4: Głos z tym samym językiem i krajem
+  if (country) {
+    voice = voices.find(v => {
+      const vLang = v.lang.split('-')[0].toLowerCase();
+      const vCountry = v.lang.split('-')[1]?.toLowerCase();
+      return vLang === lang && vCountry === country;
+    });
+    if (voice) return voice;
+  }
+
+  // Priorytet 5: Dowolny głos z tym samym językiem
+  voice = voices.find(v => v.lang.toLowerCase().startsWith(lang));
+  if (voice) return voice;
+
+  // Priorytet 6: Głos lokalny dla danego języka
+  voice = voices.find(v => v.localService && v.lang.toLowerCase().startsWith(lang));
+  if (voice) return voice;
+
+  // Priorytet 7: Pierwszy dostępny głos
   return voices[0];
 }
 

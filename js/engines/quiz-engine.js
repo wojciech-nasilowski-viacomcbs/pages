@@ -980,6 +980,10 @@ export class QuizEngine extends BaseEngine {
       case 'true-false':
         return userAnswer === question.correctAnswer;
 
+      case 'matching':
+        // Dla matching, userAnswer to już boolean (obliczony w _renderMatching)
+        return userAnswer === true;
+
       case 'listening': {
         // Normalizuj odpowiedzi (bez wielkości liter, akcentów i interpunkcji)
         const normalizedUser = this._normalizeString(userAnswer);
