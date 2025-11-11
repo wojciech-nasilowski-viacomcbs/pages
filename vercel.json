@@ -2,6 +2,12 @@
   "buildCommand": "bash scripts/vercel-build.sh",
   "outputDirectory": ".",
   "framework": null,
+  "crons": [],
+  "build": {
+    "env": {
+      "VERCEL_FORCE_NO_BUILD_CACHE": "1"
+    }
+  },
   "headers": [
     {
       "source": "/js/(.*)",
