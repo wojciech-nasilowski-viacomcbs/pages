@@ -2,6 +2,7 @@
  * @fileoverview Silnik treningów - wersja ES6 Class
  * Refactored w FAZIE 3.3 - dziedziczenie po BaseEngine
  * Obsługuje trening z timerem, fazami i Wake Lock API
+ * @version 2025-11-11-bugfixes
  */
 
 import { BaseEngine } from './base-engine.js';
@@ -682,3 +683,4 @@ export function startWorkout(workoutData, filename) {
 }
 
 console.log('✅ WorkoutEngine (ES6 Class) loaded');
+// BUILD: 1762868366

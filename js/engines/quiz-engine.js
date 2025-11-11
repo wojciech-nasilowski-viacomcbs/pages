@@ -2,6 +2,7 @@
  * @fileoverview Silnik quizów - wersja ES6 Class
  * Refactored w FAZIE 3.2 - dziedziczenie po BaseEngine
  * Obsługuje wszystkie typy pytań: single-choice, multiple-choice, true-false, fill-in-blank
+ * @version 2025-11-11-bugfixes
  */
 
 import { BaseEngine } from './base-engine.js';
@@ -1321,3 +1322,4 @@ export function resetMistakes() {
 }
 
 console.log('✅ QuizEngine (ES6 Class) loaded');
+// BUILD: 1762868366
