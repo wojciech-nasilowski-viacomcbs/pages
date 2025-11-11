@@ -543,21 +543,12 @@ export class WorkoutEngine extends BaseEngine {
     this._stopTimer();
     this._releaseWakeLock();
 
-    // Ukryj przyciski treningu
-    this.elements.mainButton?.classList.add('hidden');
-    this.elements.skipButton?.classList.add('hidden');
-
-    // Pokaż podsumowanie
-    this.elements.phase.textContent = 'Trening zakończony!';
-    this.elements.exerciseName.textContent = '🎉 Gratulacje!';
-    this.elements.exerciseDescription.textContent = 'Ukończyłeś cały trening.';
-    this.elements.exerciseDetails.textContent = '';
-
-    // Pokaż przyciski restart/home
-    this.elements.restartButton?.classList.remove('hidden');
-    this.elements.homeButton?.classList.remove('hidden');
-
     this.log('Workout completed');
+
+    // Przejdź do ekranu podsumowania
+    if (this.showScreenFn && this.appState) {
+      this.showScreenFn('workout-end', this.appState, this.elements);
+    }
   }
 
   /**
