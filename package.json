@@ -15,7 +15,7 @@
     "lint:fix": "eslint js/**/*.js __tests__/**/*.js --fix",
     "format": "prettier --write \"js/**/*.js\" \"__tests__/**/*.js\"",
     "format:check": "prettier --check \"js/**/*.js\" \"__tests__/**/*.js\"",
-    "prepare": "husky"
+    "prepare": "[ -d .git ] && husky || echo 'Skipping husky (not in git repo)'"
   },
   "lint-staged": {
     "*.js": [
