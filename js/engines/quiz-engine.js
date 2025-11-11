@@ -823,11 +823,21 @@ export class QuizEngine extends BaseEngine {
         if (btnAnswer === correctAnswer) {
           // Poprawna odpowiedź - zawsze zielona
           btn.classList.add('bg-green-600', 'border-green-400');
-          btn.classList.remove('bg-gray-800', 'bg-gray-700', 'hover:bg-gray-700');
+          btn.classList.remove(
+            'bg-gray-800',
+            'bg-gray-700',
+            'hover:bg-gray-700',
+            'border-gray-700'
+          );
         } else if (btnAnswer === userAnswer) {
           // Wybrana niepoprawna odpowiedź - czerwona
           btn.classList.add('bg-red-600', 'border-red-400');
-          btn.classList.remove('bg-gray-800', 'bg-gray-700', 'hover:bg-gray-700');
+          btn.classList.remove(
+            'bg-gray-800',
+            'bg-gray-700',
+            'hover:bg-gray-700',
+            'border-gray-700'
+          );
         } else {
           // Pozostałe - przyciemnione
           btn.classList.add('opacity-50');
@@ -837,11 +847,21 @@ export class QuizEngine extends BaseEngine {
         if (index === correctIndex) {
           // Poprawna odpowiedź - zawsze zielona
           btn.classList.add('bg-green-600', 'border-green-400');
-          btn.classList.remove('bg-gray-800', 'bg-gray-700', 'hover:bg-gray-700');
+          btn.classList.remove(
+            'bg-gray-800',
+            'bg-gray-700',
+            'hover:bg-gray-700',
+            'border-gray-700'
+          );
         } else if (index === userAnswer) {
           // Wybrana niepoprawna odpowiedź - czerwona
           btn.classList.add('bg-red-600', 'border-red-400');
-          btn.classList.remove('bg-gray-800', 'bg-gray-700', 'hover:bg-gray-700');
+          btn.classList.remove(
+            'bg-gray-800',
+            'bg-gray-700',
+            'hover:bg-gray-700',
+            'border-gray-700'
+          );
         } else {
           // Pozostałe - przyciemnione
           btn.classList.add('opacity-50');
@@ -872,9 +892,23 @@ export class QuizEngine extends BaseEngine {
 
       const isMatchCorrect = match.leftIndex === match.originalIndex;
 
-      // Usuń poprzednie kolory (fioletowy z dopasowania)
-      leftBtn.classList.remove('bg-purple-700', 'border-purple-500', 'opacity-50');
-      rightBtn.classList.remove('bg-purple-700', 'border-purple-500', 'opacity-50');
+      // Usuń poprzednie kolory (fioletowy z dopasowania + szary border)
+      leftBtn.classList.remove(
+        'bg-purple-700',
+        'border-purple-500',
+        'opacity-50',
+        'bg-gray-800',
+        'hover:bg-gray-700',
+        'border-gray-700'
+      );
+      rightBtn.classList.remove(
+        'bg-purple-700',
+        'border-purple-500',
+        'opacity-50',
+        'bg-gray-800',
+        'hover:bg-gray-700',
+        'border-gray-700'
+      );
 
       if (isMatchCorrect) {
         // Poprawna para - zielona
