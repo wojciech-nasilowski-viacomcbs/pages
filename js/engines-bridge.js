@@ -9,7 +9,7 @@
  * - content-manager.js (IIFE) wywołuje window.startQuiz(), window.startWorkout()
  */
 
-import { initQuizEngine, startQuiz, resetMistakes } from './engines/quiz-engine.js';
+import { initQuizEngine, startQuiz, resetMistakes } from './engines/quiz-engine-new.js';
 
 import { initWorkoutEngine, startWorkout } from './engines/workout-engine.js';
 
