@@ -998,14 +998,6 @@ export class QuizEngine extends BaseEngine {
         const normalizedUser = this._normalizeString(userAnswer);
         const normalizedCorrect = this._normalizeString(question.correctAnswer);
 
-        console.log('🔍 Fill-in-blank check:', {
-          userAnswer,
-          correctAnswer: question.correctAnswer,
-          normalizedUser,
-          normalizedCorrect,
-          isEqual: normalizedUser === normalizedCorrect
-        });
-
         // Sprawdź dokładne dopasowanie
         if (normalizedUser === normalizedCorrect) {
           return true;
