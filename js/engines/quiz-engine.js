@@ -822,22 +822,22 @@ export class QuizEngine extends BaseEngine {
 
         if (btnAnswer === correctAnswer) {
           // Poprawna odpowiedź - zawsze zielona
-          btn.classList.add('bg-green-600', 'border-green-400');
           btn.classList.remove(
             'bg-gray-800',
             'bg-gray-700',
             'hover:bg-gray-700',
             'border-gray-700'
           );
+          btn.classList.add('!bg-green-600', '!border-green-400');
         } else if (btnAnswer === userAnswer) {
           // Wybrana niepoprawna odpowiedź - czerwona
-          btn.classList.add('bg-red-600', 'border-red-400');
           btn.classList.remove(
             'bg-gray-800',
             'bg-gray-700',
             'hover:bg-gray-700',
             'border-gray-700'
           );
+          btn.classList.add('!bg-red-600', '!border-red-400');
         } else {
           // Pozostałe - przyciemnione
           btn.classList.add('opacity-50');
@@ -846,22 +846,22 @@ export class QuizEngine extends BaseEngine {
         // Dla single-choice i multiple-choice: userAnswer to index
         if (index === correctIndex) {
           // Poprawna odpowiedź - zawsze zielona
-          btn.classList.add('bg-green-600', 'border-green-400');
           btn.classList.remove(
             'bg-gray-800',
             'bg-gray-700',
             'hover:bg-gray-700',
             'border-gray-700'
           );
+          btn.classList.add('!bg-green-600', '!border-green-400');
         } else if (index === userAnswer) {
           // Wybrana niepoprawna odpowiedź - czerwona
-          btn.classList.add('bg-red-600', 'border-red-400');
           btn.classList.remove(
             'bg-gray-800',
             'bg-gray-700',
             'hover:bg-gray-700',
             'border-gray-700'
           );
+          btn.classList.add('!bg-red-600', '!border-red-400');
         } else {
           // Pozostałe - przyciemnione
           btn.classList.add('opacity-50');
@@ -912,12 +912,12 @@ export class QuizEngine extends BaseEngine {
 
       if (isMatchCorrect) {
         // Poprawna para - zielona
-        leftBtn.classList.add('bg-green-600', 'border-green-400');
-        rightBtn.classList.add('bg-green-600', 'border-green-400');
+        leftBtn.classList.add('!bg-green-600', '!border-green-400');
+        rightBtn.classList.add('!bg-green-600', '!border-green-400');
       } else {
         // Błędna para - czerwona
-        leftBtn.classList.add('bg-red-600', 'border-red-400');
-        rightBtn.classList.add('bg-red-600', 'border-red-400');
+        leftBtn.classList.add('!bg-red-600', '!border-red-400');
+        rightBtn.classList.add('!bg-red-600', '!border-red-400');
       }
 
       // Wyłącz przyciski
@@ -937,12 +937,24 @@ export class QuizEngine extends BaseEngine {
    * @returns {string}
    */
   _normalizeString(str) {
-    return String(str)
-      .toLowerCase()
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '') // Usuń akcenty
-      .replace(/[^\w\s]/g, '') // Usuń znaki interpunkcyjne
-      .trim();
+    return (
+      String(str)
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '') // Usuń akcenty (á, é, í, ó, ú, ñ)
+        // Mapowanie polskich znaków diakrytycznych
+        .replace(/ą/g, 'a')
+        .replace(/ć/g, 'c')
+        .replace(/ę/g, 'e')
+        .replace(/ł/g, 'l')
+        .replace(/ń/g, 'n')
+        .replace(/ó/g, 'o')
+        .replace(/ś/g, 's')
+        .replace(/ź/g, 'z')
+        .replace(/ż/g, 'z')
+        .replace(/[^\w\s]/g, '') // Usuń znaki interpunkcyjne
+        .trim()
+    );
   }
 
   /**
@@ -985,6 +997,14 @@ export class QuizEngine extends BaseEngine {
         // Normalizuj odpowiedzi (bez wielkości liter, akcentów i interpunkcji)
         const normalizedUser = this._normalizeString(userAnswer);
         const normalizedCorrect = this._normalizeString(question.correctAnswer);
+
+        console.log('🔍 Fill-in-blank check:', {
+          userAnswer,
+          correctAnswer: question.correctAnswer,
+          normalizedUser,
+          normalizedCorrect,
+          isEqual: normalizedUser === normalizedCorrect
+        });
 
         // Sprawdź dokładne dopasowanie
         if (normalizedUser === normalizedCorrect) {
