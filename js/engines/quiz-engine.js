@@ -1108,24 +1108,27 @@ export class QuizEngine extends BaseEngine {
     const score = this.quizState.score;
     const percentage = Math.round((score / totalQuestions) * 100);
 
-    // Ukryj pytania, pokaż podsumowanie
-    this.elements.quizQuestionContainer.classList.add('hidden');
-
     // Update podsumowanie
-    this.elements.finalScore.textContent = `${score} / ${totalQuestions}`;
-    this.elements.finalDetails.textContent = `Wynik: ${percentage}%`;
+    this.elements.finalScore.textContent = `${percentage}%`;
+    this.elements.finalDetails.textContent = `${score} / ${totalQuestions} poprawnych odpowiedzi`;
 
-    // Pokaż przycisk "Powtórz błędy" jeśli są błędy
-    if (this.quizState.mistakeQuestions.length > 0 && !this.quizState.isMistakesOnlyMode) {
-      this.elements.mistakesInfo.classList.remove('hidden');
-      this.elements.mistakesInfo.textContent = `Masz ${this.quizState.mistakeQuestions.length} błędnych odpowiedzi`;
+    // Pokaż informację o błędach
+    const mistakesCount = this.quizState.mistakeQuestions.length;
+
+    if (mistakesCount > 0) {
+      this.elements.mistakesInfo.textContent = `Pomyłki: ${mistakesCount} z ${totalQuestions} pytań`;
       this.elements.retryMistakesButton.classList.remove('hidden');
     } else {
-      this.elements.mistakesInfo.classList.add('hidden');
+      this.elements.mistakesInfo.textContent = 'Brawo! Wszystkie odpowiedzi poprawne! 🎉';
       this.elements.retryMistakesButton.classList.add('hidden');
     }
 
     this.log(`Quiz completed: ${score}/${totalQuestions} (${percentage}%)`);
+
+    // Przejdź do ekranu podsumowania
+    if (this.showScreenFn && this.appState) {
+      this.showScreenFn('quiz-summary', this.appState, this.elements);
+    }
   }
 
   /**
@@ -1190,7 +1193,8 @@ export class QuizEngine extends BaseEngine {
   _updateProgress() {
     const progress = this.getProgress();
     this.elements.progress.textContent = `Pytanie ${progress.current} / ${progress.total}`;
-    this.elements.scoreDisplay.textContent = `Wynik: ${this.quizState.score}`;
+    // Pokazuj wynik jako: liczba poprawnych / liczba dotychczas udzielonych odpowiedzi
+    this.elements.scoreDisplay.textContent = `Wynik: ${this.quizState.score} / ${this.quizState.currentQuestionIndex}`;
 
     if (this.elements.progressBar) {
       this.elements.progressBar.style.width = `${progress.percentage}%`;
