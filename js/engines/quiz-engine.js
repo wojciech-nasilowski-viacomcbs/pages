@@ -658,6 +658,11 @@ export class QuizEngine extends BaseEngine {
       });
 
       const isCorrect = correctCount === question.pairs.length;
+
+      // Zapisz userMatches do użycia w _highlightAnswers
+      this._currentMatchingUserMatches = userMatches;
+      this._currentMatchingCorrectCount = correctCount;
+
       this._handleAnswer(isCorrect);
     });
   }
@@ -793,6 +798,12 @@ export class QuizEngine extends BaseEngine {
    * @param {boolean} isCorrect - Czy odpowiedź była poprawna
    */
   _highlightAnswers(question, userAnswer, isCorrect) {
+    // Obsługa pytań matching (łączenie w pary)
+    if (question.type === 'matching') {
+      this._highlightMatchingAnswers(question);
+      return;
+    }
+
     // Podświetlenie działa tylko dla pytań z przyciskami (single-choice, multiple-choice, true-false)
     if (!['single-choice', 'multiple-choice', 'true-false'].includes(question.type)) {
       return;
@@ -840,6 +851,52 @@ export class QuizEngine extends BaseEngine {
   }
 
   /**
+   * Podświetla odpowiedzi dla pytań matching (łączenie w pary)
+   * @private
+   * @param {Object} question - Pytanie
+   */
+  _highlightMatchingAnswers(question) {
+    const userMatches = this._currentMatchingUserMatches;
+    if (!userMatches) return;
+
+    // Pokoloruj pary
+    userMatches.forEach(match => {
+      const leftBtn = this.elements.answersContainer.querySelector(
+        `.matching-left[data-index="${match.leftIndex}"]`
+      );
+      const rightBtn = this.elements.answersContainer.querySelector(
+        `.matching-right[data-right-index="${match.rightIndex}"]`
+      );
+
+      if (!leftBtn || !rightBtn) return;
+
+      const isMatchCorrect = match.leftIndex === match.originalIndex;
+
+      // Usuń poprzednie kolory (fioletowy z dopasowania)
+      leftBtn.classList.remove('bg-purple-700', 'border-purple-500', 'opacity-50');
+      rightBtn.classList.remove('bg-purple-700', 'border-purple-500', 'opacity-50');
+
+      if (isMatchCorrect) {
+        // Poprawna para - zielona
+        leftBtn.classList.add('bg-green-600', 'border-green-400');
+        rightBtn.classList.add('bg-green-600', 'border-green-400');
+      } else {
+        // Błędna para - czerwona
+        leftBtn.classList.add('bg-red-600', 'border-red-400');
+        rightBtn.classList.add('bg-red-600', 'border-red-400');
+      }
+
+      // Wyłącz przyciski
+      leftBtn.disabled = true;
+      rightBtn.disabled = true;
+    });
+
+    // Wyczyść tymczasowe dane
+    this._currentMatchingUserMatches = null;
+    this._currentMatchingCorrectCount = null;
+  }
+
+  /**
    * Sprawdza czy odpowiedź jest poprawna
    * @private
    * @param {Object} question - Pytanie
@@ -882,6 +939,12 @@ export class QuizEngine extends BaseEngine {
 
       let feedbackHTML = '<p class="font-semibold mb-2 text-green-300">✅ Poprawna odpowiedź!</p>';
 
+      // Dla matching - dodaj informację o wszystkich parach
+      if (question.type === 'matching') {
+        feedbackHTML +=
+          '<p class="text-sm text-green-200">Świetnie! Wszystkie pary dopasowane poprawnie.</p>';
+      }
+
       // Dodaj wyjaśnienie jeśli istnieje
       if (question.explanation) {
         feedbackHTML += `<p class="text-sm text-green-200">${question.explanation}</p>`;
@@ -891,27 +954,41 @@ export class QuizEngine extends BaseEngine {
     } else {
       this.elements.feedback.className = 'mt-4 p-4 bg-red-900/50 border border-red-700 rounded-lg';
 
-      let correctAnswerText = '';
-
-      if (question.type === 'multiple-choice' || question.type === 'single-choice') {
-        // correctAnswer to indeks opcji
-        correctAnswerText = question.options[question.correctAnswer];
-      } else if (question.type === 'listening' || question.type === 'fill-in-blank') {
-        // correctAnswer to string
-        correctAnswerText = String(question.correctAnswer);
-      } else if (question.type === 'true-false') {
-        // correctAnswer to boolean
-        correctAnswerText = question.correctAnswer ? 'Prawda' : 'Fałsz';
-      } else {
-        correctAnswerText = String(question.correctAnswer);
-      }
-
       let feedbackHTML = '<p class="font-semibold mb-2 text-red-300">❌ Niepoprawna odpowiedź</p>';
-      feedbackHTML += `<p class="text-sm text-red-200 mb-2">Poprawna odpowiedź: <strong>${correctAnswerText}</strong></p>`;
 
-      // Dodaj wyjaśnienie jeśli istnieje
-      if (question.explanation) {
-        feedbackHTML += `<p class="text-sm text-red-200">${question.explanation}</p>`;
+      // Dla matching - pokaż szczegóły i prawidłowe dopasowania
+      if (question.type === 'matching') {
+        const correctCount = this._currentMatchingCorrectCount || 0;
+        feedbackHTML += `<p class="text-sm text-red-200 mb-2">Poprawnie dopasowano ${correctCount} z ${question.pairs.length} par.</p>`;
+        feedbackHTML +=
+          '<div class="mt-3 text-sm"><strong class="text-red-200">Prawidłowe dopasowania:</strong><ul class="mt-2 space-y-1 text-red-200">';
+        question.pairs.forEach(pair => {
+          feedbackHTML += `<li>• <span class="text-blue-300">${pair.item}</span> → <span class="text-green-300">${pair.match}</span></li>`;
+        });
+        feedbackHTML += '</ul></div>';
+      } else {
+        // Dla innych typów pytań
+        let correctAnswerText = '';
+
+        if (question.type === 'multiple-choice' || question.type === 'single-choice') {
+          // correctAnswer to indeks opcji
+          correctAnswerText = question.options[question.correctAnswer];
+        } else if (question.type === 'listening' || question.type === 'fill-in-blank') {
+          // correctAnswer to string
+          correctAnswerText = String(question.correctAnswer);
+        } else if (question.type === 'true-false') {
+          // correctAnswer to boolean
+          correctAnswerText = question.correctAnswer ? 'Prawda' : 'Fałsz';
+        } else {
+          correctAnswerText = String(question.correctAnswer);
+        }
+
+        feedbackHTML += `<p class="text-sm text-red-200 mb-2">Poprawna odpowiedź: <strong>${correctAnswerText}</strong></p>`;
+
+        // Dodaj wyjaśnienie jeśli istnieje
+        if (question.explanation) {
+          feedbackHTML += `<p class="text-sm text-red-200">${question.explanation}</p>`;
+        }
       }
 
       this.elements.feedback.innerHTML = feedbackHTML;
