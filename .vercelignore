@@ -1,0 +1,32 @@
+# Vercel ignore file
+# Only ignore things that should NOT be deployed
+
+# Development files
+node_modules/
+.git/
+.vscode/
+.idea/
+
+# Test files
+__tests__/
+*.test.js
+*.spec.js
+
+# Documentation (optional - uncomment if you don't want to deploy docs)
+# docs/
+
+# Archive files
+archive/
+
+# Build artifacts that shouldn't be deployed
+dist/
+.cache/
+
+# Environment files
+.env.local
+.env.*.local
+
+# Logs
+*.log
+npm-debug.log*
+
