@@ -661,7 +661,7 @@ export class ListeningEngine extends BaseEngine {
    */
   _toggleLoop() {
     this.playerState.isLooping = !this.playerState.isLooping;
-    this.elements.btnLoop?.classList.toggle('active', this.playerState.isLooping);
+    this._updateLoopButtonUI();
     this.log('Loop:', this.playerState.isLooping);
   }
 
@@ -704,6 +704,9 @@ export class ListeningEngine extends BaseEngine {
 
     // Kolejność języków
     this._updateLanguageOrderUI();
+
+    // Stan przycisku zapętlenia
+    this._updateLoopButtonUI();
   }
 
   /**
@@ -733,6 +736,20 @@ export class ListeningEngine extends BaseEngine {
         this.elements.langOrderText.textContent = `${lang1} → ${lang2}`;
       } else {
         this.elements.langOrderText.textContent = `${lang2} → ${lang1}`;
+      }
+    }
+  }
+
+  /**
+   * Update UI przycisku zapętlenia
+   * @private
+   */
+  _updateLoopButtonUI() {
+    if (this.elements.btnLoop) {
+      if (this.playerState.isLooping) {
+        this.elements.btnLoop.classList.add('active');
+      } else {
+        this.elements.btnLoop.classList.remove('active');
       }
     }
   }
