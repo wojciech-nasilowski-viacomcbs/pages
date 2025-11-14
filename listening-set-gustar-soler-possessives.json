@@ -1,0 +1,521 @@
+{
+  "title": "Hiszpański A1: GUSTAR, SOLER, Zaimki Dzierżawcze",
+  "description": "Nauka czasowników gustar, soler, zaimków dzierżawczych i liczebników przez słuchanie. Ponad 60 par zdań z odmianami i przykładami użycia.",
+  "lang1_code": "pl-PL",
+  "lang2_code": "es-ES",
+  "content": [
+    {
+      "pl": "--- CZASOWNIK GUSTAR: Konstrukcja podstawowa ---",
+      "es": "--- VERBO GUSTAR: Construcción básica ---"
+    },
+    {
+      "pl": "Lubię kawę",
+      "es": "Me gusta el café"
+    },
+    {
+      "pl": "Lubisz herbatę",
+      "es": "Te gusta el té"
+    },
+    {
+      "pl": "On lubi czekoladę",
+      "es": "Le gusta el chocolate"
+    },
+    {
+      "pl": "Ona lubi pizzę",
+      "es": "Le gusta la pizza"
+    },
+    {
+      "pl": "Lubimy muzykę",
+      "es": "Nos gusta la música"
+    },
+    {
+      "pl": "Lubicie sport",
+      "es": "Os gusta el deporte"
+    },
+    {
+      "pl": "Oni lubią filmy",
+      "es": "Les gustan las películas"
+    },
+    {
+      "pl": "--- GUSTAR: Liczba mnoga ---",
+      "es": "--- GUSTAR: Plural ---"
+    },
+    {
+      "pl": "Lubię koty",
+      "es": "Me gustan los gatos"
+    },
+    {
+      "pl": "Lubisz psy",
+      "es": "Te gustan los perros"
+    },
+    {
+      "pl": "Ona lubi kwiaty",
+      "es": "Le gustan las flores"
+    },
+    {
+      "pl": "Lubimy książki",
+      "es": "Nos gustan los libros"
+    },
+    {
+      "pl": "Oni lubią sporty",
+      "es": "Les gustan los deportes"
+    },
+    {
+      "pl": "--- GUSTAR: Z bezokolicznikiem ---",
+      "es": "--- GUSTAR: Con infinitivo ---"
+    },
+    {
+      "pl": "Lubię czytać",
+      "es": "Me gusta leer"
+    },
+    {
+      "pl": "Lubisz tańczyć",
+      "es": "Te gusta bailar"
+    },
+    {
+      "pl": "On lubi gotować",
+      "es": "Le gusta cocinar"
+    },
+    {
+      "pl": "Ona lubi śpiewać",
+      "es": "Le gusta cantar"
+    },
+    {
+      "pl": "Lubimy podróżować",
+      "es": "Nos gusta viajar"
+    },
+    {
+      "pl": "Lubicie pływać",
+      "es": "Os gusta nadar"
+    },
+    {
+      "pl": "Oni lubią biegać",
+      "es": "Les gusta correr"
+    },
+    {
+      "pl": "--- GUSTAR: Negacja ---",
+      "es": "--- GUSTAR: Negación ---"
+    },
+    {
+      "pl": "Nie lubię zimna",
+      "es": "No me gusta el frío"
+    },
+    {
+      "pl": "Nie lubisz wstawać wcześnie",
+      "es": "No te gusta madrugar"
+    },
+    {
+      "pl": "On nie lubi piłki nożnej",
+      "es": "No le gusta el fútbol"
+    },
+    {
+      "pl": "Nie lubimy hałasu",
+      "es": "No nos gusta el ruido"
+    },
+    {
+      "pl": "Oni nie lubią czekać",
+      "es": "No les gusta esperar"
+    },
+    {
+      "pl": "--- GUSTAR: Wzmocnienie z A ---",
+      "es": "--- GUSTAR: Énfasis con A ---"
+    },
+    {
+      "pl": "Właśnie ja lubię kawę",
+      "es": "A mí me gusta el café"
+    },
+    {
+      "pl": "Właśnie ty lubisz czekoladę",
+      "es": "A ti te gusta el chocolate"
+    },
+    {
+      "pl": "Właśnie ona lubi tańczyć",
+      "es": "A ella le gusta bailar"
+    },
+    {
+      "pl": "Właśnie my lubimy podróżować",
+      "es": "A nosotros nos gusta viajar"
+    },
+    {
+      "pl": "Właśnie oni lubią filmy",
+      "es": "A ellos les gustan las películas"
+    },
+    {
+      "pl": "--- CZASOWNIK SOLER: Odmiana ---",
+      "es": "--- VERBO SOLER: Conjugación ---"
+    },
+    {
+      "pl": "Ja zazwyczaj",
+      "es": "Yo suelo"
+    },
+    {
+      "pl": "Ty zazwyczaj",
+      "es": "Tú sueles"
+    },
+    {
+      "pl": "On zazwyczaj",
+      "es": "Él suele"
+    },
+    {
+      "pl": "Ona zazwyczaj",
+      "es": "Ella suele"
+    },
+    {
+      "pl": "My zazwyczaj",
+      "es": "Nosotros solemos"
+    },
+    {
+      "pl": "Wy zazwyczaj",
+      "es": "Vosotros soléis"
+    },
+    {
+      "pl": "Oni zazwyczaj",
+      "es": "Ellos suelen"
+    },
+    {
+      "pl": "--- SOLER: Przykłady użycia ---",
+      "es": "--- SOLER: Ejemplos de uso ---"
+    },
+    {
+      "pl": "Zazwyczaj jem śniadanie o ósmej",
+      "es": "Suelo desayunar a las ocho"
+    },
+    {
+      "pl": "Zazwyczaj czytasz wieczorem",
+      "es": "Sueles leer por la noche"
+    },
+    {
+      "pl": "On zazwyczaj pracuje do piątej",
+      "es": "Suele trabajar hasta las cinco"
+    },
+    {
+      "pl": "Ona zazwyczaj wraca późno",
+      "es": "Suele volver tarde"
+    },
+    {
+      "pl": "Zazwyczaj jemy obiad o drugiej",
+      "es": "Solemos comer a las dos"
+    },
+    {
+      "pl": "Zazwyczaj chodzicie do siłowni",
+      "es": "Soléis ir al gimnasio"
+    },
+    {
+      "pl": "Oni zazwyczaj śpią osiem godzin",
+      "es": "Suelen dormir ocho horas"
+    },
+    {
+      "pl": "--- SOLER: Negacja ---",
+      "es": "--- SOLER: Negación ---"
+    },
+    {
+      "pl": "Zazwyczaj nie piję kawy",
+      "es": "No suelo tomar café"
+    },
+    {
+      "pl": "Zazwyczaj nie wstajesz wcześnie",
+      "es": "No sueles levantarte temprano"
+    },
+    {
+      "pl": "On zazwyczaj nie je mięsa",
+      "es": "No suele comer carne"
+    },
+    {
+      "pl": "Zazwyczaj nie wychodzimy wieczorem",
+      "es": "No solemos salir por la noche"
+    },
+    {
+      "pl": "--- ZAIMKI DZIERŻAWCZE: mi/mis ---",
+      "es": "--- POSESIVOS: mi/mis ---"
+    },
+    {
+      "pl": "Mój przyjaciel",
+      "es": "Mi amigo"
+    },
+    {
+      "pl": "Moja przyjaciółka",
+      "es": "Mi amiga"
+    },
+    {
+      "pl": "Moja książka",
+      "es": "Mi libro"
+    },
+    {
+      "pl": "Mój dom",
+      "es": "Mi casa"
+    },
+    {
+      "pl": "Moi przyjaciele",
+      "es": "Mis amigos"
+    },
+    {
+      "pl": "Moje książki",
+      "es": "Mis libros"
+    },
+    {
+      "pl": "Moi rodzice",
+      "es": "Mis padres"
+    },
+    {
+      "pl": "--- ZAIMKI DZIERŻAWCZE: tu/tus ---",
+      "es": "--- POSESIVOS: tu/tus ---"
+    },
+    {
+      "pl": "Twój brat",
+      "es": "Tu hermano"
+    },
+    {
+      "pl": "Twoja siostra",
+      "es": "Tu hermana"
+    },
+    {
+      "pl": "Twoja książka",
+      "es": "Tu libro"
+    },
+    {
+      "pl": "Twój dom",
+      "es": "Tu casa"
+    },
+    {
+      "pl": "Twoi rodzice",
+      "es": "Tus padres"
+    },
+    {
+      "pl": "Twoje dzieci",
+      "es": "Tus hijos"
+    },
+    {
+      "pl": "Twoje klucze",
+      "es": "Tus llaves"
+    },
+    {
+      "pl": "--- ZAIMKI DZIERŻAWCZE: su/sus ---",
+      "es": "--- POSESIVOS: su/sus ---"
+    },
+    {
+      "pl": "Jego przyjaciel",
+      "es": "Su amigo"
+    },
+    {
+      "pl": "Jej siostra",
+      "es": "Su hermana"
+    },
+    {
+      "pl": "Jego samochód",
+      "es": "Su coche"
+    },
+    {
+      "pl": "Jej dom",
+      "es": "Su casa"
+    },
+    {
+      "pl": "Ich rodzice",
+      "es": "Sus padres"
+    },
+    {
+      "pl": "Jego przyjaciele",
+      "es": "Sus amigos"
+    },
+    {
+      "pl": "Jej dzieci",
+      "es": "Sus hijos"
+    },
+    {
+      "pl": "--- ZAIMKI DZIERŻAWCZE: nuestro/nuestra ---",
+      "es": "--- POSESIVOS: nuestro/nuestra ---"
+    },
+    {
+      "pl": "Nasz przyjaciel",
+      "es": "Nuestro amigo"
+    },
+    {
+      "pl": "Nasza przyjaciółka",
+      "es": "Nuestra amiga"
+    },
+    {
+      "pl": "Nasz dom",
+      "es": "Nuestra casa"
+    },
+    {
+      "pl": "Nasz samochód",
+      "es": "Nuestro coche"
+    },
+    {
+      "pl": "Nasza rodzina",
+      "es": "Nuestra familia"
+    },
+    {
+      "pl": "Nasi rodzice",
+      "es": "Nuestros padres"
+    },
+    {
+      "pl": "Nasze książki",
+      "es": "Nuestros libros"
+    },
+    {
+      "pl": "Nasze dzieci",
+      "es": "Nuestros hijos"
+    },
+    {
+      "pl": "--- ZAIMKI DZIERŻAWCZE: vuestro/vuestra ---",
+      "es": "--- POSESIVOS: vuestro/vuestra ---"
+    },
+    {
+      "pl": "Wasz nauczyciel",
+      "es": "Vuestro profesor"
+    },
+    {
+      "pl": "Wasza nauczycielka",
+      "es": "Vuestra profesora"
+    },
+    {
+      "pl": "Wasz dom",
+      "es": "Vuestra casa"
+    },
+    {
+      "pl": "Wasz samochód",
+      "es": "Vuestro coche"
+    },
+    {
+      "pl": "Wasi rodzice",
+      "es": "Vuestros padres"
+    },
+    {
+      "pl": "Wasze książki",
+      "es": "Vuestros libros"
+    },
+    {
+      "pl": "Wasze dzieci",
+      "es": "Vuestros hijos"
+    },
+    {
+      "pl": "--- LICZEBNIKI 21-29 ---",
+      "es": "--- NÚMEROS 21-29 ---"
+    },
+    {
+      "pl": "Dwadzieścia jeden",
+      "es": "Veintiuno"
+    },
+    {
+      "pl": "Dwadzieścia dwa",
+      "es": "Veintidós"
+    },
+    {
+      "pl": "Dwadzieścia trzy",
+      "es": "Veintitrés"
+    },
+    {
+      "pl": "Dwadzieścia cztery",
+      "es": "Veinticuatro"
+    },
+    {
+      "pl": "Dwadzieścia pięć",
+      "es": "Veinticinco"
+    },
+    {
+      "pl": "Dwadzieścia sześć",
+      "es": "Veintiséis"
+    },
+    {
+      "pl": "Dwadzieścia siedem",
+      "es": "Veintisiete"
+    },
+    {
+      "pl": "Dwadzieścia osiem",
+      "es": "Veintiocho"
+    },
+    {
+      "pl": "Dwadzieścia dziewięć",
+      "es": "Veintinueve"
+    },
+    {
+      "pl": "--- LICZEBNIKI 30-40 ---",
+      "es": "--- NÚMEROS 30-40 ---"
+    },
+    {
+      "pl": "Trzydzieści",
+      "es": "Treinta"
+    },
+    {
+      "pl": "Trzydzieści jeden",
+      "es": "Treinta y uno"
+    },
+    {
+      "pl": "Trzydzieści dwa",
+      "es": "Treinta y dos"
+    },
+    {
+      "pl": "Trzydzieści pięć",
+      "es": "Treinta y cinco"
+    },
+    {
+      "pl": "Czterdzieści",
+      "es": "Cuarenta"
+    },
+    {
+      "pl": "--- ZDANIA ZŁOŻONE ---",
+      "es": "--- FRASES COMPLEJAS ---"
+    },
+    {
+      "pl": "Moja siostra i jej przyjaciele idą do kina",
+      "es": "Mi hermana y sus amigos van al cine"
+    },
+    {
+      "pl": "Nasi rodzice zazwyczaj jedzą kolację o ósmej",
+      "es": "Nuestros padres suelen cenar a las ocho"
+    },
+    {
+      "pl": "Twój brat zazwyczaj przychodzi późno",
+      "es": "Tu hermano suele llegar tarde"
+    },
+    {
+      "pl": "Ich dzieci zazwyczaj bawią się w parku",
+      "es": "Sus hijos suelen jugar en el parque"
+    },
+    {
+      "pl": "Właśnie nam się podoba ta muzyka",
+      "es": "A nosotros nos gusta esta música"
+    },
+    {
+      "pl": "Bardzo lubię filmy akcji",
+      "es": "Me gustan mucho las películas de acción"
+    },
+    {
+      "pl": "Lubisz tańczyć salsę?",
+      "es": "¿Te gusta bailar salsa?"
+    },
+    {
+      "pl": "Oni lubią grać w piłkę nożną",
+      "es": "Les gusta jugar al fútbol"
+    },
+    {
+      "pl": "Zazwyczaj nie wstaję wcześnie",
+      "es": "No suelo levantarme temprano"
+    },
+    {
+      "pl": "Jego rodzice mieszkają w dużym domu",
+      "es": "Sus padres viven en una casa grande"
+    },
+    {
+      "pl": "Wasz nauczyciel jest bardzo dobry",
+      "es": "Vuestro profesor es muy bueno"
+    },
+    {
+      "pl": "Lubię czytać i pisać",
+      "es": "Me gusta leer y escribir"
+    },
+    {
+      "pl": "Ona zazwyczaj pije kawę rano",
+      "es": "Ella suele tomar café por la mañana"
+    },
+    {
+      "pl": "Czy lubicie chodzić do kina?",
+      "es": "¿Os gusta ir al cine?"
+    },
+    {
+      "pl": "Państwo lubią podróżować",
+      "es": "A ustedes les gusta viajar"
+    }
+  ]
+}
+

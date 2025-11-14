@@ -271,6 +271,94 @@
     },
 
     // ============================================
+    // AUDIO UPLOAD (SUPABASE STORAGE)
+    // ============================================
+
+    /**
+     * Upload audio file to Supabase Storage
+     * @param {File} file - Audio file to upload
+     * @returns {Promise<string>} Public URL of uploaded audio
+     */
+    async uploadAudio(file) {
+      try {
+        if (!file) throw new Error('No file provided');
+
+        // Validate file type
+        const allowedTypes = [
+          'audio/mpeg',
+          'audio/mp3',
+          'audio/ogg',
+          'audio/wav',
+          'audio/wave',
+          'audio/x-wav',
+          'audio/mp4',
+          'audio/x-m4a',
+          'audio/aac',
+          'audio/flac',
+          'audio/x-flac'
+        ];
+        if (!allowedTypes.includes(file.type)) {
+          throw new Error('Nieprawidłowy typ pliku. Dozwolone: MP3, OGG, WAV, M4A, AAC, FLAC');
+        }
+
+        // Validate file size (max 20MB)
+        const maxSize = 20 * 1024 * 1024; // 20MB
+        if (file.size > maxSize) {
+          throw new Error('Plik jest za duży. Maksymalny rozmiar: 20MB');
+        }
+
+        // Generate unique filename
+        const timestamp = Date.now();
+        const randomStr = Math.random().toString(36).substring(2, 8);
+        const ext = file.name.split('.').pop();
+        const filename = `${timestamp}-${randomStr}.${ext}`;
+
+        // Upload to Supabase Storage (direct upload, bypasses Vercel)
+        const { error } = await supabaseClient.storage
+          .from('knowledge-base-audio')
+          .upload(filename, file, {
+            cacheControl: '3600',
+            upsert: false
+          });
+
+        if (error) throw error;
+
+        // Get public URL
+        const {
+          data: { publicUrl }
+        } = supabaseClient.storage.from('knowledge-base-audio').getPublicUrl(filename);
+
+        return publicUrl;
+      } catch (error) {
+        console.error('Error uploading audio:', error);
+        throw error;
+      }
+    },
+
+    /**
+     * Delete audio from Supabase Storage
+     * @param {string} url - Public URL of audio to delete
+     */
+    async deleteAudio(url) {
+      try {
+        if (!url) return;
+
+        // Extract filename from URL
+        const filename = url.split('/').pop();
+        if (!filename) return;
+
+        const { error } = await supabaseClient.storage
+          .from('knowledge-base-audio')
+          .remove([filename]);
+
+        if (error) throw error;
+      } catch (error) {
+        console.error('Error deleting audio:', error);
+        // Don't throw - deletion is not critical
+      }
+    },
+
+    // ============================================
     // IMAGE UPLOAD (SUPABASE STORAGE)
     // ============================================
 
@@ -428,6 +516,99 @@
     },
 
     // ============================================
+    // QUILL.JS CUSTOM BLOTS
+    // ============================================
+
+    /**
+     * Register custom Audio Blot for Quill.js
+     * Allows embedding HTML5 audio players in the editor
+     */
+    registerAudioBlot() {
+      if (typeof Quill === 'undefined') {
+        console.warn('Quill is not loaded, cannot register Audio Blot');
+        return;
+      }
+
+      const BlockEmbed = Quill.import('blots/block/embed');
+
+      class AudioBlot extends BlockEmbed {
+        static create(value) {
+          const node = super.create();
+          node.setAttribute('controls', '');
+          node.setAttribute('preload', 'metadata');
+          node.setAttribute('class', 'w-full my-4 rounded-lg');
+          node.setAttribute('controlsList', 'nodownload'); // Optional: prevent download
+
+          // Add source element
+          const source = document.createElement('source');
+          source.setAttribute('src', value.url);
+          source.setAttribute('type', value.type || 'audio/mpeg');
+          node.appendChild(source);
+
+          // Add fallback text
+          const fallback = document.createTextNode(
+            'Twoja przeglądarka nie obsługuje odtwarzania audio.'
+          );
+          node.appendChild(fallback);
+
+          // Setup Media Session API when audio is loaded
+          node.addEventListener('loadedmetadata', () => {
+            this.setupMediaSession(node, value.url);
+          });
+
+          return node;
+        }
+
+        static value(node) {
+          const source = node.querySelector('source');
+          return {
+            url: source ? source.getAttribute('src') : '',
+            type: source ? source.getAttribute('type') : 'audio/mpeg'
+          };
+        }
+
+        static setupMediaSession(audioElement, url) {
+          if ('mediaSession' in navigator) {
+            // Extract filename for title
+            const filename = url.split('/').pop();
+
+            navigator.mediaSession.metadata = new MediaMetadata({
+              title: filename || 'Audio',
+              artist: 'eTrener',
+              album: 'Baza Wiedzy'
+            });
+
+            // Setup action handlers
+            navigator.mediaSession.setActionHandler('play', () => {
+              audioElement.play();
+            });
+
+            navigator.mediaSession.setActionHandler('pause', () => {
+              audioElement.pause();
+            });
+
+            navigator.mediaSession.setActionHandler('seekbackward', () => {
+              audioElement.currentTime = Math.max(audioElement.currentTime - 10, 0);
+            });
+
+            navigator.mediaSession.setActionHandler('seekforward', () => {
+              audioElement.currentTime = Math.min(
+                audioElement.currentTime + 10,
+                audioElement.duration
+              );
+            });
+          }
+        }
+      }
+
+      AudioBlot.blotName = 'audio';
+      AudioBlot.tagName = 'audio';
+
+      Quill.register(AudioBlot);
+      console.log('✅ Audio Blot registered');
+    },
+
+    // ============================================
     // QUILL.JS EDITOR INITIALIZATION
     // ============================================
 
@@ -444,6 +625,9 @@
         return null;
       }
 
+      // Register custom Audio Blot
+      this.registerAudioBlot();
+
       const defaultOptions = {
         theme: 'snow',
         placeholder: 'Napisz treść artykułu...',
@@ -452,7 +636,7 @@
             [{ header: [1, 2, 3, false] }],
             ['bold', 'italic', 'underline'],
             [{ list: 'ordered' }, { list: 'bullet' }],
-            ['link', 'image', 'video'],
+            ['link', 'image', 'audio', 'video'],
             ['clean']
           ]
         }
@@ -471,6 +655,11 @@
           await this.handleImageUpload(quill);
         });
 
+        // Audio upload handler
+        toolbar.addHandler('audio', async () => {
+          await this.handleAudioUpload(quill);
+        });
+
         // Video embed handler
         toolbar.addHandler('video', () => {
           this.handleVideoEmbed(quill);
@@ -481,6 +670,9 @@
 
         // Setup sticky toolbar with shadow effect
         this.setupStickyToolbar(quill);
+
+        // Setup Wake Lock for audio playback
+        this.setupAudioWakeLock(quill);
 
         return quill;
       } catch (error) {
@@ -522,6 +714,50 @@
 
       // Insert before clean button
       cleanButton.parentNode.insertBefore(emojiButton, cleanButton);
+    },
+
+    /**
+     * Handle audio upload in Quill editor
+     * @param {Object} quill - Quill instance
+     */
+    async handleAudioUpload(quill) {
+      const input = document.createElement('input');
+      input.setAttribute('type', 'file');
+      input.setAttribute('accept', 'audio/*');
+      input.click();
+
+      input.onchange = async () => {
+        const file = input.files[0];
+        if (!file) return;
+
+        try {
+          // Show loading state
+          const range = quill.getSelection(true);
+          quill.insertText(range.index, 'Uploading audio...');
+          quill.setSelection(range.index + 18);
+
+          // Upload audio
+          const url = await this.uploadAudio(file);
+
+          // Detect MIME type
+          const mimeType = file.type || 'audio/mpeg';
+
+          // Remove loading text and insert audio
+          quill.deleteText(range.index, 18);
+          quill.insertEmbed(range.index, 'audio', { url, type: mimeType });
+          quill.setSelection(range.index + 1);
+
+          console.log('✅ Audio uploaded and inserted:', url);
+        } catch (error) {
+          console.error('Błąd podczas uploadowania audio:', error);
+          alert(`Błąd: ${error.message}`);
+          // Remove loading text
+          const range = quill.getSelection(true);
+          if (range) {
+            quill.deleteText(range.index - 18, 18);
+          }
+        }
+      };
     },
 
     /**
@@ -1632,6 +1868,80 @@
       if (!quill._stickyToolbarObserver) {
         quill._stickyToolbarObserver = observer;
       }
+    },
+
+    /**
+     * Setup Wake Lock for audio playback in editor
+     * Prevents screen from turning off during audio playback
+     * @param {Object} quill - Quill instance
+     */
+    setupAudioWakeLock(quill) {
+      if (!window.wakeLockManager || !window.wakeLockManager.isSupported()) {
+        console.warn('Wake Lock API not supported');
+        return;
+      }
+
+      // Listen for play/pause events on all audio elements in the editor
+      const editorElement = quill.root;
+
+      editorElement.addEventListener(
+        'play',
+        async e => {
+          if (e.target.tagName === 'AUDIO') {
+            console.log('🔊 Audio playback started, activating Wake Lock');
+            await window.wakeLockManager.addReference('kb-audio');
+          }
+        },
+        true
+      );
+
+      editorElement.addEventListener(
+        'pause',
+        async e => {
+          if (e.target.tagName === 'AUDIO') {
+            console.log('⏸️ Audio playback paused, releasing Wake Lock');
+            await window.wakeLockManager.removeReference('kb-audio');
+          }
+        },
+        true
+      );
+
+      editorElement.addEventListener(
+        'ended',
+        async e => {
+          if (e.target.tagName === 'AUDIO') {
+            console.log('⏹️ Audio playback ended, releasing Wake Lock');
+            await window.wakeLockManager.removeReference('kb-audio');
+          }
+        },
+        true
+      );
+
+      console.log('✅ Wake Lock setup for audio playback');
+    },
+
+    /**
+     * Stop all audio playback in the editor
+     * Called when user leaves the knowledge base editor
+     * @param {Object} quill - Quill instance
+     */
+    stopAllAudio(quill) {
+      if (!quill || !quill.root) return;
+
+      const audioElements = quill.root.querySelectorAll('audio');
+      audioElements.forEach(audio => {
+        if (!audio.paused) {
+          audio.pause();
+          audio.currentTime = 0;
+        }
+      });
+
+      // Release Wake Lock
+      if (window.wakeLockManager && window.wakeLockManager.isSupported()) {
+        window.wakeLockManager.removeReference('kb-audio');
+      }
+
+      console.log('🔇 All audio stopped in editor');
     },
 
     /**

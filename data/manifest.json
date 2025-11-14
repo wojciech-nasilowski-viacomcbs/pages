@@ -2,6 +2,10 @@
   "quizzes": [
     "english-a1-restaurant.json",
     "english-advanced-vocabulary.json",
+    "spanish-a1-daily-routine-lesson-10.json",
+    "spanish-a1-gustar-soler-possessives-lesson-11.json",
+    "spanish-a1-interrogative-pronouns.json",
+    "spanish-a1-irregular-verbs-bota-sombrero.json",
     "spanish-a1-numbers.json",
     "spanish-a1-places-city.json",
     "spanish-a1-prepositions.json",
@@ -13,5 +17,5 @@
     "steel-guard.json",
     "trening-7a-short.json"
   ],
-  "generatedAt": "2025-11-10T08:23:48.877Z"
+  "generatedAt": "2025-11-13T11:58:15.632Z"
 }

@@ -1784,6 +1784,13 @@
 
       if (editorBackButton) {
         editorBackButton.addEventListener('click', () => {
+          // Stop all audio playback before leaving editor
+          const quillEditor = window.knowledgeBaseQuillEditor;
+          const knowledgeBaseEngine = window.knowledgeBaseEngine;
+          if (quillEditor && knowledgeBaseEngine && knowledgeBaseEngine.stopAllAudio) {
+            knowledgeBaseEngine.stopAllAudio(quillEditor);
+          }
+
           const uiManager = window.uiManager;
           if (uiManager && uiManager.showKnowledgeBaseListView) {
             uiManager.showKnowledgeBaseListView();
@@ -1793,6 +1800,13 @@
 
       if (editorCancelButton) {
         editorCancelButton.addEventListener('click', () => {
+          // Stop all audio playback before leaving editor
+          const quillEditor = window.knowledgeBaseQuillEditor;
+          const knowledgeBaseEngine = window.knowledgeBaseEngine;
+          if (quillEditor && knowledgeBaseEngine && knowledgeBaseEngine.stopAllAudio) {
+            knowledgeBaseEngine.stopAllAudio(quillEditor);
+          }
+
           const uiManager = window.uiManager;
           if (uiManager && uiManager.showKnowledgeBaseListView) {
             uiManager.showKnowledgeBaseListView();

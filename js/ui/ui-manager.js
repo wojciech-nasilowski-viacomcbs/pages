@@ -198,6 +198,15 @@
      * Przełącza zakładki (Quizy / Treningi / Słuchanie / Więcej)
      */
     switchTab(tab, state, elements, contentManager, sessionManager) {
+      // Stop audio playback when leaving knowledge-base tab
+      if (state.currentTab === 'knowledge-base' && tab !== 'knowledge-base') {
+        const quillEditor = window.knowledgeBaseQuillEditor;
+        const knowledgeBaseEngine = window.knowledgeBaseEngine;
+        if (quillEditor && knowledgeBaseEngine && knowledgeBaseEngine.stopAllAudio) {
+          knowledgeBaseEngine.stopAllAudio(quillEditor);
+        }
+      }
+
       // Sprawdź, czy wybrana zakładka jest włączona
       const enabledTabs = featureFlags.getEnabledTabs();
       let targetTab = tab;
